@@ -9,6 +9,7 @@ typedef unsigned char byte;
 
 GLuint Core::LoadTexture( const char * filepath )
 {
+	printf("Loading txt %s...\n", filepath);
 	GLuint id;
 	glGenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);

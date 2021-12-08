@@ -39,6 +39,7 @@ glm::quat rotation = glm::quat(1, 0, 0, 0);
 
 GLuint textureAsteroid;
 bool keyPressed[] = {0, 0, 0, 0, 0, 0};
+bool initialized = false;
 
 namespace texture {
 	GLuint grid;
@@ -158,6 +159,7 @@ void process_keys() {
 
 void do_frame()
 {
+	init();
 	process_keys();
 	cameraMatrix = createCameraMatrix();
 	perspectiveMatrix = Core::createPerspectiveMatrix();
@@ -198,6 +200,7 @@ void do_frame()
 
 void loadModelToContext(std::string path, Core::RenderContext& context)
 {
+	printf("Loading model %s...\n", path.c_str());
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
@@ -211,6 +214,10 @@ void loadModelToContext(std::string path, Core::RenderContext& context)
 
 void init()
 {
+	if (initialized) {
+		return;
+	}
+	initialized = true;
 	srand(time(0));
 	glEnable(GL_DEPTH_TEST);
 
@@ -274,7 +281,6 @@ int main(int argc, char **argv)
             }
             printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
 #endif
-            init();
 #ifdef EMSCRIPTEN
             emscripten_set_main_loop(do_frame, 0, 1);
 #else
