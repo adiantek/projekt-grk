@@ -1,4 +1,6 @@
 #include <opengl.h>
+#include <Logger.h>
+#include <ResourceLoader.hpp>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <iostream>
@@ -37,22 +39,10 @@ glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
 
 glm::quat rotation = glm::quat(1, 0, 0, 0);
 
-GLuint textureAsteroid;
 bool keyPressed[] = {0, 0, 0, 0, 0, 0};
 bool initialized = false;
 
-namespace texture {
-	GLuint grid;
-	GLuint gridColor;
-	GLuint earth;
-	GLuint earth2;
-	GLuint moon;
-	GLuint ship;
-
-	GLuint earthNormal;
-	GLuint asteroidNormal;
-	GLuint shipNormal;
-}
+ResourceLoader resourceLoader;
 
 void glfw_error_callback(int, const char *err_str)
 {
@@ -161,6 +151,9 @@ void init();
 
 void do_frame()
 {
+	if (!resourceLoader.loadResources()) {
+		return;
+	}
 	init();
 	process_keys();
 	cameraMatrix = createCameraMatrix();
@@ -187,12 +180,12 @@ void do_frame()
 	glUniform3f(glGetUniformLocation(programSun, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(glGetUniformLocation(programSun, "cameraPos"), cameraPos.x, cameraPos.y, cameraPos.z);
 
-	drawObjectTexNormal(programTex, shipContext, shipModelMatrix, texture::ship, texture::shipNormal);
+	drawObjectTexNormal(programTex, shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 	
-	drawObjectTexNormal(programTex, sphereContext, eu * glm::scale(glm::vec3(0.7f)), texture::earth, texture::earthNormal);
-	drawObjectTexNormal(programTex, sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), texture::moon, texture::asteroidNormal);
+	drawObjectTexNormal(programTex, sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
+	drawObjectTexNormal(programTex, sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
 
 	drawObjectColor(programSun, sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
@@ -202,13 +195,13 @@ void do_frame()
 
 void loadModelToContext(std::string path, Core::RenderContext& context)
 {
-	printf("Loading model %s...\n", path.c_str());
+	LOGI("Loading model %s...", path.c_str());
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+		LOGE("ERROR::ASSIMP::%s", import.GetErrorString());
 		return;
 	}
 	context.initFromAssimpMesh(scene->mMeshes[0]);
@@ -220,18 +213,8 @@ void init()
 		return;
 	}
 	initialized = true;
-	srand(time(0));
+	srand(0);
 	glEnable(GL_DEPTH_TEST);
-
-	texture::grid = Core::LoadTexture("assets/textures/grid.png");
-	texture::gridColor = Core::LoadTexture("assets/textures/grid_color.png");
-	texture::earth = Core::LoadTexture("assets/textures/earth.png");
-	texture::earth2 = Core::LoadTexture("assets/textures/earth2.png");
-	texture::moon = Core::LoadTexture("assets/textures/moon.png");
-	texture::ship = Core::LoadTexture("assets/textures/spaceship.png");
-	texture::earthNormal = Core::LoadTexture("assets/textures/earth2_normals.png");
-	texture::asteroidNormal = Core::LoadTexture("assets/textures/moon_normals.png");
-	texture::shipNormal = Core::LoadTexture("assets/textures/spaceship_normals.png");
 
 	programColor = shaderLoader.CreateProgram("assets/shaders/shader_color.vert", "assets/shaders/shader_color.frag");
 	programTexture = shaderLoader.CreateProgram("assets/shaders/shader_tex.vert", "assets/shaders/shader_tex.frag");
@@ -243,7 +226,6 @@ void init()
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
-	textureAsteroid = Core::LoadTexture("assets/textures/asteroid.png");
 }
 
 int main(int argc, char **argv)
@@ -251,26 +233,26 @@ int main(int argc, char **argv)
     glfwSetErrorCallback(glfw_error_callback);
     if (glfwInit() != GL_TRUE)
     {
-        printf("glfwInit() failed\n");
+        LOGE("glfwInit() failed");
         glfwTerminate();
         return EXIT_FAILURE;
     }
     else
     {
-        printf("glfwInit() success\n");
+        LOGI("glfwInit() success");
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         window = glfwCreateWindow(600, 600, "GLFW test", NULL, NULL);
         if (!window)
         {
-            printf("glfwCreateWindow() failed\n");
+            LOGE("glfwCreateWindow() failed");
             glfwTerminate();
             return EXIT_FAILURE;
         }
         else
         {
-            printf("glfwCreateWindow() success\n");
+            LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
             // glfwSetWindowSizeCallback(window, window_size_callback);
             glfwSetMouseButtonCallback(window, wmbutcb);
@@ -278,10 +260,10 @@ int main(int argc, char **argv)
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {
-                printf("gladLoadGL() failed\n");
+                LOGE("gladLoadGL() failed");
                 return EXIT_FAILURE;
             }
-            printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
+            LOGI("OpenGL Version %d.%d loaded", GLVersion.major, GLVersion.minor);
 #endif
 #ifdef EMSCRIPTEN
             emscripten_set_main_loop(do_frame, 0, 1);

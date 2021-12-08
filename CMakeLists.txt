@@ -42,7 +42,7 @@ if (EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libassimp.a")
     target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libzlibstatic.a")
     target_compile_definitions(${PROJECT_NAME} PUBLIC -DEMSCRIPTEN=1)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_MEMORY_GROWTH=1 -s USE_GLFW=3 -s USE_WEBGL2=1 --preload-file ../assets")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-O3 -s ALLOW_MEMORY_GROWTH=1 -s USE_GLFW=3 -s USE_WEBGL2=1 --preload-file ../assets")
 endif()
 
 if (CMAKE_DL_LIBS)

@@ -1,3 +1,4 @@
+#include <Logger.h>
 #include "Shader_Loader.h" 
 #include<iostream>
 #include<fstream>
@@ -60,7 +61,7 @@ GLuint Shader_Loader::CreateShader(GLenum shaderType, std::string
 GLuint Shader_Loader::CreateProgram(char* vertexShaderFilename,
 	char* fragmentShaderFilename)
 {
-	printf("Loading program %s and %s...\n", vertexShaderFilename, fragmentShaderFilename);
+	LOGI("Loading program %s and %s...", vertexShaderFilename, fragmentShaderFilename);
 	//wczytaj shadery
 	std::string vertex_shader_code = ReadShader(vertexShaderFilename);
 	std::string fragment_shader_code = ReadShader(fragmentShaderFilename);
