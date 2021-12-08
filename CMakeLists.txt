@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(noise)
+project(GrafikaKomputerowa)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     option(BUILD_HTML "Build html also!" ON)
@@ -23,6 +23,16 @@ if (NOT EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.lib")
     target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3dll.lib")
     target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/zlibstaticd.lib")
+    add_custom_command(
+        TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
+                ${CMAKE_CURRENT_BINARY_DIR}/Release/assimp-vc142-mtd.dll)
+    add_custom_command(
+        TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
+                ${CMAKE_CURRENT_BINARY_DIR}/Debug/assimp-vc142-mtd.dll)
 endif()
 
 if (EMSCRIPTEN)
