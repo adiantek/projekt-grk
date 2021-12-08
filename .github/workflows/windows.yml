@@ -20,3 +20,15 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    - name: Create out
+      shell: bash
+      run: |
+        mkdir out
+        cp build/Release/GrafikaKomputerowa.exe out/
+        cp dependencies/assimp-vc142-mtd.dll out/
+        cp dependencies/glfw3.dll out/
+        cp -R assets out/
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GrafikaKomputerowa
+        path: out/
