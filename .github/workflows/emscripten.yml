@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: mymindstorm/setup-emsdk@v11
+        with:
+          version: 3.0.0
+          actions-cache-folder: 'emsdk-cache'
+      - name: Verify
+        run: emcc -v
+      - name: Compile
+        run: |
+          mkdir build
+          pushd build
+          emcmake cmake ..
+          emmake make
+          popd
