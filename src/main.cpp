@@ -157,6 +157,8 @@ void process_keys() {
 	}
 }
 
+void init();
+
 void do_frame()
 {
 	init();
