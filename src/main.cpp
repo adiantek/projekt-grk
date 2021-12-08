@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <stdbool.h>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -32,6 +33,7 @@ glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
 glm::quat rotation = glm::quat(1, 0, 0, 0);
 
 GLuint textureAsteroid;
+bool keyPressed[] = {0, 0, 0, 0, 0, 0};
 
 void glfw_error_callback(int, const char *err_str)
 {
@@ -41,18 +43,14 @@ void glfw_error_callback(int, const char *err_str)
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int modifier)
 {
     printf("key: %d, scancode: %d, action: %d, modifier: %d\n", key, scancode, action, modifier);
-    // if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-    //    glfwSetWindowShouldClose(window, 1);
-	float angleSpeed = 0.1f;
-	float moveSpeed = 0.1f;
-	switch(key)
+	switch (key)
 	{
-	case GLFW_KEY_Z: cameraAngle -= angleSpeed; break;
-	case GLFW_KEY_X: cameraAngle += angleSpeed; break;
-	case GLFW_KEY_W: cameraPos += cameraDir * moveSpeed; break;
-	case GLFW_KEY_S: cameraPos -= cameraDir * moveSpeed; break;
-	case GLFW_KEY_D: cameraPos += cameraSide * moveSpeed; break;
-	case GLFW_KEY_A: cameraPos -= cameraSide * moveSpeed; break;
+	case GLFW_KEY_Z: keyPressed[0] = action != 0; break;
+	case GLFW_KEY_X: keyPressed[1] = action != 0; break;
+	case GLFW_KEY_W: keyPressed[2] = action != 0; break;
+	case GLFW_KEY_S: keyPressed[3] = action != 0; break;
+	case GLFW_KEY_D: keyPressed[4] = action != 0; break;
+	case GLFW_KEY_A: keyPressed[5] = action != 0; break;
 	}
 }
 
@@ -107,8 +105,32 @@ void drawObjectTexture(Core::RenderContext context, glm::mat4 modelMatrix, GLuin
 	glUseProgram(0);
 }
 
+void process_keys() {
+	float angleSpeed = 0.05f;
+	float moveSpeed = 0.05f;
+	if (keyPressed[0]) {
+		cameraAngle -= angleSpeed;
+	}
+	if (keyPressed[1]) {
+		cameraAngle += angleSpeed;
+	}
+	if (keyPressed[2]) {
+		cameraPos += cameraDir * moveSpeed;
+	}
+	if (keyPressed[3]) {
+		cameraPos -= cameraDir * moveSpeed;
+	}
+	if (keyPressed[4]) {
+		cameraPos += cameraSide * moveSpeed;
+	}
+	if (keyPressed[5]) {
+		cameraPos -= cameraSide * moveSpeed;
+	}
+}
+
 void do_frame()
 {
+	process_keys();
 	cameraMatrix = createCameraMatrix();
 	perspectiveMatrix = Core::createPerspectiveMatrix();
 
@@ -164,7 +186,7 @@ int main(int argc, char **argv)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        window = glfwCreateWindow(1280, 720, "GLFW test", NULL, NULL);
+        window = glfwCreateWindow(600, 600, "GLFW test", NULL, NULL);
         if (!window)
         {
             printf("glfwCreateWindow() failed\n");
@@ -184,7 +206,7 @@ int main(int argc, char **argv)
                 printf("gladLoadGL() failed\n");
                 return EXIT_FAILURE;
             }
-            printf("OpenGL Version %d.%d loaded", GLVersion.major, GLVersion.minor);
+            printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
 #endif
             init();
 #ifdef EMSCRIPTEN
