@@ -1,4 +1,4 @@
-#version 410 core
+#version 300 es
 
 layout(location = 0) in vec3 vertexPosition;
 layout(location = 2) in vec2 vertexTexCoord;
