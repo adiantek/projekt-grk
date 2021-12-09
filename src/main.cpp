@@ -15,13 +15,6 @@
 
 GLFWwindow *window;
 
-GLuint programColor;
-GLuint programTexture;
-
-GLuint program;
-GLuint programSun;
-GLuint programTex;
-
 Core::Shader_Loader shaderLoader;
 
 Core::RenderContext shipContext;
@@ -41,17 +34,23 @@ glm::quat rotation = glm::quat(1, 0, 0, 0);
 
 bool keyPressed[] = {0, 0, 0, 0, 0, 0};
 bool initialized = false;
+bool mouseGrabbed = false;
 
 ResourceLoader resourceLoader;
 
 void glfw_error_callback(int, const char *err_str)
 {
-    printf("GLFW Error: %s\n", err_str);
+    LOGE("GLFW Error: %s", err_str);
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int modifier)
 {
-    printf("key: %d, scancode: %d, action: %d, modifier: %d\n", key, scancode, action, modifier);
+	if (action == 1) {
+		LOGI("pressed: key %d, scancode %d, modifier %d", key, scancode, modifier);
+	} else if (action == 0) {
+		LOGI("released: key %d, scancode %d, modifier %d", key, scancode, modifier);
+	}
+	// action = 2: repeat
 	switch (key)
 	{
 	case GLFW_KEY_Z: keyPressed[0] = action != 0; break;
@@ -61,12 +60,25 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	case GLFW_KEY_D: keyPressed[4] = action != 0; break;
 	case GLFW_KEY_A: keyPressed[5] = action != 0; break;
 	}
+	if (key == GLFW_KEY_ESCAPE) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		mouseGrabbed = false;
+	}
+}
+
+void mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
+	// LOGI("mouse move: %.0f %.0f", xpos, ypos);
 }
 
 static void wmbutcb(GLFWwindow *window, int button, int action, int mods)
 {
     //assert(window != NULL); (void)button; (void)action; (void)mods;
-    printf("mouse button: %d, action: %d, mods: %d\n", button, action, mods);
+    LOGI("mouse button: %d, action: %d, mods: %d", button, action, mods);
+	if (button == 0 && action == 1) {
+		// press left button
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		mouseGrabbed = true;
+	}
 }
 
 glm::mat4 createCameraMatrix()
@@ -76,50 +88,47 @@ glm::mat4 createCameraMatrix()
 	cameraSide = glm::cross(cameraDir, up);
 
 	return Core::createViewMatrix(cameraPos, cameraDir, up);
+	//return glm::lookAt(cameraPos, cameraDir, up);
 }
 
-void drawObjectColor(GLuint program, Core::RenderContext context, glm::mat4 modelMatrix, glm::vec3 color)
+void drawObjectColor(Core::RenderContext context, glm::mat4 modelMatrix, glm::vec3 color)
 {
-	glUseProgram(program);
+	glUseProgram(resourceLoader.p_shader_4_sun);
 
-	glUniform3f(glGetUniformLocation(program, "objectColor"), color.x, color.y, color.z);
-	glUniform3f(glGetUniformLocation(program, "lightDir"), lightDir.x, lightDir.y, lightDir.z);
+	glUniform3f(resourceLoader.p_shader_4_sun_uni_objectColor, color.x, color.y, color.z);
+	// glUniform3f(resourceLoader.p_shader_4_sun_uni_ligh, lightDir.x, lightDir.y, lightDir.z);
 
 	glm::mat4 transformation = perspectiveMatrix * cameraMatrix * modelMatrix;
-	glUniformMatrix4fv(glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, GL_FALSE, (float*)&transformation);
-	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_FALSE, (float*)&modelMatrix);
+	glUniformMatrix4fv(resourceLoader.p_shader_4_sun_uni_modelViewProjectionMatrix, 1, GL_FALSE, (float*)&transformation);
+	glUniformMatrix4fv(resourceLoader.p_shader_4_sun_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 
 	Core::DrawContext(context);
-
-	glUseProgram(0);
 }
 
 void drawObjectTexture(Core::RenderContext context, glm::mat4 modelMatrix, GLuint textureId)
 {
-	GLuint program = programTexture;
+	GLuint program = resourceLoader.p_shader_tex;
 
 	glUseProgram(program);
 
-	glUniform3f(glGetUniformLocation(program, "lightDir"), lightDir.x, lightDir.y, lightDir.z);
+	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 	Core::SetActiveTexture(textureId, "textureSampler", program, 0);
 
 	glm::mat4 transformation = perspectiveMatrix * cameraMatrix * modelMatrix;
-	glUniformMatrix4fv(glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, GL_FALSE, (float*)&transformation);
-	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_FALSE, (float*)&modelMatrix);
+	glUniformMatrix4fv(resourceLoader.p_shader_tex_uni_modelViewProjectionMatrix, 1, GL_FALSE, (float*)&transformation);
+	glUniformMatrix4fv(resourceLoader.p_shader_tex_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 
 	Core::DrawContext(context);
-
-	glUseProgram(0);
 }
 
-void drawObjectTexNormal(GLuint programTex, Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal)
+void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal)
 {
-	glUseProgram(programTex);
+	glUseProgram(resourceLoader.p_shader_4_tex);
 	glm::mat4 transformation = perspectiveMatrix * cameraMatrix * modelMatrix;
-	Core::SetActiveTexture(txt, "colorTexture", programTex, 0);
-	Core::SetActiveTexture(txtNormal, "normalSampler", programTex, 1);
-	glUniformMatrix4fv(glGetUniformLocation(programTex, "modelMatrix"), 1, GL_FALSE, (float*)&modelMatrix);
-	glUniformMatrix4fv(glGetUniformLocation(programTex, "transformation"), 1, GL_FALSE, (float*)&transformation);
+	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_shader_4_tex, 0);
+	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_shader_4_tex, 1);
+	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
+	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_uni_transformation, 1, GL_FALSE, (float*)&transformation);
 	Core::DrawContext(context);
 	glUseProgram(0);
 }
@@ -156,38 +165,37 @@ void do_frame()
 	}
 	init();
 	process_keys();
+	perspectiveMatrix = glm::perspective(glm::radians(70.0F), 1.0F, 0.1F, 100.0F);
 	cameraMatrix = createCameraMatrix();
-	perspectiveMatrix = Core::createPerspectiveMatrix();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
 
 	glm::mat4 shipInitialTransformation = glm::translate(glm::vec3(0,-0.25f,0)) * glm::rotate(glm::radians(180.0f), glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25f));
 	glm::mat4 shipModelMatrix = glm::translate(cameraPos + cameraDir * 0.5f) * glm::rotate(-cameraAngle, glm::vec3(0,1,0)) * shipInitialTransformation;
-	// drawObjectColor(programColor, shipContext, shipModelMatrix, glm::vec3(0.6f));
-
-	drawObjectColor(programSun, sphereContext2, glm::translate(glm::vec3(0,0,0)), glm::vec3(0.6f));
 
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
-	glUseProgram(programTex);
-	glUniform3f(glGetUniformLocation(programTex, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(glGetUniformLocation(programTex, "cameraPos"), cameraPos.x, cameraPos.y, cameraPos.z);
-	glUseProgram(program);
-	glUniform3f(glGetUniformLocation(program, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(glGetUniformLocation(program, "cameraPos"), cameraPos.x, cameraPos.y, cameraPos.z);
-	glUseProgram(programSun);
-	glUniform3f(glGetUniformLocation(programSun, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(glGetUniformLocation(programSun, "cameraPos"), cameraPos.x, cameraPos.y, cameraPos.z);
 
-	drawObjectTexNormal(programTex, shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
+	glUseProgram(resourceLoader.p_shader_4_tex);
+	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(resourceLoader.p_shader_4_tex_uni_cameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
+
+	glUseProgram(resourceLoader.p_shader_4_1);
+	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
+
+	glUseProgram(resourceLoader.p_shader_4_sun);
+	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
+
+	drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 	
-	drawObjectTexNormal(programTex, sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
-	drawObjectTexNormal(programTex, sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
+	drawObjectTexNormal(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
+	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
 
-	drawObjectColor(programSun, sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
+	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -215,13 +223,6 @@ void init()
 	initialized = true;
 	srand(0);
 	glEnable(GL_DEPTH_TEST);
-
-	programColor = shaderLoader.CreateProgram("assets/shaders/shader_color.vert", "assets/shaders/shader_color.frag");
-	programTexture = shaderLoader.CreateProgram("assets/shaders/shader_tex.vert", "assets/shaders/shader_tex.frag");
-	
-	program = shaderLoader.CreateProgram("assets/shaders/shader_4_1.vert", "assets/shaders/shader_4_1.frag");
-	programSun = shaderLoader.CreateProgram("assets/shaders/shader_4_sun.vert", "assets/shaders/shader_4_sun.frag");
-	programTex = shaderLoader.CreateProgram("assets/shaders/shader_4_tex.vert", "assets/shaders/shader_4_tex.frag");
 
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
@@ -254,6 +255,7 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
+			glfwSetCursorPosCallback(window, mouse_move_callback);
             // glfwSetWindowSizeCallback(window, window_size_callback);
             glfwSetMouseButtonCallback(window, wmbutcb);
             glfwSetKeyCallback(window, key_callback);
