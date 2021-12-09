@@ -144,7 +144,7 @@ void Core::DrawVertexArrayIndexed( const float * vertexArray, const int * indexA
 
 void Core::DrawVertexArray( const VertexData & data )
 {
-	int numAttribs = std::min(VertexData::MAX_ATTRIBS, data.NumActiveAttribs);
+	int numAttribs = std::min(8, data.NumActiveAttribs);
 	for(int i = 0; i < numAttribs; i++)
 	{
 		glVertexAttribPointer(i, data.Attribs[i].Size, GL_FLOAT, false, 0, data.Attribs[i].Pointer);
