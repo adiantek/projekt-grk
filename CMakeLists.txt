@@ -20,19 +20,24 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_DEBUG_POSTFIX _d)
 
 if (NOT EMSCRIPTEN)
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.lib")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3dll.lib")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/zlibstaticd.lib")
-    add_custom_command(
-        TARGET ${PROJECT_NAME}  POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
-                ${CMAKE_CURRENT_BINARY_DIR}/Release/assimp-vc142-mtd.dll)
-    add_custom_command(
-        TARGET ${PROJECT_NAME}  POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
-                ${CMAKE_CURRENT_BINARY_DIR}/Debug/assimp-vc142-mtd.dll)
+    if(WIN32)
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3dll.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/zlibstaticd.lib")
+        add_custom_command(
+            TARGET ${PROJECT_NAME}  POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
+                    ${CMAKE_CURRENT_BINARY_DIR}/Release/assimp-vc142-mtd.dll)
+        add_custom_command(
+            TARGET ${PROJECT_NAME}  POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
+                    ${CMAKE_CURRENT_BINARY_DIR}/Debug/assimp-vc142-mtd.dll)
+    else()
+        target_link_libraries(${PROJECT_NAME} glfw)
+        target_link_libraries(${PROJECT_NAME} assimp)
+    endif()
 endif()
 
 if (EMSCRIPTEN)
