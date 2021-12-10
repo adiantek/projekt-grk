@@ -10,7 +10,7 @@
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
-#include "Camera.h"
+#include "Camera.hpp"
 #include "Texture.h"
 
 GLFWwindow *window;
@@ -21,20 +21,18 @@ Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
 Core::RenderContext sphereContext2;
 
-glm::vec3 cameraPos = glm::vec3(0, 0, 5);
-glm::vec3 cameraDir; // Wektor "do przodu" kamery
-glm::vec3 cameraSide; // Wektor "w bok" kamery
-float cameraAngle = 0;
-
-glm::mat4 cameraMatrix, perspectiveMatrix;
+Camera camera = Camera(600, 600);
+glm::mat4 viewMatrix;
 
 glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
-
-glm::quat rotation = glm::quat(1, 0, 0, 0);
 
 bool keyPressed[] = {0, 0, 0, 0, 0, 0};
 bool initialized = false;
 bool mouseGrabbed = false;
+
+double lastX = 0;
+double lastY = 0;
+float distance = 1.0f;
 
 ResourceLoader resourceLoader;
 
@@ -67,7 +65,19 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 }
 
 void mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
+	double deltaX = lastX - xpos;
+	double deltaY = lastY - ypos;
+	lastX = xpos;
+	lastY = ypos;
+	if(mouseGrabbed) {
+		camera.rotate(glm::angleAxis((float) -deltaX * 0.005f, glm::vec3(0.0, 1.0, 0.0)) * glm::angleAxis((float) -deltaY * 0.005f, glm::vec3(1.0, 0.0, 0.0)));
+	}
 	// LOGI("mouse move: %.0f %.0f", xpos, ypos);
+}
+
+void window_size_callback(GLFWwindow* window, int width, int height) {
+	camera.setSize(width, height);
+	camera.useCameraViewport();
 }
 
 static void wmbutcb(GLFWwindow *window, int button, int action, int mods)
@@ -81,14 +91,14 @@ static void wmbutcb(GLFWwindow *window, int button, int action, int mods)
 	}
 }
 
-glm::mat4 createCameraMatrix()
-{
-	cameraDir = glm::vec3(cosf(cameraAngle - glm::radians(90.0f)), 0.0f, sinf(cameraAngle - glm::radians(90.0f)));
-	glm::vec3 up = glm::vec3(0, 1, 0);
-	cameraSide = glm::cross(cameraDir, up);
-
-	return Core::createViewMatrix(cameraPos, cameraDir, up);
-	//return glm::lookAt(cameraPos, cameraDir, up);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	if(yoffset < 0.0) {
+		distance += 0.1f;
+		camera.position -= camera.getDirection() * 0.1f;
+	} else {
+		distance -= 0.1f;
+		camera.position += camera.getDirection() * 0.1f;
+	}
 }
 
 void drawObjectColor(Core::RenderContext context, glm::mat4 modelMatrix, glm::vec3 color)
@@ -98,7 +108,7 @@ void drawObjectColor(Core::RenderContext context, glm::mat4 modelMatrix, glm::ve
 	glUniform3f(resourceLoader.p_shader_4_sun_uni_objectColor, color.x, color.y, color.z);
 	// glUniform3f(resourceLoader.p_shader_4_sun_uni_ligh, lightDir.x, lightDir.y, lightDir.z);
 
-	glm::mat4 transformation = perspectiveMatrix * cameraMatrix * modelMatrix;
+	glm::mat4 transformation = viewMatrix * modelMatrix;
 	glUniformMatrix4fv(resourceLoader.p_shader_4_sun_uni_modelViewProjectionMatrix, 1, GL_FALSE, (float*)&transformation);
 	glUniformMatrix4fv(resourceLoader.p_shader_4_sun_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 
@@ -114,7 +124,7 @@ void drawObjectTexture(Core::RenderContext context, glm::mat4 modelMatrix, GLuin
 	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 	Core::SetActiveTexture(textureId, "textureSampler", program, 0);
 
-	glm::mat4 transformation = perspectiveMatrix * cameraMatrix * modelMatrix;
+	glm::mat4 transformation = viewMatrix * modelMatrix;
 	glUniformMatrix4fv(resourceLoader.p_shader_tex_uni_modelViewProjectionMatrix, 1, GL_FALSE, (float*)&transformation);
 	glUniformMatrix4fv(resourceLoader.p_shader_tex_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 
@@ -124,7 +134,7 @@ void drawObjectTexture(Core::RenderContext context, glm::mat4 modelMatrix, GLuin
 void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal)
 {
 	glUseProgram(resourceLoader.p_shader_4_tex);
-	glm::mat4 transformation = perspectiveMatrix * cameraMatrix * modelMatrix;
+	glm::mat4 transformation = viewMatrix * modelMatrix;
 	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_shader_4_tex, 0);
 	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_shader_4_tex, 1);
 	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
@@ -134,25 +144,25 @@ void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLu
 }
 
 void process_keys() {
-	float angleSpeed = 0.05f;
+	float angleSpeed = 0.01f;
 	float moveSpeed = 0.05f;
 	if (keyPressed[0]) {
-		cameraAngle -= angleSpeed;
+		camera.rotate(glm::angleAxis(-angleSpeed, glm::vec3(0.0, 0.0, 1.0)));
 	}
 	if (keyPressed[1]) {
-		cameraAngle += angleSpeed;
+		camera.rotate(glm::angleAxis(angleSpeed, glm::vec3(0.0, 0.0, 1.0)));
 	}
 	if (keyPressed[2]) {
-		cameraPos += cameraDir * moveSpeed;
+		camera.position += camera.getDirection() * moveSpeed;
 	}
 	if (keyPressed[3]) {
-		cameraPos -= cameraDir * moveSpeed;
+		camera.position -= camera.getDirection() * moveSpeed;
 	}
 	if (keyPressed[4]) {
-		cameraPos += cameraSide * moveSpeed;
+		camera.position += camera.getSide() * moveSpeed;
 	}
 	if (keyPressed[5]) {
-		cameraPos -= cameraSide * moveSpeed;
+		camera.position -= camera.getSide() * moveSpeed;
 	}
 }
 
@@ -165,28 +175,28 @@ void do_frame()
 	}
 	init();
 	process_keys();
-	perspectiveMatrix = glm::perspective(glm::radians(70.0F), 1.0F, 0.1F, 100.0F);
-	cameraMatrix = createCameraMatrix();
+
+	viewMatrix = camera.getTransformationMatrix();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
 
 	glm::mat4 shipInitialTransformation = glm::translate(glm::vec3(0,-0.25f,0)) * glm::rotate(glm::radians(180.0f), glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25f));
-	glm::mat4 shipModelMatrix = glm::translate(cameraPos + cameraDir * 0.5f) * glm::rotate(-cameraAngle, glm::vec3(0,1,0)) * shipInitialTransformation;
+	glm::mat4 shipModelMatrix = glm::translate(camera.position + camera.getDirection() * distance) * glm::mat4_cast(glm::inverse(-camera.getRotation())) * shipInitialTransformation;
 
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(resourceLoader.p_shader_4_tex_uni_cameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform3f(resourceLoader.p_shader_4_tex_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_sun);
-	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
 
 	drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
@@ -256,9 +266,10 @@ int main(int argc, char **argv)
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
 			glfwSetCursorPosCallback(window, mouse_move_callback);
-            // glfwSetWindowSizeCallback(window, window_size_callback);
+            glfwSetWindowSizeCallback(window, window_size_callback);
             glfwSetMouseButtonCallback(window, wmbutcb);
             glfwSetKeyCallback(window, key_callback);
+			glfwSetScrollCallback(window, scroll_callback);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {
