@@ -28,6 +28,9 @@ public:
     GLuint txt_asteroidNormal = 0;
     GLuint txt_shipNormal = 0;
     GLuint txt_asteroid = 0;
+    GLuint txt_wall = 0;
+    GLuint txt_wallNormal = 0;
+    GLuint txt_wallHeight = 0;
 
     // programs
     GLuint p_shader_4_1 = 0;
@@ -62,6 +65,22 @@ public:
     GLint p_shader_4_tex_uni_modelMatrix = -1;
     GLint p_shader_4_tex_uni_normalSampler = -1;
     GLint p_shader_4_tex_uni_transformation = -1;
+    
+    GLuint p_shader_4_tex_with_parallax = 0;
+    bool p_shader_4_tex_with_parallax_loaded = false;
+    GLint p_shader_4_tex_with_parallax_attr_vertexBitangent = -1;
+    GLint p_shader_4_tex_with_parallax_attr_vertexNormal = -1;
+    GLint p_shader_4_tex_with_parallax_attr_vertexPosition = -1;
+    GLint p_shader_4_tex_with_parallax_attr_vertexTangent = -1;
+    GLint p_shader_4_tex_with_parallax_attr_vertexTexCoord = -1;
+    GLint p_shader_4_tex_with_parallax_uni_cameraPos = -1;
+    GLint p_shader_4_tex_with_parallax_uni_colorTexture = -1;
+    GLint p_shader_4_tex_with_parallax_uni_lightPos = -1;
+    GLint p_shader_4_tex_with_parallax_uni_modelMatrix = -1;
+    GLint p_shader_4_tex_with_parallax_uni_normalSampler = -1;
+    GLint p_shader_4_tex_with_parallax_uni_heightSampler = -1;
+    GLint p_shader_4_tex_with_parallax_uni_transformation = -1;
+    GLint p_shader_4_tex_with_parallax_uni_heightScale = -1;
 
     GLuint p_shader_color = 0;
     bool p_shader_color_loaded = false;

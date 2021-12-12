@@ -28,6 +28,9 @@ void ResourceLoader::loadTextures()
     loadTexture("assets/textures/moon_normals.png", &this->txt_asteroidNormal);
     loadTexture("assets/textures/spaceship_normals.png", &this->txt_shipNormal);
     loadTexture("assets/textures/asteroid.png", &this->txt_asteroid);
+    loadTexture("assets/textures/wall.jpg", &this->txt_wall);
+    loadTexture("assets/textures/wall_normal.jpg", &this->txt_wallNormal);
+    loadTexture("assets/textures/wall_height.jpg", &this->txt_wallHeight);
 }
 
 void ResourceLoader::loadPrograms()
@@ -66,6 +69,21 @@ void ResourceLoader::loadPrograms()
         this->p_shader_4_tex_uni_modelMatrix = glGetUniformLocation(this->p_shader_4_tex, "modelMatrix");
         this->p_shader_4_tex_uni_normalSampler = glGetUniformLocation(this->p_shader_4_tex, "normalSampler");
         this->p_shader_4_tex_uni_transformation = glGetUniformLocation(this->p_shader_4_tex, "transformation");
+    }
+    LOAD_PROGRAM(shader_4_tex_with_parallax, 2, "shader_4_tex_with_parallax.frag", "shader_4_tex.vert") {
+        this->p_shader_4_tex_with_parallax_attr_vertexBitangent = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexBitangent");
+        this->p_shader_4_tex_with_parallax_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexNormal");
+        this->p_shader_4_tex_with_parallax_attr_vertexPosition = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexPosition");
+        this->p_shader_4_tex_with_parallax_attr_vertexTangent = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexTangent");
+        this->p_shader_4_tex_with_parallax_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexTexCoord");
+        this->p_shader_4_tex_with_parallax_uni_cameraPos = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "cameraPos");
+        this->p_shader_4_tex_with_parallax_uni_colorTexture = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "colorTexture");
+        this->p_shader_4_tex_with_parallax_uni_lightPos = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "lightPos");
+        this->p_shader_4_tex_with_parallax_uni_modelMatrix = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "modelMatrix");
+        this->p_shader_4_tex_with_parallax_uni_normalSampler = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "normalSampler");
+        this->p_shader_4_tex_with_parallax_uni_heightSampler = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "depthSampler");
+        this->p_shader_4_tex_with_parallax_uni_transformation = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "transformation");
+        this->p_shader_4_tex_with_parallax_uni_heightScale = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "heightScale");
     }
     LOAD_PROGRAM(shader_color, 2, "shader_color.frag", "shader_color.vert") {
         // this->dumpProgram("shader_color", this->p_shader_color);

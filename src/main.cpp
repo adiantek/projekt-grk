@@ -20,6 +20,7 @@ Core::Shader_Loader shaderLoader;
 Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
 Core::RenderContext sphereContext2;
+Core::RenderContext brickWallContext;
 
 Camera camera = Camera(600, 600);
 glm::mat4 viewMatrix;
@@ -76,8 +77,11 @@ void mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
-	camera.setSize(width, height);
-	camera.useCameraViewport();
+	LOGI("Widow resize: width: %d, height: %d", width, height);
+	if(width > 0 && height > 0) {
+		camera.setSize(width, height);
+		camera.useCameraViewport();
+	}
 }
 
 static void wmbutcb(GLFWwindow *window, int button, int action, int mods)
@@ -143,6 +147,19 @@ void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLu
 	glUseProgram(0);
 }
 
+void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal, GLuint txtHeight)
+{
+	glUseProgram(resourceLoader.p_shader_4_tex_with_parallax);
+	glm::mat4 transformation = viewMatrix * modelMatrix;
+	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_shader_4_tex_with_parallax, 0);
+	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_shader_4_tex_with_parallax, 1);
+	Core::SetActiveTexture(txtHeight, "depthSampler", resourceLoader.p_shader_4_tex_with_parallax, 2);
+	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_with_parallax_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
+	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_with_parallax_uni_transformation, 1, GL_FALSE, (float*)&transformation);
+	Core::DrawContext(context);
+	glUseProgram(0);
+}
+
 void process_keys() {
 	float angleSpeed = 0.01f;
 	float moveSpeed = 0.05f;
@@ -191,6 +208,11 @@ void do_frame()
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
 
+	glUseProgram(resourceLoader.p_shader_4_tex_with_parallax);
+	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
+	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.02f);
+
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
@@ -200,10 +222,13 @@ void do_frame()
 
 	drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
+	glm::mat4 eu2 = glm::eulerAngleY(time / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 	
 	drawObjectTexNormal(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
 	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
+	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
+	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
@@ -237,6 +262,7 @@ void init()
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
+	loadModelToContext("assets/models/cube.obj", brickWallContext);
 }
 
 int main(int argc, char **argv)
