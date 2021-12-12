@@ -49,7 +49,7 @@ vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float hei
     }
     
     // get texture coordinates before collision (reverse operations)
-    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+    vec2 prevTexCoords = currentTexCoords - deltaTexCoords;
 
     // get depth after and before collision for linear interpolation
     float afterDepth  = currentDepthMapValue - currentLayerDepth;
