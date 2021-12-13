@@ -262,7 +262,7 @@ void init()
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
-	loadModelToContext("assets/models/cube.obj", brickWallContext);
+	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 }
 
 int main(int argc, char **argv)

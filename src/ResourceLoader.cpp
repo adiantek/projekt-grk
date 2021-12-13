@@ -28,9 +28,9 @@ void ResourceLoader::loadTextures()
     loadTexture("assets/textures/moon_normals.png", &this->txt_asteroidNormal);
     loadTexture("assets/textures/spaceship_normals.png", &this->txt_shipNormal);
     loadTexture("assets/textures/asteroid.png", &this->txt_asteroid);
-    loadTexture("assets/textures/wall.jpg", &this->txt_wall);
-    loadTexture("assets/textures/wall_normal.jpg", &this->txt_wallNormal);
-    loadTexture("assets/textures/wall_height.jpg", &this->txt_wallHeight);
+    loadTexture("assets/textures/wall.png", &this->txt_wall);
+    loadTexture("assets/textures/wall_normal.png", &this->txt_wallNormal);
+    loadTexture("assets/textures/wall_height.png", &this->txt_wallHeight);
 }
 
 void ResourceLoader::loadPrograms()
@@ -70,7 +70,7 @@ void ResourceLoader::loadPrograms()
         this->p_shader_4_tex_uni_normalSampler = glGetUniformLocation(this->p_shader_4_tex, "normalSampler");
         this->p_shader_4_tex_uni_transformation = glGetUniformLocation(this->p_shader_4_tex, "transformation");
     }
-    LOAD_PROGRAM(shader_4_tex_with_parallax, 2, "shader_4_tex_with_parallax.frag", "shader_4_tex.vert") {
+    LOAD_PROGRAM(shader_4_tex_with_parallax, 3, "parallaxMapping.frag", "shader_4_tex.vert", "shader_4_tex_with_parallax.frag") {
         this->p_shader_4_tex_with_parallax_attr_vertexBitangent = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexBitangent");
         this->p_shader_4_tex_with_parallax_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexNormal");
         this->p_shader_4_tex_with_parallax_attr_vertexPosition = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexPosition");
@@ -243,7 +243,7 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
         memcpy(fullPath, "assets/shaders/", sizeof("assets/shaders/"));
         memcpy(fullPath + sizeof("assets/shaders/") - 1, shaderName, shaderNameLen + 1);
         LOGI("[ %3.0f%% ] Loading shader: %s", this->loadedResources * 100.0 / this->totalResources, shaderName);
-        this->shaders[i] = compileShader(i != 0 ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER, fullPath);
+        this->shaders[i] = compileShader(i % 2 != 0 ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER, fullPath);
         this->shadersCompiled++;
         this->loadedResources++;
     }
