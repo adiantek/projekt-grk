@@ -1,1 +1,5 @@
+# Build folder
 build/
+
+# Visual studio auto generated content
+.vs/
