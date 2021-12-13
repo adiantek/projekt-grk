@@ -34,6 +34,16 @@ if (NOT EMSCRIPTEN)
             COMMAND ${CMAKE_COMMAND} -E copy
                     "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
                     ${CMAKE_CURRENT_BINARY_DIR}/Debug/assimp-vc142-mtd.dll)
+        add_custom_command(
+            TARGET ${PROJECT_NAME}  POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3.dll"
+                    ${CMAKE_CURRENT_BINARY_DIR}/Release/glfw3.dll)
+        add_custom_command(
+            TARGET ${PROJECT_NAME}  POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3.dll"
+                    ${CMAKE_CURRENT_BINARY_DIR}/Debug/glfw3.dll)
     else()
         target_link_libraries(${PROJECT_NAME} glfw)
         target_link_libraries(${PROJECT_NAME} assimp)

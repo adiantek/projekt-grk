@@ -8,10 +8,10 @@
             "name": "Launch exe",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${fileWorkspaceFolder}\\build\\Debug\\GrafikaKomputerowa.exe",
+            "program": "${workspaceFolder}\\build\\Debug\\GrafikaKomputerowa.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileWorkspaceFolder}",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "console": "externalTerminal"
         }
