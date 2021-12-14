@@ -105,6 +105,13 @@ void ResourceLoader::loadPrograms()
         this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "modelViewProjectionMatrix");
         this->p_shader_tex_uni_textureSampler = glGetUniformLocation(this->p_shader_tex, "textureSampler");
     }
+    LOAD_PROGRAM(simplex, 2, "simplex.frag", "simplex.vert") {
+        // this->dumpProgram("simplex", this->p_simplex);
+        this->p_simplex_attr_vertexPosition = glGetAttribLocation(this->p_simplex, "vertexPosition");
+        this->p_simplex_uni_alpha = glGetUniformLocation(this->p_simplex, "alpha");
+        this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
+        this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
+    }
 
 #undef LOAD_PROGRAM
 }

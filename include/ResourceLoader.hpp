@@ -102,6 +102,14 @@ public:
     GLint p_shader_tex_uni_modelViewProjectionMatrix = -1;
     GLint p_shader_tex_uni_textureSampler = -1;
 
+    // simplex:
+    GLuint p_simplex = 0;
+    bool p_simplex_loaded = false;
+    GLint p_simplex_attr_vertexPosition = -1;
+    GLint p_simplex_uni_alpha = -1;
+    GLint p_simplex_uni_p = -1;
+    GLint p_simplex_uni_scale = -1;
+
 private:
     int totalResourcesCounter = 0;
     bool all_loaded = false;

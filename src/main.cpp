@@ -8,6 +8,8 @@
 #include <vector>
 #include <stdbool.h>
 #include <Controller.hpp>
+#include <Random.hpp>
+#include <SimplexNoiseGenerator.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -101,7 +103,9 @@ void do_frame()
 	}
 	init();
     glfwPollEvents();
-	controller->update();
+	glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	/*controller->update();
 
 	viewMatrix = camera.getTransformationMatrix();
 
@@ -141,6 +145,10 @@ void do_frame()
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
+	*/
+	Random r(0);
+	SimplexNoiseGenerator noise(&r);
+	noise.draw(&resourceLoader);
 
     glfwSwapBuffers(window);
 }
@@ -165,13 +173,12 @@ void init()
 		return;
 	}
 	initialized = true;
-	srand(0);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
-	loadModelToContext("assets/models/spaceship.obj", shipContext);
-	loadModelToContext("assets/models/sphere.obj", sphereContext);
-	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
-	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
+	// loadModelToContext("assets/models/spaceship.obj", shipContext);
+	// loadModelToContext("assets/models/sphere.obj", sphereContext);
+	// loadModelToContext("assets/models/sphere2.obj", sphereContext2);
+	// loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 }
 
 int main(int argc, char **argv)
