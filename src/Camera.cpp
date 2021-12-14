@@ -75,5 +75,5 @@ float Camera::getAspect() {
 
 void Camera::updatePerspective() {
     /* -fov is for inverting camera direction to look at positive Z */
-    perspective = glm::perspective(-fov, (float) width / (float) height, near, far);
+    perspective = glm::perspective(glm::radians(fov), (float) width / (float) height, near, far);
 }

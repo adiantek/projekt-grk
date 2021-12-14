@@ -26,7 +26,7 @@ vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float hei
     // Size of every iteration step on depth
     float layerDepth = 1.0 / numLayers;
     // Size of every iteration change in texture coords
-    vec2 deltaTexCoords = (vec2(viewDir.x, -viewDir.y) / viewDir.z * heightScale) / numLayers;
+    vec2 deltaTexCoords = (viewDir.xy / viewDir.z * heightScale) / numLayers;
     // Initial itaration values
     float currentLayerDepth = 1.0;
     vec2  currentTexCoords = texCoords;
@@ -35,7 +35,7 @@ vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float hei
     while(currentLayerDepth > currentDepthMapValue) {
         currentTexCoords -= deltaTexCoords;
         currentDepthMapValue = texture(depthMap, currentTexCoords).r;  
-        currentLayerDepth -= layerDepth;  
+        currentLayerDepth -= layerDepth;
     }
     // Previous coords
     vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
@@ -48,10 +48,11 @@ vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float hei
 void main()
 {
 	vec3 V = normalize(viewDirTS);
-	vec2 vertexTexCoords = parallaxMapping(vertexTexCoord2, V, depthSampler, heightScale);
+	vec2 vertexTexCoords = parallaxMapping(vec2(vertexTexCoord2.x, 1.0 - vertexTexCoord2.y), V, depthSampler, heightScale);
 
     if(vertexTexCoords.x > 1.0 || vertexTexCoords.y > 1.0 || vertexTexCoords.x < 0.0 || vertexTexCoords.y < 0.0)
         discard;
+      
 	vec3 objectColor = vec3(texture(colorTexture, vertexTexCoords));
 
 	vec3 lightDir = normalize(lightDirTS);

@@ -18,11 +18,11 @@ out vec4 FragColor;
 
 void main()
 {
-	vec3 objectColor = vec3(texture(colorTexture, vertexTexCoord2));
+	vec3 objectColor = vec3(texture(colorTexture, vec2(vertexTexCoord2.x, 1.0 - vertexTexCoord2.y)));
 
 	vec3 lightDir = normalize(lightDirTS);
 	vec3 V = normalize(viewDirTS);
-	vec3 normal = normalize(vec3(texture(normalSampler, vertexTexCoord2)) * 2.0 - 1.0);
+	vec3 normal = normalize(vec3(texture(normalSampler, vec2(vertexTexCoord2.x, 1.0 - vertexTexCoord2.y))) * 2.0 - 1.0);
 	vec3 R = reflect(-normalize(lightDir),normal);
 	
 	float specular = pow(max(0.0,dot(R,V)),10.0);

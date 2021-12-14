@@ -211,7 +211,7 @@ void do_frame()
 	glUseProgram(resourceLoader.p_shader_4_tex_with_parallax);
 	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
-	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.02f);
+	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.03f);
 
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);

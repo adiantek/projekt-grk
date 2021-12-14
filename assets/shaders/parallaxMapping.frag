@@ -7,7 +7,7 @@ vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float hei
     // Size of every iteration step on depth
     float layerDepth = 1.0 / numLayers;
     // Size of every iteration change in texture coords
-    vec2 deltaTexCoords = (vec2(viewDir.x, -viewDir.y) / viewDir.z * heightScale) / numLayers;
+    vec2 deltaTexCoords = (viewDir.xy / viewDir.z * heightScale) / numLayers;
     // Initial itaration values
     float currentLayerDepth = 1.0;
     vec2  currentTexCoords = texCoords;
@@ -16,7 +16,7 @@ vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float hei
     while(currentLayerDepth > currentDepthMapValue) {
         currentTexCoords -= deltaTexCoords;
         currentDepthMapValue = texture(depthMap, currentTexCoords).r;  
-        currentLayerDepth -= layerDepth;  
+        currentLayerDepth -= layerDepth;
     }
     // Previous coords
     vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
