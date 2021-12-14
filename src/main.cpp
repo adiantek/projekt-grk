@@ -24,6 +24,7 @@ Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
 Core::RenderContext sphereContext2;
 Core::RenderContext brickWallContext;
+GLuint planeContext;
 
 Camera camera = Camera(600, 600);
 glm::mat4 viewMatrix;
@@ -81,6 +82,17 @@ void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLu
 	glUseProgram(0);
 }
 
+void drawObjectPlane(glm::mat4 modelMatrix)
+{
+	glUseProgram(resourceLoader.p_simplex);
+	glm::mat4 transformation = viewMatrix * modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(resourceLoader.p_simplex, "transformation"), 1, GL_FALSE, (float*)&transformation);
+	glBindVertexArray(planeContext);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
 void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal, GLuint txtHeight)
 {
 	glUseProgram(resourceLoader.p_shader_4_tex_with_parallax);
@@ -105,7 +117,7 @@ void do_frame()
     glfwPollEvents();
 	glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	/*controller->update();
+	controller->update();
 
 	viewMatrix = camera.getTransformationMatrix();
 
@@ -143,9 +155,10 @@ void do_frame()
 	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
+	drawObjectPlane(glm::translate(glm::vec3(8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
-	*/
+	
 	Random r(0);
 	SimplexNoiseGenerator noise(&r);
 	noise.draw(&resourceLoader);
@@ -167,18 +180,42 @@ void loadModelToContext(std::string path, Core::RenderContext& context)
 	context.initFromAssimpMesh(scene->mMeshes[0]);
 }
 
+void loadPlane() {
+	glGenVertexArrays(1, &planeContext);
+    glBindVertexArray(planeContext);
+
+	GLuint vertexIndexBuffer = 0;
+
+	float vertexArray[16] = {
+            -1, -1, 0, 1,
+            1, -1, 0, 1,
+            -1, 1, 0, 1,
+            1, 1, 0, 1
+    };
+
+	glGenBuffers(1, &vertexIndexBuffer);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexIndexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 4 * 4, vertexArray, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)(0));
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+}
+
 void init()
 {
 	if (initialized) {
 		return;
 	}
 	initialized = true;
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
-	// loadModelToContext("assets/models/spaceship.obj", shipContext);
-	// loadModelToContext("assets/models/sphere.obj", sphereContext);
-	// loadModelToContext("assets/models/sphere2.obj", sphereContext2);
-	// loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
+	loadModelToContext("assets/models/spaceship.obj", shipContext);
+	loadModelToContext("assets/models/sphere.obj", sphereContext);
+	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
+	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
+	loadPlane();
 }
 
 int main(int argc, char **argv)
