@@ -250,7 +250,11 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
     }
     va_end(ap);
 
-    if (this->shadersCompiled == shadersCount)
+    if (!canLoadNextResource()) {
+        return false;
+    }
+
+    if (this->shadersCompiled == shadersCount) // always true?
     {
         LOGI("[ %3.0f%% ] Loading program: %s", this->loadedResources * 100.0 / this->totalResources, name);
         *out_loaded = true;
@@ -259,6 +263,7 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
         this->loadedResources++;
         return true;
     }
+    return false;
 }
 
 char *ResourceLoader::readFile(const char *file, size_t *size)
