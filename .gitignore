@@ -1,5 +1,6 @@
 # Build folder
 build/
+build2/
 
 # Visual studio auto generated content
 .vs/

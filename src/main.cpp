@@ -59,10 +59,12 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	case GLFW_KEY_D: keyPressed[4] = action != 0; break;
 	case GLFW_KEY_A: keyPressed[5] = action != 0; break;
 	}
+#ifndef __EMSCRIPTEN__
 	if (key == GLFW_KEY_ESCAPE) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		mouseGrabbed = false;
 	}
+#endif
 }
 
 void mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -70,11 +72,20 @@ void mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
 	double deltaY = lastY - ypos;
 	lastX = xpos;
 	lastY = ypos;
-	if(mouseGrabbed) {
+	if (mouseGrabbed) {
 		camera.rotate(glm::angleAxis((float) -deltaX * 0.005f, glm::vec3(0.0, 1.0, 0.0)) * glm::angleAxis((float) -deltaY * 0.005f, glm::vec3(1.0, 0.0, 0.0)));
 	}
 	// LOGI("mouse move: %.0f %.0f", xpos, ypos);
 }
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+EMSCRIPTEN_KEEPALIVE void mouse_grab_status(bool active) {
+	LOGI("mouse_grab_status: %s", (active ? "active" : "inactive"));
+	mouseGrabbed = active;
+}
+}
+#endif
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
 	LOGI("Widow resize: width: %d, height: %d", width, height);
@@ -90,8 +101,10 @@ static void wmbutcb(GLFWwindow *window, int button, int action, int mods)
     LOGI("mouse button: %d, action: %d, mods: %d", button, action, mods);
 	if (button == 0 && action == 1) {
 		// press left button
+#ifndef __EMSCRIPTEN__
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		mouseGrabbed = true;
+#endif
 	}
 }
 
