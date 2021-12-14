@@ -7,6 +7,7 @@
 #include <cmath>
 #include <vector>
 #include <stdbool.h>
+#include <Controller.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -27,95 +28,13 @@ glm::mat4 viewMatrix;
 
 glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
 
-bool keyPressed[] = {0, 0, 0, 0, 0, 0};
 bool initialized = false;
-bool mouseGrabbed = false;
-
-double lastX = 0;
-double lastY = 0;
-float distance = 1.0f;
 
 ResourceLoader resourceLoader;
 
 void glfw_error_callback(int, const char *err_str)
 {
     LOGE("GLFW Error: %s", err_str);
-}
-
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int modifier)
-{
-	if (action == 1) {
-		LOGI("pressed: key %d, scancode %d, modifier %d", key, scancode, modifier);
-	} else if (action == 0) {
-		LOGI("released: key %d, scancode %d, modifier %d", key, scancode, modifier);
-	}
-	// action = 2: repeat
-	switch (key)
-	{
-	case GLFW_KEY_Z: keyPressed[0] = action != 0; break;
-	case GLFW_KEY_X: keyPressed[1] = action != 0; break;
-	case GLFW_KEY_W: keyPressed[2] = action != 0; break;
-	case GLFW_KEY_S: keyPressed[3] = action != 0; break;
-	case GLFW_KEY_D: keyPressed[4] = action != 0; break;
-	case GLFW_KEY_A: keyPressed[5] = action != 0; break;
-	}
-#ifndef __EMSCRIPTEN__
-	if (key == GLFW_KEY_ESCAPE) {
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		mouseGrabbed = false;
-	}
-#endif
-}
-
-void mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
-	double deltaX = lastX - xpos;
-	double deltaY = lastY - ypos;
-	lastX = xpos;
-	lastY = ypos;
-	if (mouseGrabbed) {
-		camera.rotate(glm::angleAxis((float) -deltaX * 0.005f, glm::vec3(0.0, 1.0, 0.0)) * glm::angleAxis((float) -deltaY * 0.005f, glm::vec3(1.0, 0.0, 0.0)));
-	}
-	// LOGI("mouse move: %.0f %.0f", xpos, ypos);
-}
-
-#ifdef __EMSCRIPTEN__
-extern "C" {
-EMSCRIPTEN_KEEPALIVE void mouse_grab_status(bool active) {
-	LOGI("mouse_grab_status: %s", (active ? "active" : "inactive"));
-	mouseGrabbed = active;
-}
-}
-#endif
-
-void window_size_callback(GLFWwindow* window, int width, int height) {
-	LOGI("Widow resize: width: %d, height: %d", width, height);
-	if(width > 0 && height > 0) {
-		camera.setSize(width, height);
-		camera.useCameraViewport();
-	}
-}
-
-static void wmbutcb(GLFWwindow *window, int button, int action, int mods)
-{
-    //assert(window != NULL); (void)button; (void)action; (void)mods;
-    LOGI("mouse button: %d, action: %d, mods: %d", button, action, mods);
-	if (button == 0 && action == 1) {
-		// press left button
-#ifndef __EMSCRIPTEN__
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		mouseGrabbed = true;
-#endif
-	}
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	if(yoffset < 0.0) {
-		distance += 0.1f;
-		camera.position -= camera.getDirection() * 0.1f;
-	} else {
-		distance -= 0.1f;
-		camera.position += camera.getDirection() * 0.1f;
-	}
 }
 
 void drawObjectColor(Core::RenderContext context, glm::mat4 modelMatrix, glm::vec3 color)
@@ -173,29 +92,6 @@ void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMat
 	glUseProgram(0);
 }
 
-void process_keys() {
-	float angleSpeed = 0.01f;
-	float moveSpeed = 0.05f;
-	if (keyPressed[0]) {
-		camera.rotate(glm::angleAxis(-angleSpeed, glm::vec3(0.0, 0.0, 1.0)));
-	}
-	if (keyPressed[1]) {
-		camera.rotate(glm::angleAxis(angleSpeed, glm::vec3(0.0, 0.0, 1.0)));
-	}
-	if (keyPressed[2]) {
-		camera.position += camera.getDirection() * moveSpeed;
-	}
-	if (keyPressed[3]) {
-		camera.position -= camera.getDirection() * moveSpeed;
-	}
-	if (keyPressed[4]) {
-		camera.position += camera.getSide() * moveSpeed;
-	}
-	if (keyPressed[5]) {
-		camera.position -= camera.getSide() * moveSpeed;
-	}
-}
-
 void init();
 
 void do_frame()
@@ -204,15 +100,16 @@ void do_frame()
 		return;
 	}
 	init();
-	process_keys();
+    glfwPollEvents();
+	controller->update();
 
 	viewMatrix = camera.getTransformationMatrix();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 shipInitialTransformation = glm::translate(glm::vec3(0,-0.25f,0)) * glm::rotate(glm::radians(180.0f), glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25f));
-	glm::mat4 shipModelMatrix = glm::translate(camera.position + camera.getDirection() * distance) * glm::mat4_cast(glm::inverse(-camera.getRotation())) * shipInitialTransformation;
+	glm::mat4 shipModelMatrix = glm::translate(camera.position + camera.getDirection() * controller->distance) * glm::mat4_cast(glm::inverse(-camera.getRotation())) * shipInitialTransformation;
 
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
@@ -246,7 +143,6 @@ void do_frame()
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
     glfwSwapBuffers(window);
-    glfwPollEvents();
 }
 
 void loadModelToContext(std::string path, Core::RenderContext& context)
@@ -304,11 +200,7 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
-			glfwSetCursorPosCallback(window, mouse_move_callback);
-            glfwSetWindowSizeCallback(window, window_size_callback);
-            glfwSetMouseButtonCallback(window, wmbutcb);
-            glfwSetKeyCallback(window, key_callback);
-			glfwSetScrollCallback(window, scroll_callback);
+			new Controller(window, &camera);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {
