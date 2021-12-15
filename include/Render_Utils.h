@@ -20,6 +20,8 @@ namespace Core
         void initFromOBJ(obj::Model& model);
 
 		void initFromAssimpMesh(aiMesh* mesh);
+
+		void initPlane(float width, float height, int widthSegments=1, int heightSegments=1);
 	};
 
 	// vertexArray - jednowymiarowa tablica zawierajaca wartosci opisujace pozycje kolejnych wierzcholkow w jednym ciagu (x1, y1, z1, w1, x2, y2, z2, w2, ...)
