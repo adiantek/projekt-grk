@@ -15,10 +15,11 @@ in vec2 texturePosition;
 
 void main() {
   /* Get vertex info */
-  vec4 info = texture(depthMap, texturePosition);
+  vec2 texPos = vec2(texturePosition.x, 1.0 - texturePosition.y);
+  vec4 info = texture(depthMap, texPos);
 
   /* Add the drop to the height */
-  float drop = max(0.0, 1.0 - length(center * 0.5 + 0.5 - texturePosition) / radius);
+  float drop = max(0.0, 1.0 - length(center * 0.5 + 0.5 - texPos) / radius);
   drop = 0.5 - cos(drop * PI) * 0.5;
   info.r += drop * strength;
 

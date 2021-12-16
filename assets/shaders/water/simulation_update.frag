@@ -8,16 +8,17 @@ uniform vec2 delta;
 in vec2 texturePosition;
 
 void main() {
-    vec4 info = texture(depthMap, texturePosition);
+    vec2 texPos = vec2(texturePosition.x, 1.0 - texturePosition.y);
+    vec4 info = texture(depthMap, texPos);
 
     vec2 dx = vec2(delta.x, 0.0);
     vec2 dy = vec2(0.0, delta.y);
 
     float average = (
-        texture(depthMap, texturePosition - dx).r +
-        texture(depthMap, texturePosition - dy).r +
-        texture(depthMap, texturePosition + dx).r +
-        texture(depthMap, texturePosition + dy).r
+        texture(depthMap, texPos - dx).r +
+        texture(depthMap, texPos - dy).r +
+        texture(depthMap, texPos + dx).r +
+        texture(depthMap, texPos + dy).r
     ) * 0.25;
 
     /* change the velocity to move toward the average */
@@ -30,8 +31,8 @@ void main() {
     info.r += info.g;
 
     /* update the normal */
-    vec3 ddx = vec3(delta.x, texture(depthMap, vec2(texturePosition.x + delta.x, texturePosition.y)).r - info.r, 0.0);
-    vec3 ddy = vec3(0.0, texture(depthMap, vec2(texturePosition.x, texturePosition.y + delta.y)).r - info.r, delta.y);
+    vec3 ddx = vec3(delta.x, texture(depthMap, vec2(texPos.x + delta.x, texPos.y)).r - info.r, 0.0);
+    vec3 ddy = vec3(0.0, texture(depthMap, vec2(texPos.x, texPos.y + delta.y)).r - info.r, delta.y);
     info.ba = normalize(cross(ddy, ddx)).xz;
 
     gl_FragColor = info;
