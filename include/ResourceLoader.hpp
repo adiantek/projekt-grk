@@ -101,6 +101,20 @@ public:
     GLint p_shader_tex_uni_modelViewProjectionMatrix = -1;
     GLint p_shader_tex_uni_textureSampler = -1;
 
+    GLuint p_water_simulation_update = 0;
+    bool p_water_simulation_update_loaded = false;
+    GLint p_water_simulation_update_attr_vertexPosition = -1;
+    GLint p_water_simulation_update_uni_delta = -1;
+    GLint p_water_simulation_update_uni_depthMap = -1;
+
+    GLuint p_water_simulation_drop = 0;
+    bool p_water_simulation_drop_loaded = false;
+    GLint p_water_simulation_drop_attr_vertexPosition = -1;
+    GLint p_water_simulation_drop_uni_center = -1;
+    GLint p_water_simulation_drop_uni_depthMap = -1;
+    GLint p_water_simulation_drop_uni_radius = -1;
+    GLint p_water_simulation_drop_uni_strength = -1;
+
 private:
     int totalResourcesCounter = 0;
     bool all_loaded = false;

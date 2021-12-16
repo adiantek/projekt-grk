@@ -104,6 +104,20 @@ void ResourceLoader::loadPrograms()
         this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "modelViewProjectionMatrix");
         this->p_shader_tex_uni_textureSampler = glGetUniformLocation(this->p_shader_tex, "textureSampler");
     }
+    LOAD_PROGRAM(water_simulation_update, 2, "water/simulation_update.frag", "water/simulation.vert") {
+        // this->dumpProgram("water_simulation_update", this->p_water_simulation_update);
+        this->p_water_simulation_update_attr_vertexPosition = glGetAttribLocation(this->p_water_simulation_update, "vertexPosition");
+        this->p_water_simulation_update_uni_delta = glGetUniformLocation(this->p_water_simulation_update, "delta");
+        this->p_water_simulation_update_uni_depthMap = glGetUniformLocation(this->p_water_simulation_update, "depthMap");
+    }
+    LOAD_PROGRAM(water_simulation_drop, 2, "water/simulation_drop.frag", "water/simulation.vert") {
+        // this->dumpProgram("water_simulation_drop", this->p_water_simulation_drop);
+        this->p_water_simulation_drop_attr_vertexPosition = glGetAttribLocation(this->p_water_simulation_drop, "vertexPosition");
+        this->p_water_simulation_drop_uni_center = glGetUniformLocation(this->p_water_simulation_drop, "center");
+        this->p_water_simulation_drop_uni_depthMap = glGetUniformLocation(this->p_water_simulation_drop, "depthMap");
+        this->p_water_simulation_drop_uni_radius = glGetUniformLocation(this->p_water_simulation_drop, "radius");
+        this->p_water_simulation_drop_uni_strength = glGetUniformLocation(this->p_water_simulation_drop, "strength");
+    }
 
 #undef LOAD_PROGRAM
 }
