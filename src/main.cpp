@@ -8,6 +8,8 @@
 #include <vector>
 #include <stdbool.h>
 #include <Controller.hpp>
+#include <Random.hpp>
+#include <SimplexNoiseGenerator.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -22,6 +24,7 @@ Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
 Core::RenderContext sphereContext2;
 Core::RenderContext brickWallContext;
+GLuint planeContext;
 
 Camera camera = Camera(600, 600);
 glm::mat4 viewMatrix;
@@ -94,6 +97,9 @@ void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMat
 
 void init();
 
+Random r(0);
+SimplexNoiseGenerator *noise;
+
 void do_frame()
 {
 	if (!resourceLoader.loadResources()) {
@@ -141,6 +147,12 @@ void do_frame()
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
+	
+	// double st = glfwGetTime();
+	// for (int i = 0; i < 1000; i++)
+	// 	noise->draw(&resourceLoader);
+	// st = glfwGetTime() - st;
+	// LOGD("time: %.3f", st);
 
     glfwSwapBuffers(window);
 }
@@ -165,8 +177,9 @@ void init()
 		return;
 	}
 	initialized = true;
-	srand(0);
 	glEnable(GL_DEPTH_TEST);
+	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
+
 
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
