@@ -108,6 +108,9 @@ void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMat
 
 void init();
 
+Random r(0);
+SimplexNoiseGenerator *noise;
+
 void do_frame()
 {
 	if (!resourceLoader.loadResources()) {
@@ -155,13 +158,15 @@ void do_frame()
 	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
-	drawObjectPlane(glm::translate(glm::vec3(8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	// drawObjectPlane(glm::translate(glm::vec3(8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 	
-	Random r(0);
-	SimplexNoiseGenerator noise(&r);
-	noise.draw(&resourceLoader);
+	// double st = glfwGetTime();
+	// for (int i = 0; i < 1000; i++)
+	// 	noise->draw(&resourceLoader);
+	// st = glfwGetTime() - st;
+	// LOGD("time: %.3f", st);
 
     glfwSwapBuffers(window);
 }
@@ -210,6 +215,8 @@ void init()
 	}
 	initialized = true;
 	glEnable(GL_DEPTH_TEST);
+	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
+
 
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);

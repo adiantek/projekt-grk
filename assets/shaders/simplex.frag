@@ -85,9 +85,19 @@ float getValue(vec2 v) {
     return 70.0 * (d10 + d11 + d12);
 }
 
+// source: https://gamedev.net/forums/topic/684158-rgba-to-float-percision/5321388/
+vec4 decode(float value)
+{
+    uint rgba = floatBitsToUint(value);
+    float r = float((rgba & 0xff000000U) >> 24) / 255.0;
+    float g = float((rgba & 0x00ff0000U) >> 16) / 255.0;
+    float b = float((rgba & 0x0000ff00U) >>  8) / 255.0;
+    float a = float((rgba & 0x000000ffU) >>  0) / 255.0;
+    return vec4(a, b, g, r);//vec4(r, g, b, a);
+}
+
 void main()
 {
     float noise = getValue(fragPos.xy * scale);
-    noise = (noise + 0.5) / 2.0;
-    FragColor = vec4(noise, noise, noise, alpha);
+    FragColor = decode(noise);
 }

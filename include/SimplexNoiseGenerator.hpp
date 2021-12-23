@@ -8,9 +8,16 @@ class SimplexNoiseGenerator {
     private:
         double x, y, z;
         int permutationTable[256];
-        GLuint buffer;
+        GLuint vertices;
+        GLuint indices;
+        GLuint vao;
+        GLuint fb;
+        GLuint fbTxt;
+        GLuint fbBuf;
 
     public:
-        SimplexNoiseGenerator(Random *r);
+        SimplexNoiseGenerator(Random *r, ResourceLoader *res);
+        ~SimplexNoiseGenerator();
         void draw(ResourceLoader *res);
+        float noiseValues[256 * 256];
 };
