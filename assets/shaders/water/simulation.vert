@@ -1,11 +1,13 @@
 #version 300 es
 
+uniform vec2 transition;
+uniform float scale;
+
 layout(location = 0) in vec3 vertexPosition;
 
-out vec2 texturePosition;
+out vec2 position;
 
 void main() {
-    texturePosition = vertexPosition.xy * 0.5 + 0.5;
-
+    position = vertexPosition.xy * scale + transition;
     gl_Position = vec4(vertexPosition, 1.0);
 }

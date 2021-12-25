@@ -31,6 +31,7 @@ void ResourceLoader::loadTextures()
     loadTexture("assets/textures/wall.png", &this->txt_wall);
     loadTexture("assets/textures/wall_normal.png", &this->txt_wallNormal);
     loadTexture("assets/textures/wall_height.png", &this->txt_wallHeight);
+    loadTextureCubeMap(&this->txt_skybox);
 }
 
 void ResourceLoader::loadPrograms()
@@ -101,22 +102,27 @@ void ResourceLoader::loadPrograms()
         this->p_shader_tex_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_tex, "vertexTexCoord");
         this->p_shader_tex_uni_lightDir = glGetUniformLocation(this->p_shader_tex, "lightDir");
         this->p_shader_tex_uni_modelMatrix = glGetUniformLocation(this->p_shader_tex, "modelMatrix");
-        this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "modelViewProjectionMatrix");
+        this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "transformation");
         this->p_shader_tex_uni_textureSampler = glGetUniformLocation(this->p_shader_tex, "textureSampler");
     }
-    LOAD_PROGRAM(water_simulation_update, 2, "water/simulation_update.frag", "water/simulation.vert") {
-        // this->dumpProgram("water_simulation_update", this->p_water_simulation_update);
-        this->p_water_simulation_update_attr_vertexPosition = glGetAttribLocation(this->p_water_simulation_update, "vertexPosition");
-        this->p_water_simulation_update_uni_delta = glGetUniformLocation(this->p_water_simulation_update, "delta");
-        this->p_water_simulation_update_uni_depthMap = glGetUniformLocation(this->p_water_simulation_update, "depthMap");
+    LOAD_PROGRAM(water_simulation, 2, "water/simulation.frag", "water/simulation.vert") {
+        // this->dumpProgram("water_simulation", this->p_water_simulation);
+        this->p_water_simulation_attr_vertexPosition = glGetAttribLocation(this->p_water_simulation, "vertexPosition");
+        this->p_water_simulation_uni_scale = glGetUniformLocation(this->p_water_simulation, "scale");
+        this->p_water_simulation_uni_time = glGetUniformLocation(this->p_water_simulation, "time");
+        this->p_water_simulation_uni_transition = glGetUniformLocation(this->p_water_simulation, "transition");
+        this->p_water_simulation_uni_waveCount = glGetUniformLocation(this->p_water_simulation, "waveCount");
     }
-    LOAD_PROGRAM(water_simulation_drop, 2, "water/simulation_drop.frag", "water/simulation.vert") {
-        // this->dumpProgram("water_simulation_drop", this->p_water_simulation_drop);
-        this->p_water_simulation_drop_attr_vertexPosition = glGetAttribLocation(this->p_water_simulation_drop, "vertexPosition");
-        this->p_water_simulation_drop_uni_center = glGetUniformLocation(this->p_water_simulation_drop, "center");
-        this->p_water_simulation_drop_uni_depthMap = glGetUniformLocation(this->p_water_simulation_drop, "depthMap");
-        this->p_water_simulation_drop_uni_radius = glGetUniformLocation(this->p_water_simulation_drop, "radius");
-        this->p_water_simulation_drop_uni_strength = glGetUniformLocation(this->p_water_simulation_drop, "strength");
+    LOAD_PROGRAM(water_surface, 2, "water/surface.frag", "water/surface.vert") {
+        // this->dumpProgram("water_surface", this->p_water_surface);
+        this->p_water_surface_attr_position = glGetAttribLocation(this->p_water_surface, "position");
+        this->p_water_surface_attr_texturePosition = glGetAttribLocation(this->p_water_surface, "texturePosition");
+        this->p_water_surface_uni_cameraPosition = glGetUniformLocation(this->p_water_surface, "cameraPosition");
+        this->p_water_surface_uni_heightMap = glGetUniformLocation(this->p_water_surface, "heightMap");
+        this->p_water_surface_uni_model = glGetUniformLocation(this->p_water_surface, "model");
+        this->p_water_surface_uni_normalMap = glGetUniformLocation(this->p_water_surface, "normalMap");
+        this->p_water_surface_uni_skybox = glGetUniformLocation(this->p_water_surface, "skybox");
+        this->p_water_surface_uni_transformation = glGetUniformLocation(this->p_water_surface, "transformation");
     }
 
 #undef LOAD_PROGRAM
@@ -181,6 +187,46 @@ bool ResourceLoader::canLoadNextResource()
         this->startFrame = 0;
         return false;
     }
+}
+
+void ResourceLoader::loadTextureCubeMap(GLuint *out)
+{
+    this->totalResourcesCounter++;
+    if (*out)
+    {
+        this->loadedResources++;
+        return;
+    }
+    if (!canLoadNextResource())
+    {
+        return;
+    }
+    LOGI("[ %3.0f%% ] Loading txt: %s", this->loadedResources * 100.0 / this->totalResources, "CubeMap");
+    char *names[] = {"assets/textures/skybox/left.png", "assets/textures/skybox/right.png", "assets/textures/skybox/top.png", "assets/textures/skybox/bottom.png", "assets/textures/skybox/front.png", "assets/textures/skybox/back.png"};
+    GLuint id;
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    int w, h;
+    for(unsigned int i = 0; i < 6; i++) {
+        unsigned char *image = SOIL_load_image(names[i], &w, &h, 0, SOIL_LOAD_RGBA);
+        if (!image)
+        {
+            LOGE("Failed loading %s: %s", names[i], SOIL_last_result());
+        }
+        else
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+            SOIL_free_image_data(image);
+        }
+    }
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    *out = id;
+    this->loadedResources++;
 }
 
 void ResourceLoader::loadTexture(const char *name, GLuint *out)

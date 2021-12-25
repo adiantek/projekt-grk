@@ -8,6 +8,7 @@
 #include <vector>
 #include <stdbool.h>
 #include <Controller.hpp>
+#include <Water/Surface.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -32,6 +33,8 @@ glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
 bool initialized = false;
 
 ResourceLoader resourceLoader;
+
+Water::Surface* waterSurface;
 
 void glfw_error_callback(int, const char *err_str)
 {
@@ -59,7 +62,7 @@ void drawObjectTexture(Core::RenderContext context, glm::mat4 modelMatrix, GLuin
 	glUseProgram(program);
 
 	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
-	Core::SetActiveTexture(textureId, "textureSampler", program, 0);
+	Core::SetActiveTexture(textureId, "colorTexture", program, 0);
 
 	glm::mat4 transformation = viewMatrix * modelMatrix;
 	glUniformMatrix4fv(resourceLoader.p_shader_tex_uni_modelViewProjectionMatrix, 1, GL_FALSE, (float*)&transformation);
@@ -141,6 +144,7 @@ void do_frame()
 	drawObjectTexNormalParallax(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
+	waterSurface->draw(viewMatrix, camera.position);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
@@ -169,17 +173,18 @@ void init()
 	initialized = true;
 	srand(0);
 	glEnable(GL_DEPTH_TEST);
-
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
+
+	waterSurface = new Water::Surface(0.0f, -9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
 }
 
 int main(int argc, char **argv)
 {
-    glfwSetErrorCallback(glfw_error_callback);
+	glfwSetErrorCallback(glfw_error_callback);
     if (glfwInit() != GL_TRUE)
     {
         LOGE("glfwInit() failed");
