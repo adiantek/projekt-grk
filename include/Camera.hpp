@@ -5,7 +5,7 @@
 
 class Camera {
 public:
-    Camera(int width, int height, float fov=100.0f, float near=0.1f, float far=100.0f, int x=0, int y=0);
+    Camera(int width, int height, float fov=80.0f, float near=0.1f, float far=100.0f, int x=0, int y=0);
     ~Camera();
     /* Get camera and perspective transformation matrix */
     glm::mat4 getTransformationMatrix();
