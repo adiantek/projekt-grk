@@ -1,0 +1,103 @@
+#version 300 es
+precision highp float;
+precision highp int;
+
+in vec4 fragPos;
+out vec4 FragColor;
+
+uniform float scale;
+uniform float alpha;
+uniform int p[256];
+
+const float grads[24] = float[24](
+    1.0, 1.0,
+    -1.0, 1.0,
+    1.0, -1.0,
+    -1.0, -1.0,
+    1.0, 0.0,
+    -1.0, 0.0,
+    1.0, 0.0,
+    -1.0, 0.0,
+    0.0, 1.0,
+    0.0, -1.0,
+    0.0, 1.0,
+    0.0, -1.0);
+
+// https://en.wikipedia.org/wiki/Simplex_noise#Algorithm_detail
+// n = 2
+
+const float SQRT_3 = sqrt(3.0);
+const float F_2 = (SQRT_3 - 1.0) / 2.0;
+const float G_2 = (3.0 - SQRT_3) / 6.0; // alternate form to (1-1/sqrt(3))/2 from WolframAlpha
+
+const vec2 F_22 = vec2(F_2, F_2);
+const vec2 G_22 = vec2(G_2, G_2);
+
+int getPermutValue(int permutIndex) {
+    return p[permutIndex & 255];
+}
+
+float processGrad(int gradIndex, vec2 xy) {
+    return
+        grads[gradIndex * 2 + 0] * xy.x +
+        grads[gradIndex * 2 + 1] * xy.y;
+}
+
+float getContrib(int gradIndex, vec2 xy, float offset) {
+    float d1 = offset - dot(xy.xy, xy.xy);
+    float d0;
+    if (d1 < 0.0) {
+        d0 = 0.0;
+    } else {
+        d1 = d1 * d1;
+        d0 = d1 * d1 * processGrad(gradIndex, xy);
+    }
+    return d0;
+}
+
+// https://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf page 11
+float getValue(vec2 v) {
+    // Find unit grid cell containing point
+    vec2 ij = floor(v + dot(v, F_22));
+    float xy = dot(ij, G_22);
+    vec2 xy0 = v - ij + xy; // The x,y distances from the cell origin
+
+    // For the 2D case, the simplex shape is an equilateral triangle.
+    // Determine which simplex we are in.
+    vec2 kl = (xy0.x > xy0.y) ? // Offsets for second (middle) corner of simplex in (i,j) coords
+        vec2(1.0, 0.0) // lower triangle, XY order: (0,0)->(1,0)->(1,1)
+        : vec2(0.0, 1.0); // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+    vec2 xy1 = xy0 - kl + G_2; // Offsets for middle corner in (x,y) unskewed coords
+    vec2 xy2 = xy0 - 1.0 + 2.0 * G_2; // Offsets for last corner in (x,y) unskewed coords
+    
+    // Wrap the integer cells at 255 (smaller integer period can be introduced here)
+    ivec2 ij2 = ivec2(ij) & 255;
+    
+    // Work out the hashed gradient indices of the three simplex corners
+    int gi0 = getPermutValue(ij2.x + getPermutValue(ij2.y)) % 12;
+    int gi1 = getPermutValue(ij2.x + int(kl.x) + getPermutValue(ij2.y + int(kl.y))) % 12;
+    int gi2 = getPermutValue(ij2.x + 1 + getPermutValue(ij2.y + 1)) % 12;
+
+    float d10 = getContrib(gi0, xy0, 0.5); // Calculate the contribution from the first corner
+    float d11 = getContrib(gi1, xy1, 0.5); // Calculate the contribution from the second corner
+    float d12 = getContrib(gi2, xy2, 0.5); // Calculate the contribution from the third corner
+    
+    return 70.0 * (d10 + d11 + d12);
+}
+
+// source: https://gamedev.net/forums/topic/684158-rgba-to-float-percision/5321388/
+vec4 decode(float value)
+{
+    uint rgba = floatBitsToUint(value);
+    float r = float((rgba & 0xff000000U) >> 24) / 255.0;
+    float g = float((rgba & 0x00ff0000U) >> 16) / 255.0;
+    float b = float((rgba & 0x0000ff00U) >>  8) / 255.0;
+    float a = float((rgba & 0x000000ffU) >>  0) / 255.0;
+    return vec4(a, b, g, r);//vec4(r, g, b, a);
+}
+
+void main()
+{
+    float noise = getValue(fragPos.xy * scale);
+    FragColor = decode(noise);
+}

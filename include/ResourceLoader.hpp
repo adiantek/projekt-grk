@@ -67,6 +67,7 @@ public:
     GLint p_shader_4_tex_uni_normalSampler = -1;
     GLint p_shader_4_tex_uni_transformation = -1;
     
+    // shader_4_tex_with_parallax:
     GLuint p_shader_4_tex_with_parallax = 0;
     bool p_shader_4_tex_with_parallax_loaded = false;
     GLint p_shader_4_tex_with_parallax_attr_vertexBitangent = -1;
@@ -76,12 +77,12 @@ public:
     GLint p_shader_4_tex_with_parallax_attr_vertexTexCoord = -1;
     GLint p_shader_4_tex_with_parallax_uni_cameraPos = -1;
     GLint p_shader_4_tex_with_parallax_uni_colorTexture = -1;
+    GLint p_shader_4_tex_with_parallax_uni_depthSampler = -1;
+    GLint p_shader_4_tex_with_parallax_uni_heightScale = -1;
     GLint p_shader_4_tex_with_parallax_uni_lightPos = -1;
     GLint p_shader_4_tex_with_parallax_uni_modelMatrix = -1;
     GLint p_shader_4_tex_with_parallax_uni_normalSampler = -1;
-    GLint p_shader_4_tex_with_parallax_uni_heightSampler = -1;
     GLint p_shader_4_tex_with_parallax_uni_transformation = -1;
-    GLint p_shader_4_tex_with_parallax_uni_heightScale = -1;
 
     GLuint p_shader_color = 0;
     bool p_shader_color_loaded = false;
@@ -120,6 +121,13 @@ public:
     GLint p_water_surface_uni_normalMap = -1;
     GLint p_water_surface_uni_skybox = -1;
     GLint p_water_surface_uni_transformation = -1;
+    // simplex:
+    GLuint p_simplex = 0;
+    bool p_simplex_loaded = false;
+    GLint p_simplex_attr_vertexPosition = -1;
+    GLint p_simplex_uni_alpha = -1;
+    GLint p_simplex_uni_p = -1;
+    GLint p_simplex_uni_scale = -1;
 
 private:
     int totalResourcesCounter = 0;

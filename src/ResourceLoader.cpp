@@ -72,6 +72,7 @@ void ResourceLoader::loadPrograms()
         this->p_shader_4_tex_uni_transformation = glGetUniformLocation(this->p_shader_4_tex, "transformation");
     }
     LOAD_PROGRAM(shader_4_tex_with_parallax, 2, "shader_4_tex_with_parallax.frag", "shader_4_tex.vert") {
+        // this->dumpProgram("shader_4_tex_with_parallax", this->p_shader_4_tex_with_parallax);
         this->p_shader_4_tex_with_parallax_attr_vertexBitangent = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexBitangent");
         this->p_shader_4_tex_with_parallax_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexNormal");
         this->p_shader_4_tex_with_parallax_attr_vertexPosition = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexPosition");
@@ -79,12 +80,12 @@ void ResourceLoader::loadPrograms()
         this->p_shader_4_tex_with_parallax_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexTexCoord");
         this->p_shader_4_tex_with_parallax_uni_cameraPos = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "cameraPos");
         this->p_shader_4_tex_with_parallax_uni_colorTexture = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "colorTexture");
+        this->p_shader_4_tex_with_parallax_uni_depthSampler = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "depthSampler");
+        this->p_shader_4_tex_with_parallax_uni_heightScale = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "heightScale");
         this->p_shader_4_tex_with_parallax_uni_lightPos = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "lightPos");
         this->p_shader_4_tex_with_parallax_uni_modelMatrix = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "modelMatrix");
         this->p_shader_4_tex_with_parallax_uni_normalSampler = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "normalSampler");
-        this->p_shader_4_tex_with_parallax_uni_heightSampler = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "depthSampler");
         this->p_shader_4_tex_with_parallax_uni_transformation = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "transformation");
-        this->p_shader_4_tex_with_parallax_uni_heightScale = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "heightScale");
     }
     LOAD_PROGRAM(shader_color, 2, "shader_color.frag", "shader_color.vert") {
         // this->dumpProgram("shader_color", this->p_shader_color);
@@ -123,6 +124,13 @@ void ResourceLoader::loadPrograms()
         this->p_water_surface_uni_normalMap = glGetUniformLocation(this->p_water_surface, "normalMap");
         this->p_water_surface_uni_skybox = glGetUniformLocation(this->p_water_surface, "skybox");
         this->p_water_surface_uni_transformation = glGetUniformLocation(this->p_water_surface, "transformation");
+    }
+    LOAD_PROGRAM(simplex, 2, "simplex.frag", "simplex.vert") {
+        // this->dumpProgram("simplex", this->p_simplex);
+        this->p_simplex_attr_vertexPosition = glGetAttribLocation(this->p_simplex, "vertexPosition");
+        this->p_simplex_uni_alpha = glGetUniformLocation(this->p_simplex, "alpha");
+        this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
+        this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
     }
 
 #undef LOAD_PROGRAM
@@ -309,7 +317,11 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
     }
     va_end(ap);
 
-    if (this->shadersCompiled == shadersCount)
+    if (!canLoadNextResource()) {
+        return false;
+    }
+
+    if (this->shadersCompiled == shadersCount) // always true?
     {
         LOGI("[ %3.0f%% ] Loading program: %s", this->loadedResources * 100.0 / this->totalResources, name);
         *out_loaded = true;
@@ -318,6 +330,7 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
         this->loadedResources++;
         return true;
     }
+    return false;
 }
 
 char *ResourceLoader::readFile(const char *file, size_t *size)

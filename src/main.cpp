@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #include <Controller.hpp>
 #include <Water/Surface.hpp>
+#include <Random.hpp>
+#include <SimplexNoiseGenerator.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -98,6 +100,9 @@ void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMat
 
 void init();
 
+Random r(0);
+SimplexNoiseGenerator *noise;
+
 void do_frame()
 {
 	if (!resourceLoader.loadResources()) {
@@ -147,6 +152,12 @@ void do_frame()
 	waterSurface->draw(viewMatrix, camera.position);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
+	
+	// double st = glfwGetTime();
+	// for (int i = 0; i < 1000; i++)
+	// 	noise->draw(&resourceLoader);
+	// st = glfwGetTime() - st;
+	// LOGD("time: %.3f", st);
 
     glfwSwapBuffers(window);
 }
@@ -171,8 +182,10 @@ void init()
 		return;
 	}
 	initialized = true;
-	srand(0);
 	glEnable(GL_DEPTH_TEST);
+	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
+
+
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
