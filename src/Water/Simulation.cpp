@@ -1,4 +1,5 @@
 #include<Water/Simulation.hpp>
+#include<Random.hpp>
 
 static inline float randf(float min, float max, int precision = 1000)
 {
@@ -12,6 +13,7 @@ namespace Water {
     Simulation::Simulation(unsigned int width, unsigned int height, float scale, ResourceLoader *loader) {
         this->width = width;
         this->height = height;
+        this->scale = scale / 2.0f;
         this->geometry.initPlane(2.0f, 2.0f);
 
         this->program = loader->p_water_simulation;
@@ -48,44 +50,6 @@ namespace Water {
         glDrawBuffers(2, drawBuffers);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        glUseProgram(this->program);
-        float r = randf(0.0, 100.0);
-        glm::vec2 windDir = glm::vec2(cosf(r), sinf(r));
-        int waveCount = 10;
-        glUniform1i(this->uniformWaveCount, waveCount);
-        glUniform1f(this->uniformScale, scale / 2.0f);
-        for (int i = 0; i < waveCount; ++i) {
-            float x = randf(0.01f, 0.04f);
-            std::cout << "waves[" << i << "].A = " << x << ";\n";
-            float q = randf(0.3f, 0.4f);
-            std::cout << "waves[" << i << "].Q = " << q << ";\n";
-            float windAngle = acosf((windDir.x/sqrtf(windDir.x*windDir.x + windDir.y*windDir.y)));
-            if (windDir.y < 0) windAngle = -windAngle;
-            float waveAngle = randf(windAngle - glm::radians(27.0f),
-                                    windAngle + glm::radians(27.0f));
-            std::cout << "waves[" << i << "].D = vec2(" << cos(waveAngle) << ", " << sin(waveAngle) << ");\n";
-            float s = randf(0.3f, 0.7f);
-            std::cout << "waves[" << i << "].s = " << s << ";\n";
-            float l = randf(30.0f, 60.0f) * x;
-            std::cout << "waves[" << i << "].l = " << l << ";\n";
-            std::ostringstream out;
-            out << "waves[" << i << "].A";
-            glUniform1f(glGetUniformLocation(this->program, out.str().c_str()), x);
-            std::ostringstream out1;
-            out1 << "waves[" << i << "].Q";
-            glUniform1f(glGetUniformLocation(this->program, out1.str().c_str()), q);
-            std::ostringstream out2;
-            out2 << "waves[" << i << "].D";
-            glUniform2f(glGetUniformLocation(this->program, out2.str().c_str()), cos(waveAngle), sin(waveAngle));
-            std::ostringstream out3;
-            out3 << "waves[" << i << "].w";
-            glUniform1f(glGetUniformLocation(this->program, out3.str().c_str()), sqrt(2.0f * 3.14f * 9.8f / l));
-            std::ostringstream out4;
-            out4 << "waves[" << i << "].fi";
-            glUniform1f(glGetUniformLocation(this->program, out4.str().c_str()), 2.0f * s / l);
-        }
-        glUseProgram(0);
     }
     
     Simulation::~Simulation() {}
@@ -93,6 +57,7 @@ namespace Water {
     void Simulation::simulate(glm::vec3 translation) {
         glUseProgram(this->program);
 
+        glUniform1f(this->uniformScale, this->scale);
         glUniform1f(this->uniformTime, (float) glfwGetTime() * 5.0f);
         glUniform2f(this->uniformTransition, translation.x, -translation.z);
 
@@ -106,6 +71,48 @@ namespace Water {
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+
+        glUseProgram(0);
+    }
+
+    void Simulation::generateRandomWaves() {
+        Random random(2137L);
+        int waveCount = 10;
+        float windAngle = random.nextFloat() * 100.0f;
+        glm::vec2 windDirection = glm::vec2(cosf(windAngle), sinf(windAngle));
+
+        if(windDirection.y < 0.0f)
+            windAngle = -windAngle;
+
+        std::string format("waves[i].X");
+
+        glUseProgram(this->program);
+        glUniform1i(this->uniformWaveCount, waveCount);
+
+        for(int i=0; i<waveCount; ++i) {
+            float amplitude = random.nextFloat() * 0.03f + 0.01f;
+            float stepness = random.nextFloat() * 0.1f + 0.3f;
+            float waveAngle = random.nextFloat() * glm::radians(2.0f * 27.0f) + (windAngle - glm::radians(27.0f));
+            glm::vec2 waveDirection = glm::vec2(cosf(waveAngle), sinf(waveAngle));
+            float speed = random.nextFloat() * 0.4f + 0.3f;
+            float lenght = (random.nextFloat() * 30.0f + 30.0f) * amplitude;
+
+            float w = sqrt(2.0f * 3.14159f * 9.8f / lenght);
+            float f = 2.0f * speed / lenght;
+
+            format[6] = i + '0';
+
+            format[9] = 'A';
+            glUniform1f(glGetUniformLocation(this->program, format.data()), amplitude);
+            format[9] = 'Q';
+            glUniform1f(glGetUniformLocation(this->program, format.data()), stepness);
+            format[9] = 'D';
+            glUniform2f(glGetUniformLocation(this->program, format.data()), waveDirection.x, waveDirection.y);
+            format[9] = 'w';
+            glUniform1f(glGetUniformLocation(this->program, format.data()), w);
+            format[9] = 'f';
+            glUniform1f(glGetUniformLocation(this->program, format.data()), f);
+        }
 
         glUseProgram(0);
     }

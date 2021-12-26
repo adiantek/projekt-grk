@@ -3,15 +3,12 @@
 precision highp float;
 
 uniform samplerCube skybox;
-uniform vec3 cameraPosition;
 
 in vec3 normal;
 in vec3 viewDirection;
-in vec3 fragmentPosition;
-
+in float dist;
 
 out vec4 fragmentColor;
-
 
 void main() {
     vec3 reflectVector = normalize(reflect(viewDirection, normal));
@@ -31,13 +28,12 @@ void main() {
             reflectivity = 1.0;
     }
 
-    vec4 reflection = texture(skybox, reflectVector);
+    vec4 reflection = texture(skybox, vec3(reflectVector.x, -reflectVector.y, reflectVector.z));
 
     vec4 transmission = vec4(0.00778151049, 0.01539574715, 0.01774450798, 1.0);
 
     fragmentColor = reflectivity * reflection + (1.0 - reflectivity) * transmission;
 
-    float dist = length(cameraPosition - fragmentPosition);
     vec4 fogColor = texture(skybox, vec3(-viewDirection.x, 0.0, -viewDirection.z));
 
     fragmentColor = mix(fragmentColor, fogColor, 1.0 - exp(-0.004 * dist));

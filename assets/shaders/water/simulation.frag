@@ -7,7 +7,7 @@ struct Wave {
     float A; // Amplitude
     vec2 D; // direction
     float w; // w = sqrt(2.0 * 3.14 * 9.8 / waves[i].l)
-    float fi; // fi = 2.0 * waves[i].s / waves[i].l
+    float f; // fi = 2.0 * waves[i].s / waves[i].l
 };
 
 uniform int waveCount;
@@ -25,7 +25,7 @@ void main() {
     vec3 normal = vec3(0.0, 0.0, 1.0);
 
     for(int i=0; i<waveCount; ++i) {
-        float value = dot(waves[i].D, position) * waves[i].w + waves[i].fi * time;
+        float value = dot(waves[i].D, position) * waves[i].w + waves[i].f * time;
 
         height.x += waves[i].Q * waves[i].A * waves[i].D.x * cos(value);
         height.y += waves[i].Q * waves[i].A * waves[i].D.y * cos(value);

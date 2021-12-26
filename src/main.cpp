@@ -193,6 +193,7 @@ void init()
 	planeContext.initPlane(2.0f, 2.0f);
 
 	waterSurface = new Water::Surface(0.0f, -9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
+	waterSurface->simulation.generateRandomWaves();
 }
 
 int main(int argc, char **argv)
