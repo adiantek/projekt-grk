@@ -120,6 +120,12 @@ void Controller::update() {
     if (this->keys[GLFW_KEY_A]) {
         this->camera->position -= this->camera->getSide() * moveSpeed;
     }
+    if (this->keys[GLFW_KEY_LEFT_SHIFT]) {
+        this->camera->position -= this->camera->getUp() * moveSpeed;
+    }
+    if (this->keys[GLFW_KEY_SPACE]) {
+        this->camera->position += this->camera->getUp() * moveSpeed;
+    }
 }
 
 static void s_window_size_callback(GLFWwindow *window, int width, int height) {

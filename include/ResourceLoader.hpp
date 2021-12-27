@@ -31,6 +31,7 @@ public:
     GLuint txt_wall = 0;
     GLuint txt_wallNormal = 0;
     GLuint txt_wallHeight = 0;
+    GLuint txt_skybox = 0;
 
     // programs
     GLuint p_shader_4_1 = 0;
@@ -102,6 +103,24 @@ public:
     GLint p_shader_tex_uni_modelViewProjectionMatrix = -1;
     GLint p_shader_tex_uni_textureSampler = -1;
 
+    GLuint p_water_simulation = 0;
+    bool p_water_simulation_loaded = false;
+    GLint p_water_simulation_attr_vertexPosition = -1;
+    GLint p_water_simulation_uni_scale = -1;
+    GLint p_water_simulation_uni_time = -1;
+    GLint p_water_simulation_uni_transition = -1;
+    GLint p_water_simulation_uni_waveCount = -1;
+
+    GLuint p_water_surface = 0;
+    bool p_water_surface_loaded = false;
+    GLint p_water_surface_attr_position = -1;
+    GLint p_water_surface_attr_texturePosition = -1;
+    GLint p_water_surface_uni_cameraPosition = -1;
+    GLint p_water_surface_uni_heightMap = -1;
+    GLint p_water_surface_uni_model = -1;
+    GLint p_water_surface_uni_normalMap = -1;
+    GLint p_water_surface_uni_skybox = -1;
+    GLint p_water_surface_uni_transformation = -1;
     // simplex:
     GLuint p_simplex = 0;
     bool p_simplex_loaded = false;
@@ -122,6 +141,7 @@ private:
     void loadPrograms();
     void loadAttributesAndUniforms();
     void loadTexture(const char *name, GLuint *out);
+    void loadTextureCubeMap(GLuint *out);
     /**
      * true if and only if program was loaded right now
      */
