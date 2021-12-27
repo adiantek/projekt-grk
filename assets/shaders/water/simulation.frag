@@ -17,8 +17,8 @@ uniform Wave waves[10];
 
 in vec2 position;
 
-layout(location = 0) out vec3 heightMap;
-layout(location = 1) out vec3 normalMap;
+layout(location = 0) out vec4 heightMap;
+layout(location = 1) out vec4 normalMap;
 
 void main() {
     vec3 height = vec3(0.0);
@@ -36,6 +36,6 @@ void main() {
         normal.z -= waves[i].Q * waves[i].w * waves[i].A * sin(value);
     }
 
-    heightMap = height;
-    normalMap = normalize(normal);
+    heightMap = vec4(height, 1.0);
+    normalMap = vec4(normalize(normal), 1.0);
 }
