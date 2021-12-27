@@ -1,5 +1,6 @@
 #include<Water/Simulation.hpp>
 #include<Random.hpp>
+#include <Logger.h>
 
 static inline float randf(float min, float max, int precision = 1000)
 {
@@ -48,6 +49,36 @@ namespace Water {
             GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1
         };
         glDrawBuffers(2, drawBuffers);
+
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if(status != GL_FRAMEBUFFER_COMPLETE) {
+            switch(status) {
+                case GL_FRAMEBUFFER_UNDEFINED:
+                    LOGE("Undefined framebuffer");
+                    break;
+                case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                    LOGE("Incomplete attachment");
+                    break;
+                case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                    LOGE("Missing attachment");
+                    break;
+                case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+                    LOGE("Incomplete draw buffer");
+                    break;
+                case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+                    LOGE("Incomplete read buffer");
+                    break;
+                case GL_FRAMEBUFFER_UNSUPPORTED:
+                    LOGE("Framebuffer unsupported");
+                    break;
+                case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                    LOGE("Incomplete multisample");
+                    break;
+                case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+                    LOGE("Incomplete layer targets");
+                    break;
+            }
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
