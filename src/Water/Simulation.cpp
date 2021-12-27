@@ -62,21 +62,14 @@ namespace Water {
                 case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
                     LOGE("Missing attachment");
                     break;
-                case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                    LOGE("Incomplete draw buffer");
-                    break;
-                case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                    LOGE("Incomplete read buffer");
-                    break;
                 case GL_FRAMEBUFFER_UNSUPPORTED:
                     LOGE("Framebuffer unsupported");
                     break;
                 case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
                     LOGE("Incomplete multisample");
                     break;
-                case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-                    LOGE("Incomplete layer targets");
-                    break;
+                default:
+                    LOGE("Other framebuffer error");
             }
         }
 
