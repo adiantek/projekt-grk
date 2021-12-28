@@ -132,6 +132,12 @@ void ResourceLoader::loadPrograms()
         this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
         this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
     }
+    LOAD_PROGRAM(environment_map, 2, "water/environment.frag", "water/environment.vert") {
+        // this->dumpProgram("environment_map", this->p_environment_map);
+        this->p_environment_map_attr_vertexPosition = glGetAttribLocation(this->p_environment_map, "vertexPosition");
+        this->p_environment_map_uni_modelMatrix = glGetUniformLocation(this->p_environment_map, "modelMatrix");
+        this->p_environment_map_uni_transformation = glGetUniformLocation(this->p_environment_map, "transformation");
+    }
 
 #undef LOAD_PROGRAM
 }

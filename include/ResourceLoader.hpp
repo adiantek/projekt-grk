@@ -128,6 +128,12 @@ public:
     GLint p_simplex_uni_alpha = -1;
     GLint p_simplex_uni_p = -1;
     GLint p_simplex_uni_scale = -1;
+    // environment_map:
+    GLuint p_environment_map = 0;
+    bool p_environment_map_loaded = false;
+    GLint p_environment_map_attr_vertexPosition = -1;
+    GLint p_environment_map_uni_modelMatrix = -1;
+    GLint p_environment_map_uni_transformation = -1;
 
 private:
     int totalResourcesCounter = 0;
