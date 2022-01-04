@@ -57,11 +57,15 @@ void Controller::mouse_button_callback(GLFWwindow *window, int button, int actio
 
 void Controller::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     if (yoffset < 0.0) {
-        distance += 0.1f;
-        this->camera->position -= this->camera->getDirection() * 0.1f;
+        if( distance < 1.5f ) {
+            distance += 0.1f;
+            this->camera->position -= this->camera->getDirection() * 0.1f;
+        }
     } else {
-        distance -= 0.1f;
-        this->camera->position += this->camera->getDirection() * 0.1f;
+        if( distance > -0.0f ) {
+            distance -= 0.1f;
+            this->camera->position += this->camera->getDirection() * 0.1f;
+        }
     }
 }
 
