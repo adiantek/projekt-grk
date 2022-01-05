@@ -1,11 +1,11 @@
 #pragma once
 
-#include "glm/glm.hpp"
-#include "glm/ext.hpp"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 class Camera {
 public:
-    Camera(int width, int height, float fov=80.0f, float near=0.1f, float far=100.0f, int x=0, int y=0);
+    Camera(int width, int height, float fov = 80.0f, float near = 0.1f, float far = 100.0f, int x = 0, int y = 0);
     ~Camera();
     /* Get camera and perspective transformation matrix */
     glm::mat4 getTransformationMatrix();
@@ -21,6 +21,12 @@ public:
     void setRotation(glm::quat rotation);
     /* Rotate camera by quaternion */
     void rotate(glm::quat rotation);
+    
+    /* Increase camera distance of view */
+    void increaseCameraDistance();
+    /* Decrease camera distance of view */
+    void decreaseCameraDistance();
+
     /* Get camera rotation quaternion */
     glm::quat getRotation();
     /* Get camera direction vector */
@@ -33,6 +39,7 @@ public:
     float getAspect();
     /* Camera position in world */
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 5.0f);
+    
 protected:
     /* Update camera perspective matrix */
     void updatePerspective();
@@ -46,6 +53,10 @@ protected:
     glm::vec3 up;
     /* Camera side vector */
     glm::vec3 side;
+
+    /* default view distance value */
+    float distance = 1.0f;
+    
     /* Perspective neat plane */
     float near;
     /* Perspective far plane */
@@ -61,3 +72,5 @@ protected:
     /* Viewport position y */
     int y;
 };
+
+extern Camera *camera;
