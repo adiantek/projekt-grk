@@ -117,7 +117,7 @@ void Camera::updatePerspective() {
 }
 
 void Camera::update() {
-    cameraTarget = glm::vec3(robot->position);
+    cameraTarget = glm::vec3(robot->position) + glm::vec3(0.0f, 0.2f, 0.0f);
     
     float horizontalDistance = this->horizontalDistance();
     float verticalDistance = this->verticalDistance();

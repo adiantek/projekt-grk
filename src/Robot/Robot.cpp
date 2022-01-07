@@ -28,23 +28,31 @@ Robot::Robot() {
         });
 
     this->mode = Robot::MODE_STATIONARY;
-    this->movementSpeed = Robot::DEFAULT_MOVEMENT_SPEED;
+    this->movementSpeed = Robot::DEFAULT_WALKING_MOVEMENT_SPEED;
 }
 
-void Robot::toggleIncreasedSpeedMode() {
-    if (this->movementSpeed == Robot::MAX_SPEED_INCREASED) {
-        this->movementSpeed = Robot::DEFAULT_MOVEMENT_SPEED;
+// void Robot::toggleIncreasedSpeedMode() {
+//     if (this->movementSpeed == Robot::MAX_SPEED_INCREASED) {
+//         this->movementSpeed = Robot::DEFAULT_MOVEMENT_SPEED;
+//     } else {
+//         this->movementSpeed = Robot::MAX_SPEED_INCREASED;
+//     }
+// }
+
+void Robot::enableIncreasedSpeedMode() {
+    if( this->mode == Robot::MODE_WALKING) {
+        this->movementSpeed = Robot::MAX_WALKING_SPEED_INCREASED;
     } else {
-        this->movementSpeed = Robot::MAX_SPEED_INCREASED;
+        this->movementSpeed = Robot::MAX_SWIMMING_SPEED_INCREASED;
     }
 }
 
-void Robot::enableIncreasedSpeedMode() {
-    this->movementSpeed = Robot::MAX_SPEED_INCREASED;
-}
-
 void Robot::disableIncreasedSpeedMode() {
-    this->movementSpeed = Robot::MAX_SPEED_INCREASED;
+    if( this->mode == Robot::MODE_WALKING) {
+        this->movementSpeed = Robot::DEFAULT_WALKING_MOVEMENT_SPEED;
+    } else {
+        this->movementSpeed = Robot::DEFAULT_SWIMMING_MOVEMENT_SPEED;
+    }
 }
 
 void Robot::setMoveDirectionVector(glm::vec3 direction) {
