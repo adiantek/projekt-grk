@@ -10,9 +10,11 @@ class GameObject {
    public:
     GameObject::GameObject(std::string name);
 
-    void setPosition(glm::vec3 position);
-    void setRotation(glm::vec3 rotation);
+    GameObject* setPosition(glm::vec3 position);
+    GameObject* setRotation(glm::vec3 rotation);
+    GameObject* setScale(glm::vec3 scale);
     GameObject* setMaterials(std::vector<Material*> materials);
+    GameObject* setMaterial(Material* material);
     GameObject* setModel(Model* model);
 
     std::string getName();
@@ -27,6 +29,7 @@ class GameObject {
     std::string name;
     glm::vec3 position;
     glm::vec3 rotation;
+    glm::vec3 scale;
     Model* model;
     std::vector<Material*> materials;
 };

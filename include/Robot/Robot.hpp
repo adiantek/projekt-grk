@@ -10,6 +10,7 @@ class Robot {
     // SPEEDS
     inline static const float DEFAULT_MOVEMENT_SPEED = 0.5f;
     inline static const float MAX_SPEED_INCREASED = 1.0f;
+    inline static const float ROTATION_SPEED = 1.0f;
 
     // MODES
     static const int MODE_STATIONARY = 0;

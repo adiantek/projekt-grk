@@ -29,7 +29,27 @@ Material::Material(GLuint* program, std::map<int, GLuint> textures) {
     }
 }
 
+Material::Material(GLuint* program) {
+    this->program = program;
+}
+
 Material::~Material() {}
+
+Material* Material::extend(Material* material) {
+    this->program = material->program;
+
+    this->diffuseTexture = material->diffuseTexture;
+    this->normalTexture = material->normalTexture;
+    this->aoTexture = material->aoTexture;
+    this->roughnessTexture = material->roughnessTexture;
+
+    return this;
+}
+
+Material* Material::setProgram(GLuint* program) {
+    this->program = program;
+    return this;
+}
 
 GLuint* Material::getDiffuse() {
     return &this->diffuseTexture;
@@ -45,6 +65,26 @@ GLuint* Material::getAO() {
 
 GLuint* Material::getRoughness() {
     return &this->roughnessTexture;
+}
+
+Material* Material::setDiffuse(GLuint* diffuseTexture) {
+    this->diffuseTexture = *diffuseTexture;
+    return this;
+}
+
+Material* Material::setNormal(GLuint* normalTexture) {
+    this->normalTexture = *normalTexture;
+    return this;
+}
+
+Material* Material::setAO(GLuint* aoTexture) {
+    this->aoTexture = *aoTexture;
+    return this;
+}
+
+Material* Material::setRoughness(GLuint* roughnessTexture) {
+    this->roughnessTexture = *roughnessTexture;
+    return this;
 }
 
 Material* Material::setParam(std::string name, glm::vec3 value) {

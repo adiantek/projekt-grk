@@ -44,20 +44,20 @@ void Camera::setFov(float fov) {
 }
 
 void Camera::mouseMove(double deltaX, double deltaY) {
-    anglePitchChange = (float)deltaY * 3.0f * timeExternal->deltaTime;
+    anglePitchChange = (float)deltaY * 9.0f * timeExternal->deltaTime;
 
     // in SWIMMING MODE FROM (-70;70), in WALKING MODE FROM (0;70) !!!!!!
     
-    if(anglePitch - anglePitchChange <= 70 && anglePitch - anglePitchChange >= -70) {
-        anglePitch -= anglePitchChange;
+    if(anglePitch + anglePitchChange <= 70 && anglePitch + anglePitchChange >= -70) {
+        anglePitch += anglePitchChange;
     }
 
     printf("angle Pitch change: %.3f", anglePitchChange);
     printf("angle Pitch: %.3f\n", anglePitch);
 
-    angleAroundChange = (float)deltaX * 1.5f * timeExternal->deltaTime;
+    angleAroundChange = (float)deltaX * 9.0f * timeExternal->deltaTime;
     if(angleAround > 360) {
-        angleAround -= 360;
+        angleAround += 360;
     }
     if(angleAround < 0) {
         angleAround += 360;

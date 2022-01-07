@@ -19,6 +19,8 @@
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
 #include <Time/Time.hpp>
+#include <Gizmos/Gizmos.hpp>
+#include <Resources/GameObject.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -33,6 +35,9 @@ Core::RenderContext sphereContext2;
 Core::RenderContext brickWallContext;
 Core::RenderContext planeContext;
 
+// Temporary ground plane
+GameObject* ground = new GameObject("ground");
+
 // Window
 GLFWwindow *window;
 
@@ -46,6 +51,8 @@ bool initialized = false;
 ResourceLoader resourceLoader;
 
 Water::Surface* waterSurface;
+
+
 
 void glfw_error_callback(int, const char *err_str)
 {
@@ -121,10 +128,7 @@ void do_frame()
 	glfwPollEvents();
 	
 	timeExternal->update();
-
 	controller->update();
-	robot->update();
-	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -137,7 +141,9 @@ void do_frame()
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
+	camera->update();
 	robot->update();
+	ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -196,14 +202,23 @@ void init() {
 	if (initialized) return;
 	initialized = true;
 
+	// Initialize resources (textures, shaders, materials)
+	Resources::init();
+
+	// Initialize Gizmos (wireframe cubes, lines, etc... - For testing purposes)
+	Gizmos::init();
+
 	// Basic 
-	new Camera(600, 600);
+	ground
+		->setModel(Resources::MODELS.PLANE)
+		->setMaterial(Resources::MATERIALS.DEFAULT)
+		->setPosition(glm::vec3(0, 0.0f, 0))
+		->setScale(glm::vec3(10, 10, 10));
+
+	new Camera(1280, 768);
 	new Robot();
 
 	glEnable(GL_DEPTH_TEST);
-
-	// Initialize resources
-	Resources::init();
 
 	// Other...
 	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
@@ -214,7 +229,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	waterSurface = new Water::Surface(0.0f, -9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
+	waterSurface = new Water::Surface(0.0f, 9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
 	waterSurface->simulation.generateRandomWaves();
 }
 
@@ -233,7 +248,7 @@ int main(int argc, char **argv)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        window = glfwCreateWindow(600, 600, "GLFW test", NULL, NULL);
+        window = glfwCreateWindow(1280, 768, "GLFW test", NULL, NULL);
         if (!window)
         {
             LOGE("glfwCreateWindow() failed");

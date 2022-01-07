@@ -32,6 +32,17 @@ class Resources {
 
         // Default materials
         inline static Material* DEFAULT = new Material();
+        inline static Material* DEFAULT_WHITE = new Material();
+        inline static Material* DEFAULT_RED = new Material();
+        inline static Material* DEFAULT_GREEN = new Material();
+        inline static Material* DEFAULT_BLUE = new Material();
+        inline static Material* DEFAULT_YELLOW = new Material();
+        inline static Material* DEFAULT_CYAN = new Material();
+        inline static Material* DEFAULT_MAGENTA = new Material();
+        inline static Material* DEFAULT_BLACK = new Material();
+        inline static Material* DEFAULT_GREY = new Material();
+        inline static Material* DEFAULT_ORANGE = new Material();
+        inline static Material* DEFAULT_PURPLE = new Material();
 
         // Robot materials
         inline static Material* ROBOT_BODY = new Material();
@@ -45,6 +56,7 @@ class Resources {
     static struct _MODELS {
 
         // Primitive models
+        inline static Model* PLANE = new Model();
         inline static Model* CUBE = new Model();
         inline static Model* COMPLEX_CUBE = new Model();
 

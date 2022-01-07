@@ -14,13 +14,18 @@ class Material {
       inline static const int ROUGHNESS_TEXTURE = 3;
 
       Material::Material();
+      Material::Material(GLuint* program);
       Material::Material(GLuint* program, std::map<int, GLuint> textures);
       Material::~Material();
 
-      void setDiffuse(GLuint* diffuseTexture);
-      void setNormal(GLuint* normalTexture);
-      void setAO(GLuint* aoTexture);
-      void setRoughness(GLuint* roughnessTexture);
+      Material* extend(Material* material);
+
+      Material* setProgram(GLuint* program);
+
+      Material* setDiffuse(GLuint* diffuseTexture);
+      Material* setNormal(GLuint* normalTexture);
+      Material* setAO(GLuint* aoTexture);
+      Material* setRoughness(GLuint* roughnessTexture);
 
       Material* setParam(std::string name, glm::vec3 value);
       Material* setParam(std::string name, float value);

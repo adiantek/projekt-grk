@@ -29,6 +29,54 @@ void Resources::initTextures() {
 void Resources::initMaterials() {
     printf("Initializing materials...\n");
 
+    Resources::MATERIALS.DEFAULT
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.827f, 0.827f, 0.827f));
+
+    Resources::MATERIALS.DEFAULT_WHITE
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    Resources::MATERIALS.DEFAULT_RED
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
+
+    Resources::MATERIALS.DEFAULT_GREEN
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
+    
+    Resources::MATERIALS.DEFAULT_BLUE
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+
+    Resources::MATERIALS.DEFAULT_YELLOW
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(1.0f, 1.0f, 0.0f));
+    
+    Resources::MATERIALS.DEFAULT_CYAN
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.0f, 1.0f, 1.0f));
+    
+    Resources::MATERIALS.DEFAULT_MAGENTA
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(1.0f, 0.0f, 1.0f));
+
+    Resources::MATERIALS.DEFAULT_BLACK
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.0f, 0.0f, 0.0f));
+    
+    Resources::MATERIALS.DEFAULT_GREY
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.5f, 0.5f, 0.5f));
+
+    Resources::MATERIALS.DEFAULT_ORANGE
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
+
+    Resources::MATERIALS.DEFAULT_PURPLE
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.5f, 0.0f, 1.0f));
+
     // Robot materials
     Resources::MATERIALS.ROBOT_BODY = new Material(&resourceLoaderExternal->p_shader_color, {
         {Material::DIFFUSE_TEXTURE, Resources::TEXTURES.ROBOT_BODY_DIFFUSE},
@@ -38,11 +86,6 @@ void Resources::initMaterials() {
     });
 
     Resources::MATERIALS.ROBOT_BODY
-        ->setParam("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
-
-    Resources::MATERIALS.DEFAULT = new Material(&resourceLoaderExternal->p_shader_color, {});
-
-    Resources::MATERIALS.DEFAULT
         ->setParam("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
 
     // Resources::MATERIALS.ROBOT_METAL = new Material(
@@ -58,7 +101,9 @@ void Resources::initMaterials() {
 void Resources::initModels() {
 
     std::cout << "Loading models..." << std::endl;
+
     // Primitives
+    ResourceLoader::loadModelExternal("assets/models/primitives/plane.dae", Resources::MODELS.PLANE);
     ResourceLoader::loadModelExternal("assets/models/primitives/cube.dae", Resources::MODELS.CUBE);
     ResourceLoader::loadModelExternal("assets/models/primitives/complex_cube.dae", Resources::MODELS.COMPLEX_CUBE);
 
