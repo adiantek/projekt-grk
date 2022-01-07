@@ -57,12 +57,12 @@ void Camera::mouseMove(double deltaX, double deltaY) {
 
     angleAroundChange = (float)deltaX * 9.0f * timeExternal->deltaTime;
     if(angleAround > 360) {
-        angleAround += 360;
+        angleAround -= 360;
     }
     if(angleAround < 0) {
         angleAround += 360;
     }
-    angleAround += angleAroundChange;
+    angleAround -= angleAroundChange;
 }
 
 float Camera::horizontalDistance() {
