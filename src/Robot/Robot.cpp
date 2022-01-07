@@ -17,13 +17,14 @@ Robot::Robot() {
         ->setModel(Resources::MODELS.ROBOT)
         ->setScale(glm::vec3(0.1f, 0.1f, 0.1f))
         ->setMaterials({
-            Resources::MATERIALS.DEFAULT_BLACK,
-            Resources::MATERIALS.DEFAULT_BLUE,
-            Resources::MATERIALS.DEFAULT_GREEN,
-            Resources::MATERIALS.DEFAULT_MAGENTA,
-            Resources::MATERIALS.DEFAULT_ORANGE,
-            Resources::MATERIALS.DEFAULT_PURPLE,
-            Resources::MATERIALS.DEFAULT_RED
+            Resources::MATERIALS.ROBOT_BODY,
+            Resources::MATERIALS.ROBOT_METAL,
+            Resources::MATERIALS.ROBOT_CHROME,
+            Resources::MATERIALS.ROBOT_LENS,
+            Resources::MATERIALS.ROBOT_WIRE,
+            Resources::MATERIALS.ROBOT_GLOW,
+            Resources::MATERIALS.ROBOT_METAL_2,
+            Resources::MATERIALS.ROBOT_METAL_PAINTED
         });
 
     this->mode = Robot::MODE_STATIONARY;

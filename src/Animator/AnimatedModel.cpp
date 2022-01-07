@@ -16,14 +16,6 @@ namespace Animator {
         this->destroy();
     }
 
-    GLuint AnimatedModel::getModel() {
-        return this->model;
-    }
-
-    GLuint AnimatedModel::getTexture() {
-        return this->texture;
-    }
-
     Joint* AnimatedModel::getRootJoint() {
         return this->rootJoint;
     }

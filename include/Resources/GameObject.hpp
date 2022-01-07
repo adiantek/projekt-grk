@@ -5,6 +5,7 @@
 
 #include <Resources/Material.hpp>
 #include <Resources/Model.hpp>
+#include <Animator/Joint.hpp>
 
 class GameObject {
    public:
@@ -32,4 +33,5 @@ class GameObject {
     glm::vec3 scale;
     Model* model;
     std::vector<Material*> materials;
+    Animator::Joint* rootJoint;
 };

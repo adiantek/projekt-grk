@@ -1,6 +1,7 @@
 #include <iostream>
 #include <assimp/postprocess.h>
 
+#include <Logger.h>
 #include <Resources/Mesh.hpp>
 #include <Resources/Model.hpp>
 #include <assimp/Importer.hpp>
@@ -8,28 +9,24 @@
 #include <vector>
 
 void Model::loadModel(char* filename) {
-    std::cout << "Loading model (char*): " << filename << std::endl; 
     this->file = std::string(filename);
-    std::cout << "Loading model (std::string): " << this->file << std::endl;
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes);
 
     if (!scene || !scene->mRootNode) {
-        std::cout << "ERROR::ASSIMP Could not load model: " << importer.GetErrorString() << std::endl;
+        LOGE("ERROR::ASSIMP Could not load model: %s\n", importer.GetErrorString());
     } else {
         this->processNode(scene->mRootNode, scene, aiMatrix4x4());
     }
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation) {
-    printf("mNumMeshes: %d\n", node->mNumMeshes);
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         transformation *= node->mTransformation;
         Mesh* processedMesh = processMesh(mesh, scene, transformation);
         this->meshes.push_back(processedMesh);
-        printf("meshes count: %d\n", this->meshes.size());
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -43,9 +40,6 @@ Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transfo
 
     std::vector<Vertex> vertices = this->vertices(mesh, extents, origin, transformation);
 
-    // ????
-    // std::vector<unsigned int> indices = this->indices(mesh);
-
     std::string name = mesh->mName.C_Str();
     Mesh* finalMesh = new Mesh(name);
 
@@ -55,8 +49,8 @@ Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transfo
         ->setExtents(extents)
         ->setOrigin(origin)
         ->setVertices(vertices);
+        // ->setRootJoint(rootJoint);
 
-    
 }
 
 std::vector<Vertex> Model::vertices(aiMesh* mesh, glm::vec3& extents, glm::vec3& origin, aiMatrix4x4 transformation) {
@@ -116,8 +110,6 @@ std::vector<Vertex> Model::vertices(aiMesh* mesh, glm::vec3& extents, glm::vec3&
 
     extents = (max - min) * 0.5f;
     origin = glm::vec3((min.x + max.x) / 2.0f, (min.y + max.y) / 2.0f, (min.z + max.z) / 2.0f);
-
-    printf("%f,%f,%f\n", origin.x, origin.y, origin.z);
 
     return vertices;
 }

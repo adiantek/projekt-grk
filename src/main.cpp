@@ -141,8 +141,8 @@ void do_frame()
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
-	camera->update();
 	robot->update();
+	camera->update();
 	ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);

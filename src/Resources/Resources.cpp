@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include <Logger.h>
 #include <ResourceLoader.hpp>
 #include <Resources/Resources.hpp>
 #include <Resources/Material.hpp>
@@ -27,7 +28,7 @@ void Resources::initTextures() {
 //---------------------------- MATERIALS --------------------------------//
 ///////////////////////////////////////////////////////////////////////////
 void Resources::initMaterials() {
-    printf("Initializing materials...\n");
+    LOGE("Initializing materials...\n");
 
     Resources::MATERIALS.DEFAULT
         ->setProgram(&resourceLoaderExternal->p_shader_color)
@@ -78,21 +79,41 @@ void Resources::initMaterials() {
         ->setParam("objectColor", glm::vec3(0.5f, 0.0f, 1.0f));
 
     // Robot materials
-    Resources::MATERIALS.ROBOT_BODY = new Material(&resourceLoaderExternal->p_shader_color, {
-        {Material::DIFFUSE_TEXTURE, Resources::TEXTURES.ROBOT_BODY_DIFFUSE},
-        {Material::AO_TEXTURE, Resources::TEXTURES.ROBOT_BODY_AO},
-        {Material::NORMAL_TEXTURE, Resources::TEXTURES.ROBOT_BODY_NORMAL},
-        {Material::ROUGHNESS_TEXTURE, Resources::TEXTURES.ROBOT_BODY_ROUGHNESS}
-    });
-
     Resources::MATERIALS.ROBOT_BODY
-        ->setParam("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.107f, 0.084f, 0.064f));
 
-    // Resources::MATERIALS.ROBOT_METAL = new Material(
-    //     {{Material::DIFFUSE_TEXTURE, Resources::TEXTURES.ROBOT_METAL_DIFFUSE},
-    //      {Material::AO_TEXTURE, Resources::TEXTURES.ROBOT_METAL_AO},
-    //      {Material::NORMAL_TEXTURE, Resources::TEXTURES.ROBOT_METAL_NORMAL},
-    //      {Material::ROUGHNESS_TEXTURE, Resources::TEXTURES.ROBOT_METAL_ROUGHNESS}});
+    // TODO: Make a chrome shader for this
+    Resources::MATERIALS.ROBOT_CHROME
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    // TODO: Check for this material. I think robot has no usage for this
+    Resources::MATERIALS.ROBOT_GLOW
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    Resources::MATERIALS.ROBOT_LENS
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.207f, 0.184f, 0.164f));
+
+    // TODO: Make a metal shader for this
+    Resources::MATERIALS.ROBOT_METAL
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.380f, 0.345f, 0.321f));
+
+    // TODO: Make a metal shader for this
+    Resources::MATERIALS.ROBOT_METAL_2
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.360f, 0.325f, 0.301f));
+
+    Resources::MATERIALS.ROBOT_WIRE
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.0f, 0.0f, 0.0f));
+
+    Resources::MATERIALS.ROBOT_METAL_PAINTED
+        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setParam("objectColor", glm::vec3(0.870f, 0.113f, 0.007f));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -100,7 +121,7 @@ void Resources::initMaterials() {
 ///////////////////////////////////////////////////////////////////////////
 void Resources::initModels() {
 
-    std::cout << "Loading models..." << std::endl;
+    LOGE("Loading models...");
 
     // Primitives
     ResourceLoader::loadModelExternal("assets/models/primitives/plane.dae", Resources::MODELS.PLANE);
@@ -109,8 +130,7 @@ void Resources::initModels() {
 
 
     // Robot
-    ResourceLoader::loadModelExternal("assets/models/robot.dae", Resources::MODELS.ROBOT);
-    std::cout << "Loaded: " << Resources::MODELS.ROBOT->file << std::endl;
+    ResourceLoader::loadModelExternal("assets/models/robot_with_armature.dae", Resources::MODELS.ROBOT);
 
 }
 

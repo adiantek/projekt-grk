@@ -47,6 +47,12 @@ class Resources {
         // Robot materials
         inline static Material* ROBOT_BODY = new Material();
         inline static Material* ROBOT_METAL = new Material();
+        inline static Material* ROBOT_CHROME = new Material();
+        inline static Material* ROBOT_LENS = new Material();
+        inline static Material* ROBOT_WIRE = new Material();
+        inline static Material* ROBOT_GLOW = new Material();
+        inline static Material* ROBOT_METAL_2 = new Material();
+        inline static Material* ROBOT_METAL_PAINTED = new Material();
 
     } MATERIALS;
 

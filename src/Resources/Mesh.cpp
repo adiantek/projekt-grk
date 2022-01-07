@@ -30,6 +30,11 @@ Mesh* Mesh::setExtents(glm::vec3 extents) {
     return this;
 }
 
+Mesh* Mesh::setRootJoint(Animator::Joint* rootJoint) {
+    this->rootJoint = rootJoint;
+    return this;
+}
+
 void Mesh::calculateRenderContext(aiMesh* mesh) {
     this->renderContext = Core::RenderContext();
     this->renderContext.initFromAssimpMesh(mesh);
