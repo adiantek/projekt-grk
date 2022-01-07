@@ -48,8 +48,8 @@ void Camera::mouseMove(double deltaX, double deltaY) {
 
     // in SWIMMING MODE FROM (-70;70), in WALKING MODE FROM (0;70) !!!!!!
     
-    if(anglePitch - anglePitchChange <= 70 && anglePitch - anglePitchChange >= -70) {
-        anglePitch -= anglePitchChange;
+    if(anglePitch + anglePitchChange <= 70 && anglePitch + anglePitchChange >= -70) {
+        anglePitch += anglePitchChange;
     }
 
     printf("angle Pitch change: %.3f", anglePitchChange);
@@ -62,7 +62,7 @@ void Camera::mouseMove(double deltaX, double deltaY) {
     if(angleAround < 0) {
         angleAround += 360;
     }
-    angleAround -= angleAroundChange;
+    angleAround += angleAroundChange;
 }
 
 float Camera::horizontalDistance() {
@@ -117,7 +117,7 @@ void Camera::updatePerspective() {
 }
 
 void Camera::update() {
-    cameraTarget = glm::vec3(robot->position) + glm::vec3(0.0f, -0.1f, 0.0f);
+    cameraTarget = glm::vec3(robot->position);
     
     float horizontalDistance = this->horizontalDistance();
     float verticalDistance = this->verticalDistance();

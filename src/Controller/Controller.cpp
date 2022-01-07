@@ -117,13 +117,13 @@ void Controller::update() {
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 
     if (this->keys[GLFW_KEY_W]) {
-        position += glm::vec3(0.0f, 0.0f, 1.0f);
+        position += glm::vec3(0.0f, 0.0f, -1.0f);
     }
     if (this->keys[GLFW_KEY_A]) {
         position += glm::vec3(-1.0f, 0.0f, 0.0f);
     }
     if (this->keys[GLFW_KEY_S]) {
-        position += glm::vec3(0.0f, 0.0f, -1.0f);
+        position += glm::vec3(0.0f, 0.0f, 1.0f);
     }
     if (this->keys[GLFW_KEY_D]) {
         position += glm::vec3(1.0f, 0.0f, 0.0f);
