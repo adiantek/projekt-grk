@@ -17,6 +17,9 @@ class Robot {
     static const int MODE_SWIMMING = 2;
     static const int MODE_SLEEPING = 3;
 
+    float currentSpeed = 0;
+    float currentTurnSpeed = 0;
+
     Robot();
     ~Robot();
 

@@ -14,6 +14,7 @@
 #include <SimplexNoiseGenerator.hpp>
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
+#include <Time/Time.hpp>
 
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
@@ -118,9 +119,12 @@ void do_frame()
 	}
 	init();
 	glfwPollEvents();
-
+	
 	timeExternal->update();
+
 	controller->update();
+	robot->update();
+	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
