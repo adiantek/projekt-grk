@@ -15,6 +15,10 @@
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
 
+#include <Resources/Resources.hpp>
+#include <Robot/Robot.hpp>
+#include <Time/Time.hpp>
+
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -114,8 +118,9 @@ void do_frame()
 	}
 	init();
 	glfwPollEvents();
+
+	timeExternal->update();
 	controller->update();
-	robot->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -127,6 +132,8 @@ void do_frame()
 
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
+
+	robot->update();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -144,7 +151,7 @@ void do_frame()
 	glUseProgram(resourceLoader.p_shader_4_sun);
 	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
-	drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
+	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
@@ -181,20 +188,21 @@ void loadModelToContext(std::string path, Core::RenderContext& context)
 	context.initFromAssimpMesh(scene->mMeshes[0]);
 }
 
-void init()
-{
-	if (initialized) {
-		return;
-	}
+void init() {
+	if (initialized) return;
+	initialized = true;
 
 	// Basic 
 	new Camera(600, 600);
 	new Robot();
 
-	initialized = true;
 	glEnable(GL_DEPTH_TEST);
-	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
 
+	// Initialize resources
+	Resources::init();
+
+	// Other...
+	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
 
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
@@ -232,6 +240,7 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
+			new Time();
 			new Controller(window);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())

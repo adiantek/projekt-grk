@@ -3,11 +3,13 @@
 #include <stdbool.h>
 #include <glm/ext.hpp>
 
+#include <Resources/GameObject.hpp>
+
 class Robot {
   public:
     // SPEEDS
-    inline static const float DEFAULT_MOVEMENT_SPEED = 0.005f;
-    inline static const float MAX_SPEED_INCREASED = 0.01f;
+    inline static const float DEFAULT_MOVEMENT_SPEED = 0.5f;
+    inline static const float MAX_SPEED_INCREASED = 1.0f;
 
     // MODES
     static const int MODE_STATIONARY = 0;
@@ -37,7 +39,7 @@ class Robot {
     float movementVector;
 
     void draw();
-    // GameObject* gameObject;
+    GameObject* gameObject;
 };
 
 extern Robot *robot;

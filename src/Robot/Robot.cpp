@@ -1,10 +1,23 @@
 #include <Robot/Robot.hpp>
+#include <Resources/Resources.hpp>
+#include <Time/Time.hpp>
 
 Robot::Robot() {
     robot = this;
 
     this->position = glm::vec3(1.0f, 1.0f, 0.5f);
     this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    GameObject* gameObject = new GameObject("Robot");
+
+    this->gameObject = gameObject
+        ->setModel(Resources::MODELS.ROBOT);
+        // ->setMaterials(std::list<Material>({
+        //     Resources::MATERIALS.ROBOT_BODY,
+        //     Resources::MATERIALS.ROBOT_METAL
+        // }));
+
+
     this->mode = Robot::MODE_STATIONARY;
     this->movementSpeed = Robot::DEFAULT_MOVEMENT_SPEED;
 }
@@ -38,14 +51,17 @@ void Robot::setMoveDirectionVector(glm::vec3 direction) {
 void Robot::update() {
     // Update position
     if (this->mode == Robot::MODE_WALKING) {
-        this->position += this->moveDirectionVector * this->movementSpeed;
+        this->position += this->moveDirectionVector * this->movementSpeed * timeExternal->deltaTime;
     }
+
+    this->gameObject->setPosition(this->position);
 
     // Draw object
     this->draw();
 }
 
 void Robot::draw() {
+    this->gameObject->draw();
 }
 
 Robot *robot;
