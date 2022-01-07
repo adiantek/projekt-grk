@@ -14,7 +14,7 @@ class Robot {
     inline static const float DEFAULT_WALKING_MOVEMENT_SPEED = 1.0f;
     inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f;
 
-    inline static const float ROTATION_SPEED = 1.0f;
+    inline static const float ROTATION_SPEED = 20.0f;
 
     // MODES
     static const int MODE_STATIONARY = 0;
@@ -38,6 +38,7 @@ class Robot {
     
     glm::vec3 position;
     glm::vec3 rotation;
+    glm::vec3 direction;
 
   private:
     glm::vec3 moveDirectionVector;

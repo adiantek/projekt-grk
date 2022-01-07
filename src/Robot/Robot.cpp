@@ -10,6 +10,7 @@ Robot::Robot() {
 
     this->position = glm::vec3(0.0f, 0.0f, 6.0f);
     this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->direction = glm::vec3(0.0f, 0.0f, 0.0f);
 
     GameObject* gameObject = new GameObject("Robot");
 
@@ -66,14 +67,39 @@ void Robot::setMoveDirectionVector(glm::vec3 direction) {
 }
 
 void Robot::update() {
-    // Update position
-    if (this->mode == Robot::MODE_WALKING) {
+    if (this->mode != Robot::MODE_STATIONARY) {
         this->position += this->moveDirectionVector * this->movementSpeed * timeExternal->deltaTime;
 
-        // Iterpolate rotation to direction vector
-        float rotationSpeed = Robot::ROTATION_SPEED * timeExternal->deltaTime * 5.0f;
-        // this->rotation += glm::normalize(rotationSpeed * this->rotation + (1 - rotationSpeed) * this->moveDirectionVector);
-        this->rotation = this->moveDirectionVector;
+        if (this->moveDirectionVector.x != 0.0f || this->moveDirectionVector.z != 0.0f) {
+            float rotationSpeed = Robot::ROTATION_SPEED * timeExternal->deltaTime * 5.0f;
+
+            this->moveDirectionVector.y = 0.0f;
+            this->moveDirectionVector = glm::normalize(this->moveDirectionVector);
+
+            float rotationAngle = glm::orientedAngle(glm::vec3(0, 0, -1), this->moveDirectionVector, glm::vec3(0, 1, 0)) / glm::pi<float>() * 180.0f;
+            // float rotationAngle = glm::orientedAngle(glm::vec3(0, 0, -1), iterpolatedVector, glm::vec3(0, 1, 0)) / glm::pi<float>() * 180.0f;
+
+            if(rotation.y > 360) {
+                rotation.y -= 360;
+            } else if(rotation.y < 0) {
+                rotation.y += 360;
+            }
+            if(rotationAngle > 360) {
+                rotationAngle -= 360;
+            } else if(rotationAngle < 0) {
+                rotationAngle += 360;
+            }
+
+            if (abs(rotationAngle - this->rotation.y) < rotationSpeed) {
+                this->rotation.y = rotationAngle;
+            } else if ((this->rotation.y > rotationAngle && this->rotation.y < rotationAngle + 180.0f) || this->rotation.y < rotationAngle - 180.0f) {
+                this->rotation.y -= rotationSpeed;
+            } else {
+                this->rotation.y += rotationSpeed;
+            }
+        }
+
+        
     }
 
     // Draw Gizmos for testing purposes

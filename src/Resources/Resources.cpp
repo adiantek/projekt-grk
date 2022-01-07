@@ -130,7 +130,7 @@ void Resources::initModels() {
 
 
     // Robot
-    ResourceLoader::loadModelExternal("assets/models/robot_with_armature.dae", Resources::MODELS.ROBOT);
+    ResourceLoader::loadModelExternal("assets/models/robot.dae", Resources::MODELS.ROBOT);
 
 }
 

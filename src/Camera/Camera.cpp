@@ -52,9 +52,6 @@ void Camera::mouseMove(double deltaX, double deltaY) {
         anglePitch += anglePitchChange;
     }
 
-    printf("angle Pitch change: %.3f", anglePitchChange);
-    printf("angle Pitch: %.3f\n", anglePitch);
-
     angleAroundChange = (float)deltaX * 9.0f * timeExternal->deltaTime;
     if(angleAround > 360) {
         angleAround -= 360;
@@ -74,7 +71,7 @@ float Camera::verticalDistance() {
 }
 
 void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
-    float angle = robot->rotation.y + angleAround;
+    float angle = angleAround;
     float offsetX = horizontalD * sin(glm::radians(angle));
     float offsetZ = horizontalD * cos(glm::radians(angle));
     position.x = robot->position.x - offsetX;
