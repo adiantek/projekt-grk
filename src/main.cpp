@@ -14,6 +14,7 @@
 #include <SimplexNoiseGenerator.hpp>
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
+#include <Time/Time.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -114,8 +115,12 @@ void do_frame()
 	}
 	init();
 	glfwPollEvents();
+	
+	timeExternal->update();
+
 	controller->update();
 	robot->update();
+	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -232,6 +237,7 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
+			new Time();
 			new Controller(window);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())

@@ -6,14 +6,17 @@
 class Robot {
   public:
     // SPEEDS
-    inline static const float DEFAULT_MOVEMENT_SPEED = 0.005f;
-    inline static const float MAX_SPEED_INCREASED = 0.01f;
+    inline static const float DEFAULT_MOVEMENT_SPEED = 0.5f;
+    inline static const float MAX_SPEED_INCREASED = 1.0f;
 
     // MODES
     static const int MODE_STATIONARY = 0;
     static const int MODE_WALKING = 1;
     static const int MODE_SWIMMING = 2;
     static const int MODE_SLEEPING = 3;
+
+    float currentSpeed = 0;
+    float currentTurnSpeed = 0;
 
     Robot();
     ~Robot();

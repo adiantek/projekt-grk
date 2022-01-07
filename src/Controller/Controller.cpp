@@ -90,6 +90,9 @@ void Controller::onCursorPositionChange(GLFWwindow *window, double xpos, double 
     controller->lastX = xpos;
     controller->lastY = ypos;
     if (controller->mouseGrabbed) {
+        
+        camera->mouseMove(deltaX, deltaY);
+        
         // glm::quat mx = glm::angleAxis((float)deltaX * 0.005f, glm::vec3(0.0, 1.0, 0.0));
         // glm::quat my = glm::angleAxis((float)deltaY * 0.005f, glm::vec3(1.0, 0.0, 0.0));
 

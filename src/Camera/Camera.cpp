@@ -1,9 +1,12 @@
 #include <opengl.h>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
 #include <Camera/Camera.hpp>
 #include <Controller/Controller.hpp>
+#include <Robot/Robot.hpp>
+#include <Time/Time.hpp>
 
 Camera::Camera(int width, int height, float fov, float near, float far, int x, int y) {
     camera = this;
@@ -16,14 +19,13 @@ Camera::Camera(int width, int height, float fov, float near, float far, int x, i
     this->x = x;
     this->y = y;
 
-    // setRotation(glm::quat());
     updatePerspective();
 }
 
 Camera::~Camera() {}
 
 glm::mat4 Camera::getTransformationMatrix() {
-    return perspective * glm::mat4_cast(-rotation) * glm::translate(-position);
+    return this->perspective * this->rotationMatrix;
 }
 
 void Camera::useCameraViewport() {
@@ -41,54 +43,89 @@ void Camera::setFov(float fov) {
     updatePerspective();
 }
 
+void Camera::mouseMove(double deltaX, double deltaY) {
+    anglePitchChange = deltaY * 3.0f * timeExternal->deltaTime;
+
+    // in SWIMMING MODE FROM (-70;70), in WALKING MODE FROM (0;70) !!!!!!
+    
+    if(anglePitch - anglePitchChange <= 70 && anglePitch - anglePitchChange >= -70) {
+        anglePitch -= anglePitchChange;
+    }
+
+    printf("angle Pitch change: %.3f", anglePitchChange);
+    printf("angle Pitch: %.3f\n", anglePitch);
+
+    angleAroundChange = deltaX * 1.5f * timeExternal->deltaTime;
+    if(angleAround > 360) {
+        angleAround -= 360;
+    }
+    if(angleAround < 0) {
+        angleAround += 360;
+    }
+    angleAround -= angleAroundChange;
+}
+
+float Camera::horizontalDistance() {
+    return distance * cos(glm::radians(anglePitch));
+}
+
+float Camera::verticalDistance() {
+    return distance * sin(glm::radians(anglePitch));
+}
+
+void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
+    float angle = robot->rotation.y + angleAround;
+    float offsetX = horizontalD * sin(glm::radians(angle));
+    float offsetZ = horizontalD * cos(glm::radians(angle));
+    position.x = robot->position.x - offsetX;
+    position.z = robot->position.z - offsetZ;
+    position.y = robot->position.y + verticalD;
+}
+
 void Camera::increaseCameraDistance() {
-    if( distance < 1.5f ) {
+    if( distance < 2.0f ) {
         distance += 0.1f;
         position -= getDirection() * 0.1f;
     }
 }
 
 void Camera::decreaseCameraDistance() {
-    if( distance > -0.0f ) {
+    if( distance > 0.5f ) {
         distance -= 0.1f;
         position += getDirection() * 0.1f;
     }
 }
 
-// void Camera::setRotation(glm::quat rotation) {
-//     this->rotation = glm::normalize(rotation);
-//     glm::quat inverse = glm::inverse(this->rotation);
-//     direction = inverse * glm::vec3(0.0f, 0.0f, -1.0f);
-//     up = inverse * glm::vec3(0.0f, 1.0f, 0.0f);
-//     side = glm::cross(direction, up);
-// }
+void Camera::setDirection() {
+    direction = glm::normalize(position - cameraTarget);
+}
 
-// void Camera::rotate(glm::quat rotation) {
-//     setRotation(rotation * this->rotation);
-// }
+glm::vec3 Camera::getPosition() {
+    return position;
+}
 
-// glm::quat Camera::getRotation() {
-//     return rotation;
-// }
+float Camera::getPitch() {
+    return anglePitch;
+}
 
 glm::vec3 Camera::getDirection() {
     return direction;
 }
 
-glm::vec3 Camera::getUp() {
-    return up;
-}
-
-glm::vec3 Camera::getSide() {
-    return side;
-}
-
-float Camera::getAspect() {
-    return (float) width / (float) height;
-}
-
 void Camera::updatePerspective() {
     perspective = glm::perspective(glm::radians(fov), (float) width / (float) height, near, far);
+}
+
+void Camera::update() {
+    cameraTarget = glm::vec3(robot->position) + glm::vec3(0.0f, -0.1f, 0.0f);
+    
+    float horizontalDistance = this->horizontalDistance();
+    float verticalDistance = this->verticalDistance();
+    calculateCameraPosition(horizontalDistance, verticalDistance);
+
+    setDirection();
+
+    this->rotationMatrix = glm::lookAt(position, cameraTarget, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 Camera *camera;

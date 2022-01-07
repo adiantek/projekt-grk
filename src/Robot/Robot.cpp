@@ -1,9 +1,10 @@
 #include <Robot/Robot.hpp>
+#include <Time/Time.hpp>
 
 Robot::Robot() {
     robot = this;
 
-    this->position = glm::vec3(1.0f, 1.0f, 0.5f);
+    this->position = glm::vec3(0.0f, 0.0f, 6.0f);
     this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     this->mode = Robot::MODE_STATIONARY;
     this->movementSpeed = Robot::DEFAULT_MOVEMENT_SPEED;
@@ -38,7 +39,7 @@ void Robot::setMoveDirectionVector(glm::vec3 direction) {
 void Robot::update() {
     // Update position
     if (this->mode == Robot::MODE_WALKING) {
-        this->position += this->moveDirectionVector * this->movementSpeed;
+        this->position += this->moveDirectionVector * this->movementSpeed * timeExternal->deltaTime;
     }
 
     // Draw object

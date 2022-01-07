@@ -13,50 +13,56 @@ public:
     void useCameraViewport();
     /* Set viewport size */
     void setSize(int width, int height);
-    /* Set camera position on window */
-    void setViewPosition(int x, int y);
     /* Set camera field of view */
     void setFov(float fov);
-    /* Set camera rotation */
-    void setRotation(glm::quat rotation);
-    /* Rotate camera by quaternion */
-    void rotate(glm::quat rotation);
-    
+    /* Set camera direction */
+    void setDirection();
+
+    void mouseMove(double deltaX, double deltaY);
+
     /* Increase camera distance of view */
     void increaseCameraDistance();
     /* Decrease camera distance of view */
     void decreaseCameraDistance();
+    /* Camera update */
+    void update();
 
-    /* Get camera rotation quaternion */
-    glm::quat getRotation();
+    glm::vec3 getPosition();
+    float getPitch();
+
+    float angleAroundChange;
+    float anglePitchChange;
+
+    float horizontalDistance();
+    float verticalDistance();
+
+    void calculateCameraPosition(float horizontalD, float verticalD);
+
     /* Get camera direction vector */
     glm::vec3 getDirection();
-    /* Get camera up vector */
-    glm::vec3 getUp();
-    /* Get camera side vector */
-    glm::vec3 getSide();
-    /* Get camera width / height aspect ratio */
-    float getAspect();
     /* Camera position in world */
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 5.0f);
-    
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+
 protected:
     /* Update camera perspective matrix */
     void updatePerspective();
-    /* Camera rotation quaternion */
-    glm::quat rotation;
+
+    glm::mat4 rotationMatrix;
     /* Perspective matrix */
     glm::mat4 perspective;
+
+    /* Camera target position */
+    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 6.0f);
     /* Camera direction vector */
-    glm::vec3 direction;
-    /* Camera up vector */
-    glm::vec3 up;
-    /* Camera side vector */
-    glm::vec3 side;
+    glm::vec3 direction = glm::normalize(position - cameraTarget);
 
     /* default view distance value */
     float distance = 1.0f;
-    
+
+    float angleAround = 180;
+    float anglePitch = 20;
+    float yaw = 0;
+
     /* Perspective neat plane */
     float near;
     /* Perspective far plane */
