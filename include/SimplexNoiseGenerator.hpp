@@ -19,5 +19,5 @@ class SimplexNoiseGenerator {
         SimplexNoiseGenerator(Random *r, ResourceLoader *res);
         ~SimplexNoiseGenerator();
         void draw(ResourceLoader *res);
-        float noiseValues[256 * 256];
+        float noiseValues[16 * 16];
 };
