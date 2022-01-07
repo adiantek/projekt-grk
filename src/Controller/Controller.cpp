@@ -115,18 +115,25 @@ void Controller::update() {
     }
 
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 camera_direction = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    camera_direction = camera->getDirection();
 
     if (this->keys[GLFW_KEY_W]) {
-        position += glm::vec3(0.0f, 0.0f, -1.0f);
+        // position += glm::vec3(0.0f, 0.0f, -1.0f);
+        position += glm::vec3(-camera_direction.x, 0.0f, -camera_direction.z);
     }
     if (this->keys[GLFW_KEY_A]) {
-        position += glm::vec3(-1.0f, 0.0f, 0.0f);
+        // position += glm::vec3(-1.0f, 0.0f, 0.0f);
+        position += glm::cross(glm::vec3(camera_direction.x, 0.0f, camera_direction.z), glm::vec3(0.0f, 1.0f, 0.0f));
     }
     if (this->keys[GLFW_KEY_S]) {
-        position += glm::vec3(0.0f, 0.0f, 1.0f);
+        // position += glm::vec3(0.0f, 0.0f, 1.0f);
+        position += glm::vec3(camera_direction.x, 0.0f, camera_direction.z);
     }
     if (this->keys[GLFW_KEY_D]) {
-        position += glm::vec3(1.0f, 0.0f, 0.0f);
+        // position += glm::vec3(1.0f, 0.0f, 0.0f);
+        position += glm::cross(glm::vec3(-camera_direction.x, 0.0f, -camera_direction.z), glm::vec3(0.0f, 1.0f, 0.0f));
     }
     if (this->keys[GLFW_KEY_SPACE]) {
         position += glm::vec3(0.0f, 1.0f, 0.0f);
