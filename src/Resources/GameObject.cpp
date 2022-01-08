@@ -50,7 +50,7 @@ glm::mat4 GameObject::getModelMatrix() {
     // TODO: Add rotation
     return 
         glm::translate(this->position)
-        * glm::eulerAngleXYZ(glm::radians(this->rotation.x), glm::radians(this->rotation.y), glm::radians(this->rotation.z))
+        * glm::eulerAngleYXZ(glm::radians(this->rotation.y), glm::radians(this->rotation.x), glm::radians(this->rotation.z))
         * glm::rotate(glm::radians(-90.0f), glm::vec3(1,0,0))
         * glm::scale(this->scale);
 }
