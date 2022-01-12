@@ -15,6 +15,7 @@ class Controller {
     GLFWwindow *window;
     bool keys[GLFW_KEY_LAST];
     bool mouseGrabbed = false;
+    bool firstMouseMove = false;
     
     void init();
     void update();
@@ -30,8 +31,6 @@ class Controller {
 
    private:
     int mode;
-
-    bool firstMouseMove = false;
     double lastX = 0, lastY = 0;
 };
 
