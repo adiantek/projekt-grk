@@ -9,7 +9,7 @@
 
 class GameObject {
    public:
-    GameObject::GameObject(std::string name);
+    GameObject(std::string name);
 
     GameObject* setPosition(glm::vec3 position);
     GameObject* setRotation(glm::vec3 rotation);

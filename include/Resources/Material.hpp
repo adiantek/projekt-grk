@@ -13,10 +13,10 @@ class Material {
       inline static const int AO_TEXTURE = 2;
       inline static const int ROUGHNESS_TEXTURE = 3;
 
-      Material::Material();
-      Material::Material(GLuint* program);
-      Material::Material(GLuint* program, std::map<int, GLuint> textures);
-      Material::~Material();
+      Material();
+      Material(GLuint* program);
+      Material(GLuint* program, std::map<int, GLuint> textures);
+      ~Material();
 
       Material* extend(Material* material);
 
