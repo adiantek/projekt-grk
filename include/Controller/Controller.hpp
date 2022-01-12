@@ -34,8 +34,16 @@ class Controller {
     double lastX = 0, lastY = 0;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern Controller *controller;
 
 #ifdef __EMSCRIPTEN__
 EMSCRIPTEN_KEEPALIVE void mouse_grab_status(bool active);
+#endif
+   
+#ifdef __cplusplus
+}
 #endif
