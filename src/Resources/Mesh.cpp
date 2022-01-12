@@ -1,15 +1,19 @@
 #include <string>
 #include <vector>
+#include <stdbool.h>
 
 #include <Render_Utils.h>
 #include <Resources/Mesh.hpp>
 #include <Resources/Vertex.hpp>
+#include <Animator/Joint.hpp>
 
 Mesh::Mesh(std::string name) {
     this->name = name;
 }
 
 Mesh::~Mesh() { }
+
+/* -- Basic mesh functions -- */
 
 std::string Mesh::getName() {
     return this->name;
@@ -30,16 +34,44 @@ Mesh* Mesh::setExtents(glm::vec3 extents) {
     return this;
 }
 
+Core::RenderContext* Mesh::getRenderContext() {
+    return &this->renderContext;
+}
+
+/* -- Joints -- */
+
+void Mesh::calculateRenderContext(aiMesh* mesh) {
+    this->renderContext = Core::RenderContext();
+    this->renderContext.initFromAssimpMeshWithArmature(mesh);
+}
+
 Mesh* Mesh::setRootJoint(Animator::Joint* rootJoint) {
     this->rootJoint = rootJoint;
     return this;
 }
 
-void Mesh::calculateRenderContext(aiMesh* mesh) {
-    this->renderContext = Core::RenderContext();
-    this->renderContext.initFromAssimpMesh(mesh);
+Mesh* Mesh::setJointsCount(int jointsCount) {
+    this->jointsCount = jointsCount;
+    return this;
 }
 
-Core::RenderContext* Mesh::getRenderContext() {
-    return &this->renderContext;
+Mesh* Mesh::setJoints(std::vector<Animator::Joint*> joints) {
+    this->joints = joints;
+    return this;
+}
+
+Animator::Joint* Mesh::getRootJoint() {
+    return this->rootJoint;
+}
+
+std::vector<Animator::Joint*> Mesh::getJoints() {
+    return this->joints;
+}
+
+int Mesh::getJointsCount() {
+    return this->jointsCount;
+}
+
+bool Mesh::hasJoints() {
+    return this->jointsCount > 0;
 }

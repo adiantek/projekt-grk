@@ -95,6 +95,18 @@ public:
     GLint p_shader_color_uni_modelViewProjectionMatrix = -1;
     GLint p_shader_color_uni_objectColor = -1;
 
+    GLuint p_shader_color_armature = 0;
+    bool p_shader_color_armature_loaded = false;
+    GLint p_shader_color_armature_attr_vertexJoints = -1;
+    GLint p_shader_color_armature_attr_vertexNormal = -1;
+    GLint p_shader_color_armature_attr_vertexPosition = -1;
+    GLint p_shader_color_armature_attr_vertexWeights = -1;
+    GLint p_shader_color_armature_uni_jointTransforms = -1;
+    GLint p_shader_color_armature_uni_lightDir = -1;
+    GLint p_shader_color_armature_uni_modelMatrix = -1;
+    GLint p_shader_color_armature_uni_objectColor = -1;
+    GLint p_shader_color_armature_uni_modelViewProjectionMatrix = -1;
+
     GLuint p_shader_tex = 0;
     bool p_shader_tex_loaded = false;
     GLint p_shader_tex_attr_vertexNormal = -1;

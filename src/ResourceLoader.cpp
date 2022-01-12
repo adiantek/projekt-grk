@@ -100,6 +100,18 @@ void ResourceLoader::loadPrograms() {
         this->p_shader_color_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_color, "modelViewProjectionMatrix");
         this->p_shader_color_uni_objectColor = glGetUniformLocation(this->p_shader_color, "objectColor");
     }
+    LOAD_PROGRAM(shader_color_armature, 2, "armature/shader_color_armature.frag", "armature/shader_color_armature.vert") {
+        // this->dumpProgram("shader_color_armature", this->p_shader_color_armature);
+        this->p_shader_color_armature_attr_vertexJoints = glGetAttribLocation(this->p_shader_color_armature, "vertexJoints");
+        this->p_shader_color_armature_attr_vertexNormal = glGetAttribLocation(this->p_shader_color_armature, "vertexNormal");
+        this->p_shader_color_armature_attr_vertexPosition = glGetAttribLocation(this->p_shader_color_armature, "vertexPosition");
+        this->p_shader_color_armature_attr_vertexWeights = glGetAttribLocation(this->p_shader_color_armature, "vertexWeights");
+        this->p_shader_color_armature_uni_jointTransforms = glGetUniformLocation(this->p_shader_color_armature, "jointTransforms");
+        this->p_shader_color_armature_uni_lightDir = glGetUniformLocation(this->p_shader_color_armature, "lightDir");
+        this->p_shader_color_armature_uni_modelMatrix = glGetUniformLocation(this->p_shader_color_armature, "modelMatrix");
+        this->p_shader_color_armature_uni_objectColor = glGetUniformLocation(this->p_shader_color_armature, "objectColor");
+        this->p_shader_color_armature_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_color_armature, "modelViewProjectionMatrix");
+    }
     LOAD_PROGRAM(shader_tex, 2, "shader_tex.frag", "shader_tex.vert") {
         // this->dumpProgram("shader_tex", this->p_shader_tex);
         this->p_shader_tex_attr_vertexNormal = glGetAttribLocation(this->p_shader_tex, "vertexNormal");
@@ -498,7 +510,7 @@ void ResourceLoader::loadTextureExternal(char *name, GLuint *out) {
 void ResourceLoader::loadModelExternal(char *name, Model *out) {
     Model* model = new Model();
     model->loadModel(name);
-
+    printf("MODEL LOADED\n");
     *out = *model;
 }
 

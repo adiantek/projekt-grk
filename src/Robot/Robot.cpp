@@ -4,6 +4,7 @@
 #include <Resources/Resources.hpp>
 #include <Time/Time.hpp>
 #include <Gizmos/Gizmos.hpp>
+#include <Resources/GlobalEvents.hpp>
 
 Robot::Robot() {
     robot = this;
@@ -30,6 +31,10 @@ Robot::Robot() {
 
     this->mode = Robot::MODE_STATIONARY;
     this->movementSpeed = Robot::DEFAULT_WALKING_MOVEMENT_SPEED;
+
+    GlobalEvents::on(GlobalEvents::ON_GIZMOS_RENDER, [this]() {
+        // Gizmos::line(this->position, this->position + glm::vec3(0.0f, 2.0f, 0.0f));
+    });
 }
 
 // void Robot::toggleIncreasedSpeedMode() {

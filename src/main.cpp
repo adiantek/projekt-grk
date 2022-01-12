@@ -21,6 +21,7 @@
 #include <Time/Time.hpp>
 #include <Gizmos/Gizmos.hpp>
 #include <Resources/GameObject.hpp>
+#include <Resources/GlobalEvents.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -29,7 +30,6 @@
 // Core elements
 Core::Shader_Loader shaderLoader;
 
-Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
 Core::RenderContext sphereContext2;
 Core::RenderContext brickWallContext;
@@ -135,9 +135,6 @@ void do_frame()
 	glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 shipInitialTransformation = glm::translate(glm::vec3(0,-0.25f,0)) * glm::rotate(glm::radians(180.0f), glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25f));
-	glm::mat4 shipModelMatrix = glm::translate(robot->position) * shipInitialTransformation;
-
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
@@ -161,7 +158,6 @@ void do_frame()
 	glUseProgram(resourceLoader.p_shader_4_sun);
 	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
-	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
@@ -174,6 +170,10 @@ void do_frame()
 	waterSurface->draw(viewMatrix, camera->position);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
+
+	// Clear depth buffer and draw gizmos overlay
+	glClear(GL_DEPTH_BUFFER_BIT);
+	GlobalEvents::emit(GlobalEvents::ON_GIZMOS_RENDER);
 	
 	// double st = glfwGetTime();
 	// for (int i = 0; i < 1000; i++)
@@ -223,7 +223,6 @@ void init() {
 	// Other...
 	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
 
-	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);

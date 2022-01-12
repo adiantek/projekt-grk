@@ -42,8 +42,8 @@ namespace Animator {
     void AnimatedModel::addJointsToArray(Joint* headJoint, glm::mat4 jointMatrices[]) {
         jointMatrices[headJoint->index] = headJoint->getTransform();
 
-        for (Joint child : headJoint->children) {
-            this->addJointsToArray(&child, jointMatrices);
+        for (Joint* child : headJoint->children) {
+            this->addJointsToArray(child, jointMatrices);
         }
     }
 

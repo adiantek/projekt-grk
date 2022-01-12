@@ -8,7 +8,7 @@
             "name": "Launch exe",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\build\\Debug\\GrafikaKomputerowa.exe",
+            "program": "${workspaceFolder}\\build\\Release\\GrafikaKomputerowa.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
