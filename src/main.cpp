@@ -1,24 +1,32 @@
 #include <opengl.h>
 #include <Logger.h>
-#include <ResourceLoader.hpp>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <iostream>
 #include <cmath>
 #include <vector>
 #include <stdbool.h>
-#include <Controller.hpp>
+
+#include <ResourceLoader.hpp>
+#include <Controller/Controller.hpp>
 #include <Water/Surface.hpp>
 #include <Random.hpp>
 #include <SimplexNoiseGenerator.hpp>
+#include <Robot/Robot.hpp>
+#include <Camera/Camera.hpp>
+#include <Time/Time.hpp>
+
+#include <Resources/Resources.hpp>
+#include <Robot/Robot.hpp>
+#include <Time/Time.hpp>
+#include <Gizmos/Gizmos.hpp>
+#include <Resources/GameObject.hpp>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
-#include "Camera.hpp"
 #include "Texture.h"
 
-GLFWwindow *window;
-
+// Core elements
 Core::Shader_Loader shaderLoader;
 
 Core::RenderContext shipContext;
@@ -27,7 +35,13 @@ Core::RenderContext sphereContext2;
 Core::RenderContext brickWallContext;
 Core::RenderContext planeContext;
 
-Camera camera = Camera(600, 600);
+// Temporary ground plane
+GameObject* ground = new GameObject("ground");
+
+// Window
+GLFWwindow *window;
+
+// Other stuff...
 glm::mat4 viewMatrix;
 
 glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
@@ -37,6 +51,8 @@ bool initialized = false;
 ResourceLoader resourceLoader;
 
 Water::Surface* waterSurface;
+
+
 
 void glfw_error_callback(int, const char *err_str)
 {
@@ -109,37 +125,43 @@ void do_frame()
 		return;
 	}
 	init();
-    glfwPollEvents();
+	glfwPollEvents();
+	
+	timeExternal->update();
 	controller->update();
 
-	viewMatrix = camera.getTransformationMatrix();
+	viewMatrix = camera->getTransformationMatrix();
 
 	glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 shipInitialTransformation = glm::translate(glm::vec3(0,-0.25f,0)) * glm::rotate(glm::radians(180.0f), glm::vec3(0,1,0)) * glm::scale(glm::vec3(0.25f));
-	glm::mat4 shipModelMatrix = glm::translate(camera.position + camera.getDirection() * controller->distance) * glm::mat4_cast(glm::inverse(-camera.getRotation())) * shipInitialTransformation;
+	glm::mat4 shipModelMatrix = glm::translate(robot->position) * shipInitialTransformation;
 
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
+	robot->update();
+	camera->update();
+	ground->draw();
+
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(resourceLoader.p_shader_4_tex_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
+	glUniform3f(resourceLoader.p_shader_4_tex_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_tex_with_parallax);
 	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
+	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.06f);
 
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
+	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_sun);
-	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera.position.x, camera.position.y, camera.position.z);
+	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
-	drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
+	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
@@ -149,7 +171,7 @@ void do_frame()
 	drawObjectTexNormalParallax(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
-	waterSurface->draw(viewMatrix, camera.position);
+	waterSurface->draw(viewMatrix, camera->position);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 	
@@ -176,15 +198,30 @@ void loadModelToContext(std::string path, Core::RenderContext& context)
 	context.initFromAssimpMesh(scene->mMeshes[0]);
 }
 
-void init()
-{
-	if (initialized) {
-		return;
-	}
+void init() {
+	if (initialized) return;
 	initialized = true;
-	glEnable(GL_DEPTH_TEST);
-	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
 
+	// Initialize resources (textures, shaders, materials)
+	Resources::init();
+
+	// Initialize Gizmos (wireframe cubes, lines, etc... - For testing purposes)
+	Gizmos::init();
+
+	// Basic 
+	ground
+		->setModel(Resources::MODELS.PLANE)
+		->setMaterial(Resources::MATERIALS.DEFAULT)
+		->setPosition(glm::vec3(0, 0.0f, 0))
+		->setScale(glm::vec3(10, 10, 10));
+
+	new Camera(1280, 768);
+	new Robot();
+
+	glEnable(GL_DEPTH_TEST);
+
+	// Other...
+	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
 
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
@@ -192,7 +229,7 @@ void init()
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	waterSurface = new Water::Surface(0.0f, -9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
+	waterSurface = new Water::Surface(0.0f, 9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
 	waterSurface->simulation.generateRandomWaves();
 }
 
@@ -211,7 +248,7 @@ int main(int argc, char **argv)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        window = glfwCreateWindow(600, 600, "GLFW test", NULL, NULL);
+        window = glfwCreateWindow(1280, 768, "GLFW test", NULL, NULL);
         if (!window)
         {
             LOGE("glfwCreateWindow() failed");
@@ -222,7 +259,8 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
-			new Controller(window, &camera);
+			new Time();
+			new Controller(window);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {
