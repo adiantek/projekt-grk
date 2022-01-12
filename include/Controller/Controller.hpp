@@ -15,6 +15,7 @@ class Controller {
     GLFWwindow *window;
     bool keys[GLFW_KEY_LAST];
     bool mouseGrabbed = false;
+    bool firstMouseMove = false;
     
     void init();
     void update();
@@ -30,13 +31,19 @@ class Controller {
 
    private:
     int mode;
-
-    bool firstMouseMove = false;
     double lastX = 0, lastY = 0;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern Controller *controller;
 
 #ifdef __EMSCRIPTEN__
 EMSCRIPTEN_KEEPALIVE void mouse_grab_status(bool active);
+#endif
+   
+#ifdef __cplusplus
+}
 #endif
