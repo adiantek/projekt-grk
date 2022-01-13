@@ -77,6 +77,7 @@ void GameObject::draw() {
         glUseProgram(*material->program);
         material->loadToProgram(material->program);
 
+        // TODO cache lightDir, modelMatrix, etc. in material
         // Set light
         glUniform3f(glGetUniformLocation(*material->program, "lightDir"), lightDir.x, lightDir.y, lightDir.z);
 

@@ -42,13 +42,13 @@ void ResourceLoader::loadTextures() {
 void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
 
-    // SKYBOX
     LOAD_PROGRAM(skybox_shader, 2, "cubemap/cubemap.frag", "cubemap/cubemap.vert") {
-        this->p_skybox_shader_vertexPosition = glGetAttribLocation(this->p_skybox_shader, "vertexPosition");
-        this->p_skybox_shader_modelViewProjectionMatrix = glGetUniformLocation(this->p_skybox_shader, "modelViewProjectionMatrix");
+        // this->dumpProgram("skybox_shader", this->p_skybox_shader);
+        this->p_skybox_shader_attr_aPos = glGetAttribLocation(this->p_skybox_shader, "aPos");
+        this->p_skybox_shader_uni_projection = glGetUniformLocation(this->p_skybox_shader, "projection");
+        this->p_skybox_shader_uni_skybox = glGetUniformLocation(this->p_skybox_shader, "skybox");
     }
 
-    // STRANGE THINGS
     LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
         // this->dumpProgram("shader_4_1", this->p_shader_4_1);
         this->p_shader_4_1_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_1, "vertexNormal");

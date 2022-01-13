@@ -37,13 +37,12 @@ public:
 
     // programs:
 
-    // SKYBOX
     GLuint p_skybox_shader = 0;
     bool p_skybox_shader_loaded = false;
-    GLint p_skybox_shader_vertexPosition = -1;
-    GLint p_skybox_shader_modelViewProjectionMatrix = -1;
+    GLint p_skybox_shader_attr_aPos = -1;
+    GLint p_skybox_shader_uni_projection = -1;
+    GLint p_skybox_shader_uni_skybox = -1;
 
-    // STRANGE THINGS
     GLuint p_shader_4_1 = 0;
     bool p_shader_4_1_loaded = false;
     GLint p_shader_4_1_attr_vertexNormal = -1;

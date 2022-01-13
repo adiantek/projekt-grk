@@ -52,7 +52,6 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
         LOGI("Released key: %d", key);
         controller->keys[key] = false;
     }
-
 }
 
 void Controller::onMouseButtonPress(GLFWwindow *window, int button, int action, int mode) {

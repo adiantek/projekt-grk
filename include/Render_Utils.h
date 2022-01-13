@@ -1,7 +1,6 @@
 #pragma once
 #include "glm/glm.hpp"
 #include <opengl.h>
-#include "objload.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -16,8 +15,6 @@ namespace Core
 		GLuint vertexBuffer;
 		GLuint vertexIndexBuffer;
 		int size = 0;
-
-        void initFromOBJ(obj::Model& model);
 
 		void initFromAssimpMesh(aiMesh* mesh);
 
