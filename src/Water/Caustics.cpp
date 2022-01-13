@@ -59,9 +59,11 @@ namespace Water {
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
         glViewport(0, 0, this->textureSize * 3, this->textureSize * 3);
 
-        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        glEnable(GL_BLEND);
+        glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->depthMap);
@@ -73,19 +75,23 @@ namespace Water {
         glBindTexture(GL_TEXTURE_2D, this->normalMap);
         glUniform1i(this->uniformNormalMap, 2);
 
-        glm::mat4 transformation = glm::ortho(-(this->size / 2.0f), this->size / 2.0f, this->size / 2.0f, -(this->size / 2.0f), 0.0001f, 1000.0f) 
-        * glm::eulerAngleX(glm::radians(90.0f)) * glm::translate(-glm::vec3(0.0f, 5.0f, 0.0f)) * glm::eulerAngleX(glm::radians(-90.0f));
+        glm::mat4 transformation = glm::ortho(-(this->size / 2.0f), this->size / 2.0f, this->size / 2.0f, -(this->size / 2.0f), 0.0001f, 30.0f) * glm::eulerAngleX(glm::radians(90.0f)) * glm::translate(-glm::vec3(0.0f, 9.0f, 0.0f));
+        glm::mat4 rotation = glm::eulerAngleX(glm::radians(-90.0f));
 
         glUniform1f(this->uniformDeltaEnvTexture, 1.0f / (float) this->textureSize);
         glUniform3f(this->uniformLight, 0.0f, 0.0f, -1.0f);
         glUniformMatrix4fv(this->uniformTransformation, 1, GL_FALSE, (float*)&transformation);
+        glUniformMatrix4fv(glGetUniformLocation(this->program, "rotation"), 1, GL_FALSE, (float*)&rotation);
 
         Core::DrawContext(this->geometry);
 
-        //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glDisable(GL_BLEND);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
         glUseProgram(0);
+    }
+    glm::mat4 Caustics::getLightCamera() {
+        return glm::ortho(-(this->size / 2.0f), this->size / 2.0f, this->size / 2.0f, -(this->size / 2.0f), 0.0001f, 30.0f) * glm::eulerAngleX(glm::radians(90.0f)) * glm::translate(-glm::vec3(0.0f, 9.0f, 0.0f));
     }
 }

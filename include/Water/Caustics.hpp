@@ -9,6 +9,7 @@ namespace Water {
     public:
         Caustics(float size, int textureSize, unsigned int heightMap, unsigned int normalMap, ResourceLoader *loader);
         ~Caustics();
+        glm::mat4 getLightCamera();
         void render();
         unsigned int texture;
         EnvironmentMap environmentMap;

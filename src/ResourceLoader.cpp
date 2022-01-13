@@ -36,6 +36,7 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/wall.png", &this->txt_wall);
     loadTexture("assets/textures/wall_normal.png", &this->txt_wallNormal);
     loadTexture("assets/textures/wall_height.png", &this->txt_wallHeight);
+    loadTexture("assets/textures/dummy.png", &this->txt_dummy);
     loadTextureCubeMap(&this->txt_skybox);
 }
 
@@ -152,6 +153,18 @@ void ResourceLoader::loadPrograms() {
         this->p_caustics_uni_light = glGetUniformLocation(this->p_caustics, "light");
         this->p_caustics_uni_normalMap = glGetUniformLocation(this->p_caustics, "normalMap");
         this->p_caustics_uni_transformation = glGetUniformLocation(this->p_caustics, "transformation");
+    }
+    LOAD_PROGRAM(caustics_env, 2, "water/env.frag", "water/env.vert") {
+        // this->dumpProgram("caustics_env", this->p_caustics_env);
+        this->p_caustics_env_attr_vertexBitangent = glGetAttribLocation(this->p_caustics_env, "vertexBitangent");
+        this->p_caustics_env_attr_vertexNormal = glGetAttribLocation(this->p_caustics_env, "vertexNormal");
+        this->p_caustics_env_attr_vertexPosition = glGetAttribLocation(this->p_caustics_env, "vertexPosition");
+        this->p_caustics_env_attr_vertexTangent = glGetAttribLocation(this->p_caustics_env, "vertexTangent");
+        this->p_caustics_env_attr_vertexTexCoord = glGetAttribLocation(this->p_caustics_env, "vertexTexCoord");
+        this->p_caustics_env_uni_cameraPos = glGetUniformLocation(this->p_caustics_env, "cameraPos");
+        this->p_caustics_env_uni_lightPos = glGetUniformLocation(this->p_caustics_env, "lightPos");
+        this->p_caustics_env_uni_modelMatrix = glGetUniformLocation(this->p_caustics_env, "modelMatrix");
+        this->p_caustics_env_uni_transformation = glGetUniformLocation(this->p_caustics_env, "transformation");
     }
 
 #undef LOAD_PROGRAM

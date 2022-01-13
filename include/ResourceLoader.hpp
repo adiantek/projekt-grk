@@ -34,6 +34,7 @@ public:
     GLuint txt_wallNormal = 0;
     GLuint txt_wallHeight = 0;
     GLuint txt_skybox = 0;
+    GLuint txt_dummy = 0;
 
     // programs
     GLuint p_shader_4_1 = 0;
@@ -147,6 +148,18 @@ public:
     GLint p_caustics_uni_light = -1;
     GLint p_caustics_uni_normalMap = -1;
     GLint p_caustics_uni_transformation = -1;
+    // caustics_env:
+    GLuint p_caustics_env = 0;
+    bool p_caustics_env_loaded = false;
+    GLint p_caustics_env_attr_vertexBitangent = -1;
+    GLint p_caustics_env_attr_vertexNormal = -1;
+    GLint p_caustics_env_attr_vertexPosition = -1;
+    GLint p_caustics_env_attr_vertexTangent = -1;
+    GLint p_caustics_env_attr_vertexTexCoord = -1;
+    GLint p_caustics_env_uni_cameraPos = -1;
+    GLint p_caustics_env_uni_lightPos = -1;
+    GLint p_caustics_env_uni_modelMatrix = -1;
+    GLint p_caustics_env_uni_transformation = -1;
 
     static void loadTextureExternal(char *name, GLuint *out);
     static void loadModelExternal(char *name, Model *out);

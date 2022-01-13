@@ -102,6 +102,21 @@ void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLu
 	glUseProgram(0);
 }
 
+void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal)
+{
+	glUseProgram(resourceLoader.p_caustics_env);
+	glm::mat4 transformation = viewMatrix * modelMatrix;
+	glm::mat4 transformationLight = waterSurface->caustics.getLightCamera();
+	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_caustics_env, 0);
+	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_caustics_env, 1);
+	Core::SetActiveTexture(waterSurface->caustics.texture, "caustics", resourceLoader.p_caustics_env, 2);
+	glUniformMatrix4fv(resourceLoader.p_caustics_env_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
+	glUniformMatrix4fv(resourceLoader.p_caustics_env_uni_transformation, 1, GL_FALSE, (float*)&transformation);
+	glUniformMatrix4fv(glGetUniformLocation(resourceLoader.p_caustics_env, "lightTransformation"), 1, GL_FALSE, (float*)&transformationLight);
+	Core::DrawContext(context);
+	glUseProgram(0);
+}
+
 void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal, GLuint txtHeight)
 {
 	glUseProgram(resourceLoader.p_shader_4_tex_with_parallax);
@@ -159,7 +174,7 @@ void do_frame()
 
 	robot->update();
 	camera->update();
-	ground->draw();
+	//ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -170,6 +185,10 @@ void do_frame()
 	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.06f);
 
+	glUseProgram(resourceLoader.p_caustics_env);
+	glUniform3f(resourceLoader.p_caustics_env_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(resourceLoader.p_caustics_env_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
+
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
@@ -178,14 +197,14 @@ void do_frame()
 	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
 	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
-	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
+	//eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 	
-	drawObjectTexNormal(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
-	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
+	drawObjectTexNormalCaustics(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
+	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
 	//drawObjectTexNormalParallax(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
-	drawObjectTexNormal(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), waterSurface->caustics.environmentMap.texture, resourceLoader.txt_wallNormal);
-	drawObjectTexNormal(planeContext, glm::translate(glm::vec3(-8, 0, -2)) * eu2 * glm::scale(glm::vec3(1.0f)), waterSurface->caustics.texture, resourceLoader.txt_wallNormal);
-	drawObjectTexNormal(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(12.5f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
+	drawObjectTexNormalCaustics(planeContext, glm::translate(glm::vec3(-8, 4, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), waterSurface->caustics.environmentMap.texture, resourceLoader.txt_dummy);
+	drawObjectTexNormalCaustics(planeContext, glm::translate(glm::vec3(-8, 4, -2)) * eu2 * glm::scale(glm::vec3(1.0f)), waterSurface->caustics.texture, resourceLoader.txt_dummy);
+	drawObjectTexNormalCaustics(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(12.5f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 	waterSurface->draw(viewMatrix, camera->position);
@@ -246,7 +265,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	waterSurface = new Water::Surface(0.0f, 9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
+	waterSurface = new Water::Surface(0.0f, 9.0f, 0.0f, 25.0f, 25.0f, 512, 512, &resourceLoader);
 	waterSurface->simulation.generateRandomWaves();
 }
 
