@@ -42,6 +42,13 @@ void ResourceLoader::loadTextures() {
 void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
 
+    // SKYBOX
+    LOAD_PROGRAM(skybox_shader, 2, "cubemap/cubemap.frag", "cubemap/cubemap.vert") {
+        this->p_skybox_shader_vertexPosition = glGetAttribLocation(this->p_skybox_shader, "vertexPosition");
+        this->p_skybox_shader_modelViewProjectionMatrix = glGetUniformLocation(this->p_skybox_shader, "modelViewProjectionMatrix");
+    }
+
+    // STRANGE THINGS
     LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
         // this->dumpProgram("shader_4_1", this->p_shader_4_1);
         this->p_shader_4_1_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_1, "vertexNormal");
@@ -110,6 +117,8 @@ void ResourceLoader::loadPrograms() {
         this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "transformation");
         this->p_shader_tex_uni_textureSampler = glGetUniformLocation(this->p_shader_tex, "textureSampler");
     }
+
+    // WATER SURFACE
     LOAD_PROGRAM(water_simulation, 2, "water/simulation.frag", "water/simulation.vert") {
         // this->dumpProgram("water_simulation", this->p_water_simulation);
         this->p_water_simulation_attr_vertexPosition = glGetAttribLocation(this->p_water_simulation, "vertexPosition");
@@ -129,6 +138,7 @@ void ResourceLoader::loadPrograms() {
         this->p_water_surface_uni_skybox = glGetUniformLocation(this->p_water_surface, "skybox");
         this->p_water_surface_uni_transformation = glGetUniformLocation(this->p_water_surface, "transformation");
     }
+
     LOAD_PROGRAM(simplex, 2, "simplex.frag", "simplex.vert") {
         // this->dumpProgram("simplex", this->p_simplex);
         this->p_simplex_attr_vertexPosition = glGetAttribLocation(this->p_simplex, "vertexPosition");

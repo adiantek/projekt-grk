@@ -35,7 +35,15 @@ public:
     GLuint txt_wallHeight = 0;
     GLuint txt_skybox = 0;
 
-    // programs
+    // programs:
+
+    // SKYBOX
+    GLuint p_skybox_shader = 0;
+    bool p_skybox_shader_loaded = false;
+    GLint p_skybox_shader_vertexPosition = -1;
+    GLint p_skybox_shader_modelViewProjectionMatrix = -1;
+
+    // STRANGE THINGS
     GLuint p_shader_4_1 = 0;
     bool p_shader_4_1_loaded = false;
     GLint p_shader_4_1_attr_vertexNormal = -1;
@@ -105,6 +113,7 @@ public:
     GLint p_shader_tex_uni_modelViewProjectionMatrix = -1;
     GLint p_shader_tex_uni_textureSampler = -1;
 
+    // WATER SURFACE
     GLuint p_water_simulation = 0;
     bool p_water_simulation_loaded = false;
     GLint p_water_simulation_attr_vertexPosition = -1;
