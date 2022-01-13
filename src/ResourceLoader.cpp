@@ -1,23 +1,28 @@
-#include <ResourceLoader.hpp>
 #include <Logger.h>
 #include <SOIL/SOIL.h>
+#include <errno.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
-#include <errno.h>
 #include <filesystem>
 #include <unordered_set>
+#include <iostream>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
-ResourceLoader::ResourceLoader()
-{
+#include <ResourceLoader.hpp>
+#include <Resources/Model.hpp>
+
+
+ResourceLoader::ResourceLoader() {
+    resourceLoaderExternal = this;
 }
 
-ResourceLoader::~ResourceLoader()
-{
+ResourceLoader::~ResourceLoader() {
 }
 
-void ResourceLoader::loadTextures()
-{
+void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/grid.png", &this->txt_grid);
     loadTexture("assets/textures/grid_color.png", &this->txt_gridColor);
     loadTexture("assets/textures/earth.png", &this->txt_earth);
@@ -34,8 +39,7 @@ void ResourceLoader::loadTextures()
     loadTextureCubeMap(&this->txt_skybox);
 }
 
-void ResourceLoader::loadPrograms()
-{
+void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
 
     LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
@@ -142,22 +146,17 @@ void ResourceLoader::loadPrograms()
 #undef LOAD_PROGRAM
 }
 
-bool ResourceLoader::loadResources()
-{
-    if (this->all_loaded)
-    {
+bool ResourceLoader::loadResources() {
+    if (this->all_loaded) {
         return true;
     }
     this->loadedResources = 0;
     this->totalResourcesCounter = 0;
 
-    if (this->totalResources == 0)
-    {
+    if (this->totalResources == 0) {
         // first frame - count all resources
         this->startFrame = 0;
-    }
-    else
-    {
+    } else {
         this->startFrame = glfwGetTime();
     }
 
@@ -166,8 +165,7 @@ bool ResourceLoader::loadResources()
 
     this->totalResources = this->totalResourcesCounter;
 
-    if (this->totalResources == this->loadedResources)
-    {
+    if (this->totalResources == this->loadedResources) {
         if (this->shadersCap > 0) {
             this->shadersCap = 0;
             free(this->shaders);
@@ -179,40 +177,31 @@ bool ResourceLoader::loadResources()
     return false;
 }
 
-bool ResourceLoader::canLoadNextResource()
-{
-    if (this->startFrame == 0)
-    {
+bool ResourceLoader::canLoadNextResource() {
+    if (this->startFrame == 0) {
         // optimize - don't check time & don't load more resources
         return false;
     }
-    if (this->totalResourcesCounter == this->loadedResources)
-    {
+    if (this->totalResourcesCounter == this->loadedResources) {
         // load minimum one resource
         return true;
     }
     // max 100 ms per frame
-    if (glfwGetTime() - this->startFrame < 0.00001)
-    {
+    if (glfwGetTime() - this->startFrame < 0.00001) {
         return true;
-    }
-    else
-    {
+    } else {
         this->startFrame = 0;
         return false;
     }
 }
 
-void ResourceLoader::loadTextureCubeMap(GLuint *out)
-{
+void ResourceLoader::loadTextureCubeMap(GLuint *out) {
     this->totalResourcesCounter++;
-    if (*out)
-    {
+    if (*out) {
         this->loadedResources++;
         return;
     }
-    if (!canLoadNextResource())
-    {
+    if (!canLoadNextResource()) {
         return;
     }
     LOGI("[ %3.0f%% ] Loading txt: %s", this->loadedResources * 100.0 / this->totalResources, "CubeMap");
@@ -226,14 +215,11 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     int w, h;
-    for(unsigned int i = 0; i < 6; i++) {
+    for (unsigned int i = 0; i < 6; i++) {
         unsigned char *image = SOIL_load_image(names[i], &w, &h, 0, SOIL_LOAD_RGBA);
-        if (!image)
-        {
+        if (!image) {
             LOGE("Failed loading %s: %s", names[i], SOIL_last_result());
-        }
-        else
-        {
+        } else {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
             SOIL_free_image_data(image);
         }
@@ -243,16 +229,13 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out)
     this->loadedResources++;
 }
 
-void ResourceLoader::loadTexture(const char *name, GLuint *out)
-{
+void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     this->totalResourcesCounter++;
-    if (*out)
-    {
+    if (*out) {
         this->loadedResources++;
         return;
     }
-    if (!canLoadNextResource())
-    {
+    if (!canLoadNextResource()) {
         return;
     }
     LOGI("[ %3.0f%% ] Loading txt: %s", this->loadedResources * 100.0 / this->totalResources, name);
@@ -263,12 +246,9 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     int w, h;
     unsigned char *image = SOIL_load_image(name, &w, &h, 0, SOIL_LOAD_RGBA);
-    if (!image)
-    {
+    if (!image) {
         LOGE("Failed loading %s: %s", name, SOIL_last_result());
-    }
-    else
-    {
+    } else {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
         glGenerateMipmap(GL_TEXTURE_2D);
         SOIL_free_image_data(image);
@@ -277,16 +257,13 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out)
     this->loadedResources++;
 }
 
-bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *out_loaded, int shadersCount, ...)
-{
+bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *out_loaded, int shadersCount, ...) {
     this->totalResourcesCounter += shadersCount + 1;
-    if (*out_loaded)
-    {
+    if (*out_loaded) {
         this->loadedResources += shadersCount + 1;
         return false;
     }
-    if (!canLoadNextResource())
-    {
+    if (!canLoadNextResource()) {
         return false;
     }
     if (this->shadersCap < shadersCount) {
@@ -303,7 +280,7 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
     va_start(ap, shadersCount);
     for (int i = 0; i < shadersCount; i++) {
         if (i < this->shadersCompiled) {
-            va_arg(ap, const char*);
+            va_arg(ap, const char *);
             this->loadedResources++;
             continue;
         }
@@ -311,7 +288,7 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
             va_end(ap);
             return false;
         }
-        const char *shaderName = va_arg(ap, const char*);
+        const char *shaderName = va_arg(ap, const char *);
         size_t shaderNameLen = strlen(shaderName);
         char *fullPath = (char *)malloc(shaderNameLen + sizeof("assets/shaders/"));
         memcpy(fullPath, "assets/shaders/", sizeof("assets/shaders/"));
@@ -327,7 +304,7 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
         return false;
     }
 
-    if (this->shadersCompiled == shadersCount) // always true?
+    if (this->shadersCompiled == shadersCount)  // always true?
     {
         LOGI("[ %3.0f%% ] Loading program: %s", this->loadedResources * 100.0 / this->totalResources, name);
         *out_loaded = true;
@@ -339,66 +316,55 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
     return false;
 }
 
-char *ResourceLoader::readFile(const char *file, size_t *size)
-{
+char *ResourceLoader::readFile(const char *file, size_t *size) {
     FILE *f = fopen(file, "rb");
-    if (!f)
-    {
+    if (!f) {
         LOGE("fopen(%s): %d (%s)", file, errno, strerror(errno));
         return 0;
     }
     goto readFile;
 closeFile:
-    if (fclose(f))
-    {
+    if (fclose(f)) {
         LOGE("fclose: %d (%s)", errno, strerror(errno));
     }
     *size = 0;
     return 0;
 readFile:
-    if (fseek(f, 0, SEEK_END))
-    {
+    if (fseek(f, 0, SEEK_END)) {
         LOGE("fseek(f, 0, SEEK_END): %d (%s)", errno, strerror(errno));
         goto closeFile;
     }
     long int s = ftell(f);
-    if (s <= (long int)0)
-    {
+    if (s <= (long int)0) {
         LOGE("ftell(f): %d (%s)", errno, strerror(errno));
         goto closeFile;
     }
-    if (fseek(f, 0, SEEK_SET))
-    {
+    if (fseek(f, 0, SEEK_SET)) {
         LOGE("fseek(f, 0, SEEK_SET): %d (%s)", errno, strerror(errno));
         goto closeFile;
     }
     char *mem = (char *)malloc(s);
     *size = s;
     int r = fread(mem, 1, s, f);
-    if (r != s)
-    {
+    if (r != s) {
         LOGE("fread %d != %d (ret, size): %d (%s)", r, s, errno, strerror(errno));
         free(mem);
         goto closeFile;
     }
-    if (fclose(f))
-    {
+    if (fclose(f)) {
         LOGE("fclose: %d (%s)", errno, strerror(errno));
     }
     return mem;
 }
 
-GLuint ResourceLoader::compileShader(GLenum shaderType, const char *name)
-{
+GLuint ResourceLoader::compileShader(GLenum shaderType, const char *name) {
     size_t size;
     char *file = this->readFile(name, &size);
-    if (!file)
-    {
+    if (!file) {
         return 0;
     }
     GLuint shader = glCreateShader(shaderType);
-    if (shader == 0)
-    {
+    if (shader == 0) {
         LOGE("glCreateShader failed");
         free(file);
         return 0;
@@ -409,14 +375,12 @@ GLuint ResourceLoader::compileShader(GLenum shaderType, const char *name)
     free(file);
     GLint compile_result = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_result);
-    if (compile_result == GL_FALSE)
-    {
+    if (compile_result == GL_FALSE) {
         LOGE("Error compiling shader %s", name);
         GLint info_log_length = 0;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_length);
         char *mem = (char *)malloc(info_log_length);
-        if (mem)
-        {
+        if (mem) {
             glGetShaderInfoLog(shader, info_log_length, NULL, mem);
             LOGE("Logs: %s", mem);
             free(mem);
@@ -427,30 +391,25 @@ GLuint ResourceLoader::compileShader(GLenum shaderType, const char *name)
     return shader;
 }
 
-GLuint ResourceLoader::createProgram(const char *name, int shadersCount, GLuint *shaders)
-{
+GLuint ResourceLoader::createProgram(const char *name, int shadersCount, GLuint *shaders) {
     GLuint program = glCreateProgram();
-    if (program == 0)
-    {
+    if (program == 0) {
         LOGE("glCreateProgram failed, unloading shaders");
-        for (int i = 0; i < shadersCount; i++)
-        {
+        for (int i = 0; i < shadersCount; i++) {
             if (shaders[i]) {
                 glDeleteShader(shaders[i]);
             }
         }
         return 0;
     }
-    for (int i = 0; i < shadersCount; i++)
-    {
+    for (int i = 0; i < shadersCount; i++) {
         if (shaders[i]) {
             glAttachShader(program, shaders[i]);
         }
     }
     glLinkProgram(program);
 
-    for (int i = 0; i < shadersCount; i++)
-    {
+    for (int i = 0; i < shadersCount; i++) {
         if (shaders[i]) {
             glDetachShader(program, shaders[i]);
             glDeleteShader(shaders[i]);
@@ -459,14 +418,12 @@ GLuint ResourceLoader::createProgram(const char *name, int shadersCount, GLuint 
 
     GLint link_result = 0;
     glGetProgramiv(program, GL_LINK_STATUS, &link_result);
-    if (link_result == GL_FALSE)
-    {
+    if (link_result == GL_FALSE) {
         LOGE("Error linking program %s", name);
         GLint info_log_length = 0;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_log_length);
         char *mem = (char *)malloc(info_log_length);
-        if (mem)
-        {
+        if (mem) {
             glGetProgramInfoLog(program, info_log_length, NULL, mem);
             LOGE("Logs: %s", mem);
             free(mem);
@@ -477,8 +434,7 @@ GLuint ResourceLoader::createProgram(const char *name, int shadersCount, GLuint 
     return program;
 }
 
-void ResourceLoader::dumpProgram(const char *name, GLuint program)
-{
+void ResourceLoader::dumpProgram(const char *name, GLuint program) {
     if (program == 0) {
         LOGW("Invalid program: %s", name);
         return;
@@ -499,48 +455,57 @@ void ResourceLoader::dumpProgram(const char *name, GLuint program)
     glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
     glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &bufSize);
     glname = (GLchar *)malloc(bufSize);
-    for (i = 0; i < count; i++)
-    {
+    for (i = 0; i < count; i++) {
         glGetActiveAttrib(program, (GLuint)i, bufSize, &length, &size, &type, glname);
         printf("    GLint p_%s_attr_%s = -1;\n",
-            name, glname);
+               name, glname);
     }
     free(glname);
     glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &bufSize);
     glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
     glname = (GLchar *)malloc(bufSize);
-    for (i = 0; i < count; i++)
-    {
+    for (i = 0; i < count; i++) {
         glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, glname);
         printf("    GLint p_%s_uni_%s = -1;\n",
-            name, glname);
+               name, glname);
     }
     printf("\n");
     free(glname);
 
     printf("Source code:\n");
     printf("    {\n");
-    
+
     glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
     glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &bufSize);
     glname = (GLchar *)malloc(bufSize);
-    for (i = 0; i < count; i++)
-    {
+    for (i = 0; i < count; i++) {
         glGetActiveAttrib(program, (GLuint)i, bufSize, &length, &size, &type, glname);
         printf("        this->p_%s_attr_%s = glGetAttribLocation(this->p_%s, \"%s\");\n",
-            name, glname, name, glname);
+               name, glname, name, glname);
     }
     free(glname);
     glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &bufSize);
     glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
     glname = (GLchar *)malloc(bufSize);
-    for (i = 0; i < count; i++)
-    {
+    for (i = 0; i < count; i++) {
         glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, glname);
         printf("        this->p_%s_uni_%s = glGetUniformLocation(this->p_%s, \"%s\");\n",
-            name, glname, name, glname);
+               name, glname, name, glname);
     }
     free(glname);
 
     printf("    }\n");
 }
+
+void ResourceLoader::loadTextureExternal(char *name, GLuint *out) {
+    return resourceLoaderExternal->loadTexture(name, out);
+}
+
+void ResourceLoader::loadModelExternal(char *name, Model *out) {
+    Model* model = new Model();
+    model->loadModel(name);
+
+    *out = *model;
+}
+
+ResourceLoader *resourceLoaderExternal;
