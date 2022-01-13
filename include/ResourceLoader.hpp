@@ -3,6 +3,8 @@
 #include <opengl.h>
 #include <stdbool.h>
 
+#include <Resources/Model.hpp>
+
 class ResourceLoader
 {
 public:
@@ -146,6 +148,9 @@ public:
     GLint p_caustics_uni_normalMap = -1;
     GLint p_caustics_uni_transformation = -1;
 
+    static void loadTextureExternal(char *name, GLuint *out);
+    static void loadModelExternal(char *name, Model *out);
+
 private:
     int totalResourcesCounter = 0;
     bool all_loaded = false;
@@ -167,3 +172,5 @@ private:
     GLuint compileShader(GLenum shaderType, const char *name);
     GLuint createProgram(const char *name, int shadersCount, GLuint *shaders);
 };
+
+extern ResourceLoader* resourceLoaderExternal;
