@@ -73,7 +73,7 @@ void Robot::update() {
         this->position += this->moveDirectionVector * this->movementSpeed * timeExternal->deltaTime;
 
         if (this->mode == Robot::MODE_SWIMMING) {
-            float rotationAngleX;
+            float rotationAngleX = 0.0f;
             if (this->moveDirectionVector.y > 0.0f) {
                 rotationAngleX = 45.0f;
             } else if (this->moveDirectionVector.y < 0.0f) {
