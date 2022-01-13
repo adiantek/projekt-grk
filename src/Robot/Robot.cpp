@@ -103,14 +103,14 @@ void Robot::update() {
             float rotationAngle = glm::orientedAngle(glm::vec3(0, 0, -1), this->moveDirectionVector, glm::vec3(0, 1, 0)) / glm::pi<float>() * 180.0f;
             // float rotationAngle = glm::orientedAngle(glm::vec3(0, 0, -1), iterpolatedVector, glm::vec3(0, 1, 0)) / glm::pi<float>() * 180.0f;
 
-            if(rotation.y > 360) {
+            if (rotation.y > 360) {
                 rotation.y -= 360;
-            } else if(rotation.y < 0) {
+            } else if (rotation.y < 0) {
                 rotation.y += 360;
             }
-            if(rotationAngle > 360) {
+            if (rotationAngle > 360) {
                 rotationAngle -= 360;
-            } else if(rotationAngle < 0) {
+            } else if (rotationAngle < 0) {
                 rotationAngle += 360;
             }
 

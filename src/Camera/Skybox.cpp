@@ -3,6 +3,7 @@
 #include <Camera/Camera.hpp>
 #include <ResourceLoader.hpp>
 #include <glm/glm.hpp>
+#include <Logger.h>
 
 Skybox::Skybox() {
     float skyboxVertices[108] = {
@@ -52,7 +53,7 @@ Skybox::Skybox() {
 
     glGenVertexArrays(1, &VAO);
     //test
-    printf("po VAO");
+    LOGD("po VAO");
     glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -70,14 +71,13 @@ void Skybox::draw()
     glm::mat4 view = glm::translate(camera->getPosition());
     glm::mat4 projection = camera->getTransformationMatrix();
 
-    glDepthFunc(GL_LEQUAL);
+    glDisable(GL_DEPTH_TEST);
     glUseProgram(resourceLoaderExternal->p_skybox_shader);
-    glUniformMatrix4fv(glGetUniformLocation(resourceLoaderExternal->p_skybox_shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection * view));
+    glUniformMatrix4fv(resourceLoaderExternal->p_skybox_shader_uni_projection, 1, GL_FALSE, glm::value_ptr(projection * view));
     // skybox cube
     glBindVertexArray(VAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
-    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
 }

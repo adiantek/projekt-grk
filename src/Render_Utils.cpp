@@ -5,49 +5,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
-
-void Core::RenderContext::initFromOBJ(obj::Model& model)
-{
-    vertexArray = 0;
-    vertexBuffer = 0;
-    vertexIndexBuffer = 0;
-    unsigned int vertexDataBufferSize = sizeof(float) * model.vertex.size();
-    unsigned int vertexNormalBufferSize = sizeof(float) * model.normal.size();
-    unsigned int vertexTexBufferSize = sizeof(float) * model.texCoord.size();
-
-    size = model.faces["default"].size();
-    unsigned int vertexElementBufferSize = sizeof(unsigned short) * size;
-
-
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
-
-
-    glGenBuffers(1, &vertexIndexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexElementBufferSize, &model.faces["default"][0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    
-    glBufferData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize, NULL, GL_STATIC_DRAW);
-
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertexDataBufferSize, &model.vertex[0]);
-
-    glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize, vertexNormalBufferSize, &model.normal[0]);
-
-    glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize, vertexTexBufferSize, &model.texCoord[0]);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)(0));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize));
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(vertexNormalBufferSize + vertexDataBufferSize));
-}
-
+#include <vector>
+#include <Logger.h>
 
 void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
     vertexArray = 0;
@@ -69,7 +28,7 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
         }
     }
     if (mesh->mTextureCoords[0] == nullptr) {
-        std::cout << "no uv coords\n";
+        LOGW("no uv coords");
     }
     for (unsigned int i = 0; i < mesh->mNumFaces; i++)
     {
@@ -79,14 +38,17 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
             indices.push_back(face.mIndices[j]);
     }
 
+    // TODO refactor this
+    // lots of redundant calls to glBufferSubData
+
     unsigned int vertexDataBufferSize = sizeof(float) * mesh->mNumVertices * 3;
     unsigned int vertexNormalBufferSize = sizeof(float) * mesh->mNumVertices * 3;
     unsigned int vertexTexBufferSize = sizeof(float) * mesh->mNumVertices * 2;
     unsigned int vertexTangentBufferSize = sizeof(float) * mesh->mNumVertices * 3;
     unsigned int vertexBiTangentBufferSize = sizeof(float) * mesh->mNumVertices * 3;
 
-    unsigned int vertexElementBufferSize = sizeof(unsigned int) * indices.size();
-    size = indices.size();
+    unsigned int vertexElementBufferSize = sizeof(unsigned int) * (unsigned int) indices.size();
+    size = (unsigned int) indices.size();
 
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
@@ -182,7 +144,7 @@ void Core::RenderContext::initPlane(float width, float height, int widthSegments
         }
     }
 
-    size = indices.size();
+    size = (unsigned int) indices.size();
 
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
