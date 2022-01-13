@@ -4,6 +4,7 @@
 #include<ResourceLoader.hpp>
 #include<Water/Simulation.hpp>
 #include<Water/EnvironmentMap.hpp>
+#include<Water/Caustics.hpp>
 #include<glm/ext.hpp>
 
 namespace Water {
@@ -13,7 +14,7 @@ namespace Water {
         ~Surface();
         void draw(glm::mat4 viewMatrix, glm::vec3 cameraPos);
         Simulation simulation;
-        EnvironmentMap environmentMap;
+        Caustics caustics;
     private:
         Core::RenderContext geometry;
         glm::mat4 rotation = glm::eulerAngleX(glm::radians(90.0f));

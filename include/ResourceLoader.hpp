@@ -134,6 +134,17 @@ public:
     GLint p_environment_map_attr_vertexPosition = -1;
     GLint p_environment_map_uni_modelMatrix = -1;
     GLint p_environment_map_uni_transformation = -1;
+    // caustics:
+    GLuint p_caustics = 0;
+    bool p_caustics_loaded = false;
+    GLint p_caustics_attr_texturePosition = -1;
+    GLint p_caustics_attr_vertexPosition = -1;
+    GLint p_caustics_uni_deltaEnvTexture = -1;
+    GLint p_caustics_uni_depthMap = -1;
+    GLint p_caustics_uni_environmentMap = -1;
+    GLint p_caustics_uni_light = -1;
+    GLint p_caustics_uni_normalMap = -1;
+    GLint p_caustics_uni_transformation = -1;
 
 private:
     int totalResourcesCounter = 0;

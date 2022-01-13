@@ -10,7 +10,7 @@ namespace Water {
         this->uniformModel = loader->p_environment_map_uni_modelMatrix;
         this->uniformTransformation = loader->p_environment_map_uni_transformation;
         this->projectionMatrix = glm::ortho(-(this->size / 2.0f), this->size / 2.0f, this->size / 2.0f, -(this->size / 2.0f), 0.0001f, 1000.0f);
-        this->rotationMatrix = glm::eulerAngleX(-glm::radians(90.0f));
+        this->rotationMatrix = glm::eulerAngleX(glm::radians(90.0f));
         // Create framebuffer
         glGenFramebuffers(1, &this->framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
@@ -43,7 +43,7 @@ namespace Water {
     void EnvironmentMap::useFramebuffer(glm::vec3 transition) {
         glUseProgram(this->program);
 
-        this->transformationMatrix = this->projectionMatrix * this->rotationMatrix * glm::translate(transition);
+        this->transformationMatrix = this->projectionMatrix * this->rotationMatrix * glm::translate(-transition);
 
         glGetIntegerv(GL_VIEWPORT, this->prevViewport);
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);

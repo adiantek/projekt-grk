@@ -2,7 +2,8 @@
 
 namespace Water {
     Surface::Surface(float x, float y, float z, float width, float height, int simulationWidth, int simulationHeight, ResourceLoader* loader)
-    : simulation(simulationWidth, simulationHeight, width, loader), environmentMap(width, simulationWidth, loader) {
+    : simulation(simulationWidth, simulationHeight, width, loader), 
+      caustics(width, simulationWidth, this->simulation.maps[0], this->simulation.maps[1], loader) {
         this->geometry.initPlane(width, height, simulationWidth, simulationHeight);
         this->translation = glm::vec3(x, y, z);
         this->skybox = loader->txt_skybox;

@@ -138,6 +138,17 @@ void ResourceLoader::loadPrograms()
         this->p_environment_map_uni_modelMatrix = glGetUniformLocation(this->p_environment_map, "modelMatrix");
         this->p_environment_map_uni_transformation = glGetUniformLocation(this->p_environment_map, "transformation");
     }
+    LOAD_PROGRAM(caustics, 2, "water/caustics.frag", "water/caustics.vert") {
+        // this->dumpProgram("caustics", this->p_caustics);
+        this->p_caustics_attr_texturePosition = glGetAttribLocation(this->p_caustics, "texturePosition");
+        this->p_caustics_attr_vertexPosition = glGetAttribLocation(this->p_caustics, "vertexPosition");
+        this->p_caustics_uni_deltaEnvTexture = glGetUniformLocation(this->p_caustics, "deltaEnvTexture");
+        this->p_caustics_uni_depthMap = glGetUniformLocation(this->p_caustics, "depthMap");
+        this->p_caustics_uni_environmentMap = glGetUniformLocation(this->p_caustics, "environmentMap");
+        this->p_caustics_uni_light = glGetUniformLocation(this->p_caustics, "light");
+        this->p_caustics_uni_normalMap = glGetUniformLocation(this->p_caustics, "normalMap");
+        this->p_caustics_uni_transformation = glGetUniformLocation(this->p_caustics, "transformation");
+    }
 
 #undef LOAD_PROGRAM
 }

@@ -127,14 +127,16 @@ void do_frame()
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 
-	waterSurface->environmentMap.useFramebuffer(glm::vec3(0.0f, 5.0f, 0.0f));
-	waterSurface->environmentMap.drawObject(shipContext, shipModelMatrix);
-	waterSurface->environmentMap.drawObject(sphereContext, eu * glm::scale(glm::vec3(0.7f)));
-	waterSurface->environmentMap.drawObject(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)));
-	waterSurface->environmentMap.drawObject(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
-	waterSurface->environmentMap.drawObject(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
-	waterSurface->environmentMap.drawObject(sphereContext2, glm::translate(lightPos));
-	waterSurface->environmentMap.stopUsingFramebuffer();
+	waterSurface->caustics.environmentMap.useFramebuffer(glm::vec3(0.0f, 5.0f, 0.0f));
+	waterSurface->caustics.environmentMap.drawObject(shipContext, shipModelMatrix);
+	waterSurface->caustics.environmentMap.drawObject(sphereContext, eu * glm::scale(glm::vec3(0.7f)));
+	waterSurface->caustics.environmentMap.drawObject(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)));
+	waterSurface->caustics.environmentMap.drawObject(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	waterSurface->caustics.environmentMap.drawObject(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	waterSurface->caustics.environmentMap.drawObject(sphereContext2, glm::translate(lightPos));
+	waterSurface->caustics.environmentMap.drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(12.5f)));
+	waterSurface->caustics.environmentMap.stopUsingFramebuffer();
+	waterSurface->caustics.render();
 
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
@@ -158,7 +160,9 @@ void do_frame()
 	drawObjectTexNormal(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
 	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
 	//drawObjectTexNormalParallax(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
-	drawObjectTexNormal(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), waterSurface->environmentMap.texture, resourceLoader.txt_wallNormal);
+	drawObjectTexNormal(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), waterSurface->caustics.environmentMap.texture, resourceLoader.txt_wallNormal);
+	drawObjectTexNormal(planeContext, glm::translate(glm::vec3(-8, 0, -2)) * eu2 * glm::scale(glm::vec3(1.0f)), waterSurface->caustics.texture, resourceLoader.txt_wallNormal);
+	drawObjectTexNormal(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(12.5f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 	waterSurface->draw(viewMatrix, camera.position);
