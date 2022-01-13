@@ -178,8 +178,6 @@ void do_frame()
 	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
 	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
-	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
-	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 	
 	drawObjectTexNormal(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
