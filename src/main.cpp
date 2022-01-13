@@ -15,6 +15,7 @@
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
+#include <Camera/Skybox.hpp>
 
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
@@ -36,7 +37,7 @@ Core::RenderContext brickWallContext;
 Core::RenderContext planeContext;
 
 // Temporary ground plane
-GameObject* ground = new GameObject("ground");
+GameObject *ground = new GameObject("ground");
 
 // Window
 GLFWwindow *window;
@@ -50,7 +51,10 @@ bool initialized = false;
 
 ResourceLoader resourceLoader;
 
-Water::Surface* waterSurface;
+// Skybox
+Skybox *skybox;
+
+Water::Surface *waterSurface;
 
 
 
@@ -141,8 +145,12 @@ void do_frame()
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
-	robot->update();
 	camera->update();
+
+	// SKYBOX
+	skybox->draw();
+
+	robot->update();
 	ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
@@ -207,6 +215,9 @@ void init() {
 
 	// Initialize Gizmos (wireframe cubes, lines, etc... - For testing purposes)
 	Gizmos::init();
+
+	// SKYBOX
+	skybox = new Skybox();
 
 	// Basic 
 	ground
