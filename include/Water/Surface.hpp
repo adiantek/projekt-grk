@@ -7,7 +7,7 @@
 #include<Water/Caustics.hpp>
 #include<glm/ext.hpp>
 
-namespace Water {
+namespace water {
     class Surface {
     public:
         Surface(float x, float y, float z, float width, float height, int simulationWidth, int simulationHeight, ResourceLoader* loader);

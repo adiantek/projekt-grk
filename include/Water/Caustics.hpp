@@ -1,32 +1,28 @@
 #pragma once
 
 #include<Render_Utils.h>
-#include<ResourceLoader.hpp>
 #include<Water/EnvironmentMap.hpp>
 
-namespace Water {
+namespace water {
     class Caustics {
     public:
-        Caustics(float size, int textureSize, unsigned int heightMap, unsigned int normalMap, ResourceLoader *loader);
+        Caustics(float size, unsigned int textureSize, float y, unsigned int heightMap, unsigned int normalMap);
         ~Caustics();
-        glm::mat4 getLightCamera();
         void render();
-        unsigned int texture;
+        unsigned int getTexture();
+
+        glm::mat4 getLightCamera();
+        
         EnvironmentMap environmentMap;
-        unsigned int normalMap;
-        unsigned int depthMap;
     private:
         float size;
-        Core::RenderContext geometry;
-        unsigned int program;
         unsigned int textureSize;
-        int uniformDeltaEnvTexture;
-        int uniformDepthMap;
-        int uniformEnvironmentMap;
-        int uniformLight;
-        int uniformNormalMap;
-        int uniformTransformation;
+        float y;
+        unsigned int heightMap;
+        unsigned int normalMap;
+        Core::RenderContext geometry;
         unsigned int framebuffer;
         unsigned int depthbuffer;
+        unsigned int texture;
     };
 }

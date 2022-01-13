@@ -9,6 +9,7 @@ uniform sampler2D environmentMap;
 uniform float deltaEnvTexture;
 uniform mat4 transformation;
 uniform mat4 rotation;
+uniform mat4 translation;
 uniform vec3 light;
 
 layout(location = 0) in vec3 vertexPosition;
@@ -60,7 +61,7 @@ void main() {
 
     newPosition = environment.xyz;
 
-    vec4 projectedEnvPosition = transformation * vec4(newPosition, 1.0);
+    vec4 projectedEnvPosition = transformation * translation * vec4(newPosition, 1.0);
     depth = 0.5 + 0.5 * projectedEnvPosition.z / projectedEnvPosition.w;
 
     gl_Position = projectedEnvPosition;

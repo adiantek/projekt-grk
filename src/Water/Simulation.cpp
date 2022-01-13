@@ -10,7 +10,7 @@ static inline float randf(float min, float max, int precision = 1000)
     return ((float)(rand() % i) / (float)precision) + min;
 }
 
-namespace Water {
+namespace water {
     Simulation::Simulation(unsigned int width, unsigned int height, float scale, ResourceLoader *loader) {
         this->width = width;
         this->height = height;
@@ -114,12 +114,12 @@ namespace Water {
         glUniform1i(this->uniformWaveCount, waveCount);
 
         for(int i=0; i<waveCount; ++i) {
-            float amplitude = random.nextFloat() * 0.03f + 0.01f;
-            float stepness = random.nextFloat() * 0.1f + 0.3f;
-            float waveAngle = random.nextFloat() * glm::radians(2.0f * 27.0f) + (windAngle - glm::radians(27.0f));
+            float amplitude = random.nextFloat() * 0.015f + 0.01f;
+            float stepness = random.nextFloat() * 0.1f + 0.2f;
+            float waveAngle = random.nextFloat() * glm::radians(2.0f * 30.0f) + (windAngle - glm::radians(30.0f));
             glm::vec2 waveDirection = glm::vec2(cosf(waveAngle), sinf(waveAngle));
             float speed = random.nextFloat() * 0.4f + 0.3f;
-            float lenght = (random.nextFloat() * 30.0f + 30.0f) * amplitude;
+            float lenght = (random.nextFloat() * 30.0f + 100.0f) * amplitude;
 
             float w = sqrt(2.0f * 3.14159f * 9.8f / lenght);
             float f = 2.0f * speed / lenght;

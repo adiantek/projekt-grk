@@ -19,8 +19,8 @@ in vec3 lightPosition;
 in float lightIntensity;
 out vec4 FragColor;
 
-const float bias = 0.001;
-const vec2 resolution = vec2(1024.0);
+const float bias = 0.003;
+const vec2 resolution = vec2(1572.0);
 
 float blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
   float intensity = 0.;
@@ -57,13 +57,14 @@ void main()
     if (causticsDepth > lightPosition.z - bias) {
         // Percentage Close Filtering
         float causticsIntensity = 0.5 * (
-            blur(caustics, lightPosition.xy, resolution, vec2(0., 0.5)) +
-            blur(caustics, lightPosition.xy, resolution, vec2(0.5, 0.))
+            blur(caustics, lightPosition.xy, resolution, vec2(0.0, 0.5)) +
+            blur(caustics, lightPosition.xy, resolution, vec2(0.5, 0.0))
         );
 
-        objectColorFinal += causticsIntensity;
+        //objectColorFinal += causticsIntensity;
         computedLightIntensity += causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
+    } else {
+        computedLightIntensity = 0.3;
     }
-
-	FragColor = vec4(objectColorFinal/* * computedLightIntensity*/, 1.0);
+	FragColor = vec4(objectColorFinal * computedLightIntensity, 1.0);
 }

@@ -1,29 +1,30 @@
 #pragma once
 
-#include<ResourceLoader.hpp>
 #include<glm/glm.hpp>
 #include<Render_Utils.h>
 
-namespace Water {
+namespace water {
     class EnvironmentMap {
     public:
-        EnvironmentMap(float size, int textureSize, ResourceLoader* loader);
+        EnvironmentMap(float size, unsigned int textureSize, float y, glm::vec3 lightDirection = glm::vec3(0.0f, 1.0f, 0.0f), float maxDepth = 50.0f);
         ~EnvironmentMap();
-        void useFramebuffer(glm::vec3 transition);
+        void useFramebuffer();
         void stopUsingFramebuffer();
         void drawObject(Core::RenderContext context, glm::mat4 modelMatrix);
-        unsigned int texture;
+        unsigned int getMapTexture();
+        glm::mat4 getLightCamera();
     private:
         float size;
-        int textureSize;
-        unsigned int program;
-        int uniformModel;
-        int uniformTransformation;
+        unsigned int textureSize;
+        float y;
+        glm::vec3 lightDirection;
+        glm::mat4 lightCameraProjectionMatrix;
+        glm::mat4 lightCameraRotationMatrix;
+        glm::vec3 lightCameraTranslation;
         unsigned int framebuffer;
         unsigned int depthbuffer;
+        unsigned int texture;
+        glm::mat4 lightCameraMatrix;
         int prevViewport[4];
-        glm::mat4 projectionMatrix;
-        glm::mat4 rotationMatrix;
-        glm::mat4 transformationMatrix;
     };
 }

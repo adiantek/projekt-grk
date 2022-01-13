@@ -3,7 +3,7 @@
 #include<Render_Utils.h>
 #include<ResourceLoader.hpp>
 
-namespace Water {
+namespace water {
     class Simulation {
     public:
         Simulation(unsigned int width, unsigned int height, float scale, ResourceLoader *loader);
