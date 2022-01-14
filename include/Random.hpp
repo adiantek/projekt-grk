@@ -19,8 +19,12 @@ class Random {
     int32_t next(int32_t bits);
     int32_t nextInt();
     int32_t nextInt(int32_t n);
+    int32_t nextInt(int32_t begin, int32_t end);
     int64_t nextLong();
+    int64_t nextLong(int64_t begin, int64_t end);
     bool nextBoolean();
     float nextFloat();
+    float nextFloat(float begin, float end);
     double nextDouble();
+    double nextDouble(double begin, double end);
 };
