@@ -1,13 +1,15 @@
 #include<Water/Simulation.hpp>
+#include<Time/Time.hpp>
 #include<Random.hpp>
 #include<ResourceLoader.hpp>
 #include<Camera/Camera.hpp>
-#include <Logger.h>
+#include<Logger.h>
 
 namespace water {
-    Simulation::Simulation(float size, unsigned int textureSize) {
+    Simulation::Simulation(float size, unsigned int textureSize, glm::vec2 offset) {
         this->size = size / 2.0f;
         this->textureSize = textureSize;
+        this->offset = offset;
         this->geometry.initPlane(2.0f, 2.0f);
         // Create framebuffer for rendering water simulation
         glGenFramebuffers(1, &this->framebuffer);
@@ -52,8 +54,8 @@ namespace water {
         glUseProgram(resourceLoaderExternal->p_water_simulation);
 
         glUniform1f(resourceLoaderExternal->p_water_simulation_uni_scale, this->size);
-        glUniform1f(resourceLoaderExternal->p_water_simulation_uni_time, (float) glfwGetTime() * 5.0f);
-        glUniform2f(resourceLoaderExternal->p_water_simulation_uni_transition, camera->position.x, camera->position.z);
+        glUniform1f(resourceLoaderExternal->p_water_simulation_uni_time, (float) timeExternal->lastFrame);
+        glUniform2f(resourceLoaderExternal->p_water_simulation_uni_transition, camera->position.x + this->offset.x, camera->position.z + this->offset.y);
 
         int prevViewport[4];
         glGetIntegerv(GL_VIEWPORT, prevViewport);
@@ -88,7 +90,7 @@ namespace water {
             float stepness = random.nextFloat(0.2f, 0.3f);
             float waveAngle = random.nextFloat(windAngle - glm::radians(30.0f), windAngle + glm::radians(30.0f));
             glm::vec2 waveDirection = glm::vec2(cosf(waveAngle), sinf(waveAngle));
-            float speed = random.nextFloat(0.3f, 0.7f);
+            float speed = random.nextFloat(1.5f, 3.5f);
             float lenght = random.nextFloat(100.0f, 130.0f) * amplitude;
 
             float w = sqrt(2.0f * 3.14159f * 9.8f / lenght);

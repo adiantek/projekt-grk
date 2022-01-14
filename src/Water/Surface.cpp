@@ -3,11 +3,12 @@
 #include<ResourceLoader.hpp>
 
 namespace water {
-    Surface::Surface(float size, float y, unsigned int textureSize, unsigned int heightMap, unsigned int normalMap) {
+    Surface::Surface(float size, float y, unsigned int textureSize, unsigned int heightMap, unsigned int normalMap, glm::vec2 offset) {
         this->size = size;
         this->y = y;
         this->heightMap = heightMap;
         this->normalMap = normalMap;
+        this->offset = offset;
         this->geometry.initPlane(size, size, textureSize, textureSize);
         this->skybox = resourceLoaderExternal->txt_skybox;
     }
@@ -17,7 +18,7 @@ namespace water {
     void Surface::draw() {
         glUseProgram(resourceLoaderExternal->p_water_surface);
 
-        glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * this->rotation;
+        glm::mat4 model = glm::translate(glm::vec3(camera->position.x + this->offset.x, this->y, camera->position.z + this->offset.y)) * this->rotation;
         glm::mat4 transformation = camera->getTransformationMatrix() * model;
 
         glActiveTexture(GL_TEXTURE0);
