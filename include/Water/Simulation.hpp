@@ -1,26 +1,21 @@
 #pragma once
 
 #include<Render_Utils.h>
-#include<ResourceLoader.hpp>
 
 namespace water {
     class Simulation {
     public:
-        Simulation(unsigned int width, unsigned int height, float scale, ResourceLoader *loader);
+        Simulation(float size, unsigned int textureSize);
         ~Simulation();
-        void simulate(glm::vec3 transition);
-        void generateRandomWaves();
-        unsigned int maps[2];
+        void simulate();
+        void generateRandomWaves(long long seed = 2137L);
+        unsigned int getHeightMap();
+        unsigned int getNormalMap();
     private:
-        unsigned int width;
-        unsigned int height;
-        float scale;
-        unsigned int framebuffer;
+        float size;
+        unsigned int textureSize;
         Core::RenderContext geometry;
-        unsigned int program;
-        int uniformTransition;
-        int uniformScale;
-        int uniformTime;
-        int uniformWaveCount;
+        unsigned int framebuffer;
+        unsigned int maps[2];
     };
 }
