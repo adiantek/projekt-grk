@@ -10,7 +10,7 @@
 #include <ResourceLoader.hpp>
 #include <Controller/Controller.hpp>
 #include <Water/Surface.hpp>
-#include <Water/EnvironmentMap.hpp>
+#include <Water/Caustics.hpp>
 #include <Random.hpp>
 #include <SimplexNoiseGenerator.hpp>
 #include <Robot/Robot.hpp>
@@ -53,6 +53,7 @@ bool initialized = false;
 ResourceLoader resourceLoader;
 
 water::Surface* waterSurface;
+water::Caustics* waterCaustics;
 // Skybox
 Skybox *skybox;
 
@@ -107,10 +108,10 @@ void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMat
 {
 	glUseProgram(resourceLoader.p_caustics_env);
 	glm::mat4 transformation = viewMatrix * modelMatrix;
-	glm::mat4 transformationLight = waterSurface->caustics.getLightCamera();
+	glm::mat4 transformationLight = waterCaustics->getLightCamera();
 	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_caustics_env, 0);
 	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_caustics_env, 1);
-	Core::SetActiveTexture(waterSurface->caustics.getCausticsMap(), "caustics", resourceLoader.p_caustics_env, 2);
+	Core::SetActiveTexture(waterCaustics->getCausticsMap(), "caustics", resourceLoader.p_caustics_env, 2);
 	glUniformMatrix4fv(resourceLoader.p_caustics_env_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 	glUniformMatrix4fv(resourceLoader.p_caustics_env_uni_transformation, 1, GL_FALSE, (float*)&transformation);
 	glUniformMatrix4fv(glGetUniformLocation(resourceLoader.p_caustics_env, "lightTransformation"), 1, GL_FALSE, (float*)&transformationLight);
@@ -161,16 +162,16 @@ void do_frame()
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 
-	waterSurface->caustics.useFramebuffer();
-	waterSurface->caustics.drawObject(shipContext, shipModelMatrix);
-	waterSurface->caustics.drawObject(sphereContext, eu * glm::scale(glm::vec3(0.7f)));
-	waterSurface->caustics.drawObject(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)));
-	waterSurface->caustics.drawObject(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
-	waterSurface->caustics.drawObject(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
-	waterSurface->caustics.drawObject(sphereContext2, glm::translate(lightPos));
-	waterSurface->caustics.drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)));
-	waterSurface->caustics.stopUsingFramebuffer();
-	waterSurface->caustics.render();
+	waterCaustics->useFramebuffer();
+	waterCaustics->drawObject(shipContext, shipModelMatrix);
+	waterCaustics->drawObject(sphereContext, eu * glm::scale(glm::vec3(0.7f)));
+	waterCaustics->drawObject(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)));
+	waterCaustics->drawObject(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	waterCaustics->drawObject(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	waterCaustics->drawObject(sphereContext2, glm::translate(lightPos));
+	waterCaustics->drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)));
+	waterCaustics->stopUsingFramebuffer();
+	waterCaustics->render();
 
 
 	camera->update();
@@ -208,7 +209,6 @@ void do_frame()
 	drawObjectTexNormalCaustics(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
-	waterSurface->draw(viewMatrix, camera->position);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 	
@@ -217,6 +217,8 @@ void do_frame()
 	// 	noise->draw(&resourceLoader);
 	// st = glfwGetTime() - st;
 	// LOGD("time: %.3f", st);
+
+	waterSurface->draw();
 
     glfwSwapBuffers(window);
 }
@@ -269,8 +271,8 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	waterSurface = new water::Surface(0.0f, 9.0f, 0.0f, 40.0f, 40.0f, 256, 256, &resourceLoader);
-	waterSurface->simulation.generateRandomWaves();
+	waterCaustics = new water::Caustics(40.0f, 9.0f, 256);
+	waterSurface = new water::Surface(40.0f, 9.0f, 256, waterCaustics->getHeightMap(), waterCaustics->getNormalMap());
 }
 
 int main(int argc, char **argv)

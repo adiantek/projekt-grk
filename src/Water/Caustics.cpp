@@ -38,6 +38,8 @@ namespace water {
         }
         // Bind previous framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        this->simulation.generateRandomWaves();
     }
 
     Caustics::~Caustics() {
