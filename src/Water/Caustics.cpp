@@ -6,14 +6,12 @@
 #include<glm/ext.hpp>
 
 namespace water {
-    Caustics::Caustics(float size, unsigned int textureSize, float y, unsigned int heightMap, unsigned int normalMap) 
-    : environmentMap(size, textureSize, y) {
+    Caustics::Caustics(float size, float y, unsigned int textureSize) 
+    : environmentMap(size, y, textureSize * 2), simulation(size, textureSize) {
         this->size = size;
-        this->textureSize = textureSize;
         this->y = y;
-        this->heightMap = heightMap;
-        this->normalMap = normalMap;
-        this->geometry.initPlane(size, size, textureSize, textureSize);
+        this->textureSize = textureSize * 3;
+        this->geometry.initPlane(size, size, this->textureSize, this->textureSize);
         // Create framebuffer
         glGenFramebuffers(1, &this->framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
@@ -49,6 +47,8 @@ namespace water {
     }
 
     void Caustics::render() {
+        this->simulation.simulate();
+
         glUseProgram(resourceLoaderExternal->p_caustics);
 
         int prevViewport[4];
@@ -64,26 +64,22 @@ namespace water {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, this->heightMap);
+        glBindTexture(GL_TEXTURE_2D, this->simulation.getHeightMap());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_depthMap, 0);
         glActiveTexture(GL_TEXTURE0 + 1);
         glBindTexture(GL_TEXTURE_2D, this->environmentMap.getMapTexture());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_environmentMap, 1);
         glActiveTexture(GL_TEXTURE0 + 2);
-        glBindTexture(GL_TEXTURE_2D, this->normalMap);
+        glBindTexture(GL_TEXTURE_2D, this->simulation.getNormalMap());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_normalMap, 2);
 
 
-        glm::mat4 transformation = glm::ortho(-(this->size / 2.0f), this->size / 2.0f, this->size / 2.0f, -(this->size / 2.0f), 0.0f, 50.0f) * glm::eulerAngleX(glm::radians(90.0f));
-        glm::mat4 rotation = glm::eulerAngleX(glm::radians(-90.0f));
-
-        glm::mat4 translation1 = glm::translate(glm::vec3(-camera->position.x, -this->y, -camera->position.z));
+        glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * glm::eulerAngleX(glm::radians(-90.0f));
 
         glUniform1f(resourceLoaderExternal->p_caustics_uni_deltaEnvTexture, 1.0f / (float) this->textureSize);
-        glUniform3f(resourceLoaderExternal->p_caustics_uni_light, 0.0f, 0.0f, -1.0f);
-        glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_transformation, 1, GL_FALSE, (float*)&transformation);
-        glUniformMatrix4fv(glGetUniformLocation(resourceLoaderExternal->p_caustics, "rotation"), 1, GL_FALSE, (float*)&rotation);
-        glUniformMatrix4fv(glGetUniformLocation(resourceLoaderExternal->p_caustics, "translation"), 1, GL_FALSE, (float*)&translation1);
+        glUniform3f(resourceLoaderExternal->p_caustics_uni_light, 0.0f, 0.0f, -1.0f); // TODO: remove hardcoded light dir
+        glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_transformation, 1, GL_FALSE, (float*)&this->environmentMap.getLightCamera());
+        glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_modelMatrix, 1, GL_FALSE, (float*)&model);
 
         Core::DrawContext(this->geometry);
 
@@ -94,11 +90,31 @@ namespace water {
         glUseProgram(0);
     }
 
-    unsigned int Caustics::getTexture() {
+    unsigned int Caustics::getCausticsMap() {
         return this->texture;
+    }
+
+    unsigned int Caustics::getHeightMap() {
+        return this->simulation.getHeightMap();
+    }
+
+    unsigned int Caustics::getNormalMap() {
+        return this->simulation.getNormalMap();
     }
 
     glm::mat4 Caustics::getLightCamera() {
         return this->environmentMap.getLightCamera();
+    }
+
+    void Caustics::useFramebuffer() {
+        this->environmentMap.useFramebuffer();
+    }
+
+    void Caustics::stopUsingFramebuffer() {
+        this->environmentMap.stopUsingFramebuffer();
+    }
+
+    void Caustics::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
+        this->environmentMap.drawObject(context, modelMatrix);
     }
 }

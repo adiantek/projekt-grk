@@ -151,11 +151,12 @@ public:
     GLint p_caustics_attr_texturePosition = -1;
     GLint p_caustics_attr_vertexPosition = -1;
     GLint p_caustics_uni_deltaEnvTexture = -1;
+    GLint p_caustics_uni_light = -1;
+    GLint p_caustics_uni_modelMatrix = -1;
+    GLint p_caustics_uni_transformation = -1;
     GLint p_caustics_uni_depthMap = -1;
     GLint p_caustics_uni_environmentMap = -1;
-    GLint p_caustics_uni_light = -1;
     GLint p_caustics_uni_normalMap = -1;
-    GLint p_caustics_uni_transformation = -1;
     // caustics_env:
     GLuint p_caustics_env = 0;
     bool p_caustics_env_loaded = false;

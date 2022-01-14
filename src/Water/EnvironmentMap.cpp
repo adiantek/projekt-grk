@@ -5,7 +5,7 @@
 #include<Camera/Camera.hpp>
 
 namespace water {
-    EnvironmentMap::EnvironmentMap(float size, unsigned int textureSize, float y, glm::vec3 lightDirection, float maxDepth) {
+    EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, glm::vec3 lightDirection, float maxDepth) {
         this->size = size;
         this->textureSize = textureSize;
         this->y = y;
@@ -49,9 +49,8 @@ namespace water {
 
     void EnvironmentMap::useFramebuffer() {
         glUseProgram(resourceLoaderExternal->p_environment_map);
-
-        glm::vec3 translation = glm::vec3(-camera->position.x, -this->y, -camera->position.z);
-        this->lightCameraMatrix = this->lightCameraProjectionMatrix * this->lightCameraRotationMatrix * glm::translate(translation);
+        
+        this->lightCameraMatrix = this->lightCameraProjectionMatrix * this->lightCameraRotationMatrix * glm::translate(glm::vec3(-camera->position.x, -this->y, -camera->position.z));
 
         glGetIntegerv(GL_VIEWPORT, this->prevViewport);
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);

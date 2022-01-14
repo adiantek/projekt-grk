@@ -8,8 +8,7 @@ uniform sampler2D normalMap;
 uniform sampler2D environmentMap;
 uniform float deltaEnvTexture;
 uniform mat4 transformation;
-uniform mat4 rotation;
-uniform mat4 translation;
+uniform mat4 modelMatrix;
 uniform vec3 light;
 
 layout(location = 0) in vec3 vertexPosition;
@@ -21,8 +20,8 @@ out float waterDepth;
 out float depth;
 
 void main() {
-    vec4 depthInfo = texture(depthMap, texturePosition);
-    vec4 normalInfo = texture(normalMap, texturePosition);
+    vec4 depthInfo = texture(depthMap, vec2(texturePosition.x, 1.0 - texturePosition.y));
+    vec4 normalInfo = texture(normalMap, vec2(texturePosition.x, 1.0 - texturePosition.y));
 
     vec3 waterPosition = vec3(vertexPosition.xy + depthInfo.xy, vertexPosition.z + depthInfo.b + 9.0);//vertexPosition + depthInfo.xyz;
     vec3 waterNormal = normalize(normalInfo.xyz);
@@ -30,12 +29,12 @@ void main() {
     oldPosition = waterPosition;
 
 
-    vec4 projectedWaterPosition = transformation * rotation * vec4(waterPosition, 1.0);
+    vec4 projectedWaterPosition = transformation * modelMatrix * vec4(waterPosition, 1.0);
 
     vec2 currentPosition = projectedWaterPosition.xy;
 
     vec3 refracted = refract(normalize(light), waterNormal, eta);
-    vec4 projectedRefractionVector = transformation * vec4(refracted, 1.0);
+    vec4 projectedRefractionVector = transformation * vec4(refracted, 0.0);
 
     vec3 refractedDirection = projectedRefractionVector.xyz;
 
@@ -61,7 +60,7 @@ void main() {
 
     newPosition = environment.xyz;
 
-    vec4 projectedEnvPosition = transformation * translation * vec4(newPosition, 1.0);
+    vec4 projectedEnvPosition = transformation * vec4(newPosition, 1.0);
     depth = 0.5 + 0.5 * projectedEnvPosition.z / projectedEnvPosition.w;
 
     gl_Position = projectedEnvPosition;
