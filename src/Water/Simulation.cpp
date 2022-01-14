@@ -53,7 +53,7 @@ namespace water {
 
         glUniform1f(resourceLoaderExternal->p_water_simulation_uni_scale, this->size);
         glUniform1f(resourceLoaderExternal->p_water_simulation_uni_time, (float) glfwGetTime() * 5.0f);
-        glUniform2f(resourceLoaderExternal->p_water_simulation_uni_transition, camera->position.x, -camera->position.z);
+        glUniform2f(resourceLoaderExternal->p_water_simulation_uni_transition, camera->position.x, camera->position.z);
 
         int prevViewport[4];
         glGetIntegerv(GL_VIEWPORT, prevViewport);
