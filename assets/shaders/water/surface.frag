@@ -30,7 +30,7 @@ void main() {
 
     vec4 reflection = texture(skybox, vec3(reflectVector.x, -reflectVector.y, reflectVector.z));
 
-    vec4 transmission = vec4(0.00778151049, 0.01539574715, 0.01774450798, 1.0);
+    vec4 transmission = vec4(0.0778151049, 0.1539574715, 0.1774450798, 1.0);//vec4(0.00778151049, 0.01539574715, 0.01774450798, 1.0);
 
     fragmentColor = reflectivity * reflection + (1.0 - reflectivity) * transmission;
 

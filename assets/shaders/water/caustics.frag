@@ -2,7 +2,7 @@
 
 precision highp float;
 
-const float causticsFactor = 0.25;
+const float causticsFactor = 0.3;
 
 in vec3 oldPosition;
 in vec3 newPosition;

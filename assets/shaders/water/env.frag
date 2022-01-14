@@ -20,7 +20,7 @@ in float lightIntensity;
 out vec4 FragColor;
 
 const float bias = 0.003;
-const vec2 resolution = vec2(1572.0);
+const vec2 resolution = vec2(1024.0);
 
 float blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
   float intensity = 0.;
