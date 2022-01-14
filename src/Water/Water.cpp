@@ -1,4 +1,5 @@
 #include<Water/Water.hpp>
+#include<Time/Time.hpp>
 
 namespace water {
     Water::Water(float size, float y, unsigned int texureSize)
@@ -23,16 +24,26 @@ namespace water {
         Surface(size, y, texureSize / 2, simulation[5].getHeightMap(), simulation[5].getNormalMap(), glm::vec2(0.0f, size - 0.1f)),
         Surface(size, y, texureSize / 2, simulation[6].getHeightMap(), simulation[6].getNormalMap(), glm::vec2(0.0f, 0.1f - size)),
         Surface(size, y, texureSize / 2, simulation[7].getHeightMap(), simulation[7].getNormalMap(), glm::vec2(0.1f - size, 0.0f)),
-    } {}
+    } {
+        waterObject = this;
+        this->lastTime = (float) timeExternal->lastFrame;
+    }
 
     Water::~Water() {}
 
     void Water::draw() {
-        this->caustics.render();
-        for(int i=0; i<8; ++i)
-		    this->simulation[i].simulate();
         for(int i=0; i<9; ++i)
 		    this->surface[i].draw();
+    }
+
+    void Water::simulate() {
+        if ((float) timeExternal->lastFrame - lastTime > 0.017) {
+            this->caustics.render();
+            for(int i=0; i<8; ++i)
+		        this->simulation[i].simulate();
+            this->lastTime = (float) timeExternal->lastFrame;
+        }
+        
     }
     
     void Water::useFramebuffer() {
@@ -55,3 +66,5 @@ namespace water {
         return this->caustics.getCausticsMap();
     }
 }
+
+water::Water* waterObject;

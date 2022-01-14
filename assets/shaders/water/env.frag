@@ -36,18 +36,6 @@ float blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
 
 void main()
 {
-	vec3 objectColor = vec3(texture(colorTexture, vec2(vertexTexCoord2.x, 1.0 - vertexTexCoord2.y)));
-
-	vec3 lightDir = normalize(lightDirTS);
-	vec3 V = normalize(viewDirTS);
-	vec3 normal = normalize(vec3(texture(normalSampler, vec2(vertexTexCoord2.x, 1.0 - vertexTexCoord2.y))) * 2.0 - 1.0);
-	vec3 R = reflect(-normalize(lightDir),normal);
-	
-	float specular = pow(max(0.0,dot(R,V)),10.0);
-	float diffuse = max(0.0,dot(normal,normalize(lightDir)));
-
-    vec3 objectColorFinal = mix(objectColor,objectColor*diffuse+vec3(1.0)*specular,0.9);
-
     float computedLightIntensity = 0.5;
 
     computedLightIntensity += 0.2 * lightIntensity;
@@ -64,7 +52,31 @@ void main()
         //objectColorFinal += causticsIntensity;
         computedLightIntensity += causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
     } else {
-        computedLightIntensity = 0.3;
+        float shadow = 0.0;
+        vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0));
+        for(int x = -1; x <= 1; ++x)
+        {
+            for(int y = -1; y <= 1; ++y)
+            {
+                float pcfDepth = texture(caustics, lightPosition.xy + vec2(x, y) * texelSize).w; 
+                shadow += causticsDepth - bias > pcfDepth ? 1.0 : 0.0;        
+            }    
+        }
+        shadow /= 9.0;
+        computedLightIntensity = sqrt(shadow * 0.5);
     }
+
+	vec3 objectColor = vec3(texture(colorTexture, vec2(vertexTexCoord2.x, 1.0 - vertexTexCoord2.y)));
+
+	vec3 lightDir = normalize(lightDirTS);
+	vec3 V = normalize(viewDirTS);
+	vec3 normal = normalize(vec3(texture(normalSampler, vec2(vertexTexCoord2.x, 1.0 - vertexTexCoord2.y))) * 2.0 - 1.0);
+	vec3 R = reflect(-normalize(lightDir),normal);
+	
+	float specular = pow(max(0.0,dot(R,V)),10.0);
+	float diffuse = max(0.0,dot(normal,normalize(lightDir)));
+
+    vec3 objectColorFinal = mix(objectColor,objectColor*diffuse+vec3(1.0)*specular,0.9);
+
 	FragColor = vec4(objectColorFinal * computedLightIntensity, 1.0);
 }

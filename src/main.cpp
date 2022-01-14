@@ -51,7 +51,6 @@ bool initialized = false;
 
 ResourceLoader resourceLoader;
 
-water::Water* water1;
 // Skybox
 Skybox *skybox;
 
@@ -106,10 +105,10 @@ void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMat
 {
 	glUseProgram(resourceLoader.p_caustics_env);
 	glm::mat4 transformation = viewMatrix * modelMatrix;
-	glm::mat4 transformationLight = water1->getLightCamera();
+	glm::mat4 transformationLight = waterObject->getLightCamera();
 	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_caustics_env, 0);
 	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_caustics_env, 1);
-	Core::SetActiveTexture(water1->getCausticsMap(), "caustics", resourceLoader.p_caustics_env, 2);
+	Core::SetActiveTexture(waterObject->getCausticsMap(), "caustics", resourceLoader.p_caustics_env, 2);
 	glUniformMatrix4fv(resourceLoader.p_caustics_env_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 	glUniformMatrix4fv(resourceLoader.p_caustics_env_uni_transformation, 1, GL_FALSE, (float*)&transformation);
 	glUniformMatrix4fv(glGetUniformLocation(resourceLoader.p_caustics_env, "lightTransformation"), 1, GL_FALSE, (float*)&transformationLight);
@@ -160,15 +159,15 @@ void do_frame()
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 
-	water1->useFramebuffer();
-	water1->drawObject(shipContext, shipModelMatrix);
-	water1->drawObject(sphereContext, eu * glm::scale(glm::vec3(0.7f)));
-	water1->drawObject(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)));
-	water1->drawObject(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
-	water1->drawObject(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
-	water1->drawObject(sphereContext2, glm::translate(lightPos));
-	water1->drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)));
-	water1->stopUsingFramebuffer();
+	waterObject->useFramebuffer();
+	waterObject->drawObject(shipContext, shipModelMatrix);
+	waterObject->drawObject(sphereContext, eu * glm::scale(glm::vec3(0.7f)));
+	waterObject->drawObject(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)));
+	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	waterObject->drawObject(sphereContext2, glm::translate(lightPos));
+	waterObject->drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)));
+	waterObject->stopUsingFramebuffer();
 
 
 	camera->update();
@@ -177,6 +176,8 @@ void do_frame()
 	skybox->draw();
 
 	robot->update();
+
+	waterObject->simulate();
 	//ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
@@ -215,7 +216,7 @@ void do_frame()
 	// st = glfwGetTime() - st;
 	// LOGD("time: %.3f", st);
 
-	water1->draw();
+	waterObject->draw();
     glfwSwapBuffers(window);
 }
 
@@ -267,7 +268,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	water1 = new water::Water(50.0f, 9.0f, 300);
+	new water::Water(50.0f, 9.0f, 270);
 }
 
 int main(int argc, char **argv)

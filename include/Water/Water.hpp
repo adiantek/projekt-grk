@@ -9,6 +9,7 @@ namespace water {
         Water(float size, float y, unsigned int texureSize);
         ~Water();
         void draw();
+        void simulate();
         void useFramebuffer();
         void drawObject(Core::RenderContext context, glm::mat4 modelMatrix);
         void stopUsingFramebuffer();
@@ -18,5 +19,8 @@ namespace water {
         Caustics caustics;
         Simulation simulation[8];
         Surface surface[9];
+        float lastTime;
     };
 }
+
+extern water::Water* waterObject;
