@@ -32,7 +32,8 @@ namespace water {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         // Bind texture to framebuffer
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
-        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
+        glDrawBuffers(1, &drawBuffer);
         // Check for framebuffer errors
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             LOGE("Framebuffer not created");

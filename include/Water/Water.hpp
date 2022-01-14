@@ -19,7 +19,6 @@ namespace water {
         Caustics caustics;
         Simulation simulation[8];
         Surface surface[9];
-        float lastTime;
     };
 }
 
