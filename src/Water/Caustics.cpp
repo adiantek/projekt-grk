@@ -78,10 +78,11 @@ namespace water {
 
 
         glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * glm::eulerAngleX(glm::radians(-90.0f));
+        glm::mat4 lightCamera = this->environmentMap.getLightCamera();
 
         glUniform1f(resourceLoaderExternal->p_caustics_uni_deltaEnvTexture, 1.0f / (float) this->textureSize);
         glUniform3f(resourceLoaderExternal->p_caustics_uni_light, 0.0f, 0.0f, -1.0f); // TODO: remove hardcoded light dir
-        glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_transformation, 1, GL_FALSE, (float*)&this->environmentMap.getLightCamera());
+        glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_transformation, 1, GL_FALSE, (float*)&lightCamera);
         glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_modelMatrix, 1, GL_FALSE, (float*)&model);
 
         Core::DrawContext(this->geometry);
