@@ -38,14 +38,26 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
             indices.push_back(face.mIndices[j]);
     }
 
-    // TODO refactor this
-    // lots of redundant calls to glBufferSubData
+    VertexBuffer buffer(&POS_NORMAL_TEX_TANGENT_BITANGENT, mesh->mNumVertices);
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+        if (mesh->mTextureCoords[0] != nullptr) {
+            buffer.tex(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+        }
+        if (mesh->mVertices != nullptr) {
+            buffer.pos(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+        }
+        if (mesh->mNormals != nullptr) {
+            buffer.normal(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+        }
+        if (mesh->mTangents != nullptr) {
+            buffer.tangent(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+        }
+        if (mesh->mBitangents != nullptr) {
+            buffer.bitangent(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+        }
+        buffer.end();
+    }
 
-    unsigned int vertexDataBufferSize = sizeof(float) * mesh->mNumVertices * 3;
-    unsigned int vertexNormalBufferSize = sizeof(float) * mesh->mNumVertices * 3;
-    unsigned int vertexTexBufferSize = sizeof(float) * mesh->mNumVertices * 2;
-    unsigned int vertexTangentBufferSize = sizeof(float) * mesh->mNumVertices * 3;
-    unsigned int vertexBiTangentBufferSize = sizeof(float) * mesh->mNumVertices * 3;
 
     unsigned int vertexElementBufferSize = sizeof(unsigned int) * (unsigned int)indices.size();
     size = (unsigned int)indices.size();
@@ -57,32 +69,12 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexElementBufferSize, &indices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    //std::cout << vertexBuffer;
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
-
-    glBufferData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexBiTangentBufferSize, NULL, GL_STATIC_DRAW);
-
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertexDataBufferSize, mesh->mVertices);
-
-    glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize, vertexNormalBufferSize, mesh->mNormals);
-
-    glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize, vertexTexBufferSize, &textureCoord[0]);
-
-    glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize, vertexTangentBufferSize, mesh->mTangents);
-
-    glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize, vertexBiTangentBufferSize, mesh->mBitangents);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)(0));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(vertexNormalBufferSize + vertexDataBufferSize));
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize));
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize));
+    vertexBuffer = buffer.uploadVBO();
+    buffer.configureVAO(0, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->pos);
+    buffer.configureVAO(1, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->normal);
+    buffer.configureVAO(2, 2, GL_FLOAT, GL_FALSE, buffer.getFormat()->tex);
+    buffer.configureVAO(3, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->tangent);
+    buffer.configureVAO(4, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->bitangent);
 }
 
 void Core::RenderContext::initPlane(float width, float height, int widthSegments, int heightSegments) {

@@ -9,6 +9,9 @@ VertexBuffer::VertexBuffer(VertexFormat *format, uint32_t vertices) {
     this->vertices = vertices;
     this->buff = new uint8_t[format->getGPUSize() * vertices];
     this->buffPos = this->buff;
+    for (size_t i = 0; i < format->getGPUSize() * vertices; i++) {
+        this->buff[i] = 0;
+    }
 }
 
 VertexBuffer::~VertexBuffer() {

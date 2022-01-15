@@ -11,27 +11,27 @@ void VertexFormat::addPos() {
 }
 
 void VertexFormat::addColor() {
-    this->pos = this->size;
+    this->color = this->size;
     this->size += 4;  // 4 * sizeof(char)
 }
 
 void VertexFormat::addTex() {
-    this->pos = this->size;
+    this->tex = this->size;
     this->size += 8;  // sizeof(vec2)
 }
 
 void VertexFormat::addNormal() {
-    this->pos = this->size;
+    this->normal = this->size;
     this->size += 12;  // sizeof(vec3)
 }
 
 void VertexFormat::addTangent() {
-    this->pos = this->size;
+    this->tangent = this->size;
     this->size += 12;  // sizeof(vec3)
 }
 
 void VertexFormat::addBitangent() {
-    this->pos = this->size;
+    this->bitangent = this->size;
     this->size += 12;  // sizeof(vec3)
 }
 
