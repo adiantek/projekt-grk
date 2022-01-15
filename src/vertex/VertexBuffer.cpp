@@ -1,5 +1,6 @@
-#include <vertex/VertexBuffer.hpp>
 #include <Logger.h>
+
+#include <vertex/VertexBuffer.hpp>
 
 using namespace vertex;
 
@@ -42,13 +43,37 @@ VertexBuffer *VertexBuffer::tex(float u, float v) {
     return this;
 }
 
+VertexBuffer *VertexBuffer::normal(float x, float y, float z) {
+    float *p = (float *)(this->buffPos + this->format->normal);
+    *p++ = x;
+    *p++ = y;
+    *p++ = z;
+    return this;
+}
+
+VertexBuffer *VertexBuffer::tangent(float x, float y, float z) {
+    float *p = (float *)(this->buffPos + this->format->tangent);
+    *p++ = x;
+    *p++ = y;
+    *p++ = z;
+    return this;
+}
+
+VertexBuffer *VertexBuffer::bitangent(float x, float y, float z) {
+    float *p = (float *)(this->buffPos + this->format->bitangent);
+    *p++ = x;
+    *p++ = y;
+    *p++ = z;
+    return this;
+}
+
 VertexBuffer *VertexBuffer::end() {
     buffPos += this->format->getGPUSize();
     return this;
 }
 
 GLuint VertexBuffer::uploadVBO() {
-    uint32_t gotVertices = (uint32_t) (this->buffPos - this->buff) / this->format->getGPUSize();
+    uint32_t gotVertices = (uint32_t)(this->buffPos - this->buff) / this->format->getGPUSize();
     if (gotVertices != this->vertices) {
         LOGE("VertexBuffer failed: too many or too low vertices: got %d, expected %d", gotVertices, this->vertices);
         return 0;
@@ -61,8 +86,7 @@ GLuint VertexBuffer::uploadVBO() {
 }
 
 void VertexBuffer::configureVAO(GLuint index, GLint size, GLenum type, GLboolean normalized, int32_t pointer) {
-    const void *p = (const void*) ((const uint8_t*)0 + pointer);
+    const void *p = (const void *)((const uint8_t *)0 + pointer);
     glEnableVertexAttribArray(index);
     glVertexAttribPointer(index, size, type, normalized, this->format->getGPUSize(), p);
-
 }

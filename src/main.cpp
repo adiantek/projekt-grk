@@ -134,6 +134,7 @@ void do_frame()
 	
 	timeExternal->update();
 	controller->update();
+	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -146,7 +147,6 @@ void do_frame()
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
-	camera->update();
 
 	// SKYBOX
 	skybox->draw();

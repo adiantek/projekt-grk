@@ -1,9 +1,9 @@
 #include <opengl.h>
-#include <Camera/Skybox.hpp>
+
 #include <Camera/Camera.hpp>
+#include <Camera/Skybox.hpp>
 #include <ResourceLoader.hpp>
 #include <glm/glm.hpp>
-#include <Logger.h>
 #include <vertex/VertexBuffer.hpp>
 
 using namespace vertex;
@@ -31,14 +31,12 @@ Skybox::Skybox() {
     glBindVertexArray(VAO);
     skyboxVBO.uploadVBO();
     skyboxVBO.configureVAO(0, 3, GL_FLOAT, GL_FALSE, skyboxVBO.getFormat()->color);
-    
     cubemapTexture = resourceLoaderExternal->txt_skybox;
 };
 
-Skybox::~Skybox() {};
+Skybox::~Skybox(){};
 
-void Skybox::draw()
-{
+void Skybox::draw() {
     glm::mat4 view = glm::translate(camera->getPosition());
     glm::mat4 projection = camera->getTransformationMatrix();
 

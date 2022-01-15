@@ -31,6 +31,7 @@ class VertexFormat {
 extern VertexFormat POS;
 extern VertexFormat POS_COLOR;
 extern VertexFormat POS_TEX;
+extern VertexFormat POS_NORMAL_TEX_TANGENT_BITANGENT;
 
 void VertexFormats_load();
 
