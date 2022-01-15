@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <assimp/Importer.hpp>
 #include <vector>
+#include <vertex/VertexBuffer.hpp>
+
+using namespace vertex;
 
 void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
     vertexArray = 0;
@@ -87,7 +90,8 @@ void Core::RenderContext::initPlane(float width, float height, int widthSegments
     vertexBuffer = 0;
     vertexIndexBuffer = 0;
 
-    std::vector<float> buffer;
+    VertexBuffer buffer(&POS_NORMAL_TEX_TANGENT_BITANGENT, (heightSegments + 1) * (widthSegments + 1));
+
     std::vector<unsigned int> indices;
 
     float segmentWidth = width / (float)widthSegments;
@@ -100,25 +104,13 @@ void Core::RenderContext::initPlane(float width, float height, int widthSegments
         float y = (float)iy * segmentHeight - heightHalf;
         for (int ix = 0; ix < widthSegments + 1; ++ix) {
             float x = (float)ix * segmentWidth - widthHalf;
-            // Vertex
-            buffer.push_back(x);
-            buffer.push_back(y);
-            buffer.push_back(0.0f);
-            // Normal
-            buffer.push_back(0.0f);
-            buffer.push_back(0.0f);
-            buffer.push_back(1.0f);
-            // UV coords
-            buffer.push_back((float)ix / (float)widthSegments);
-            buffer.push_back((float)iy / (float)heightSegments);
-            // Tangent
-            buffer.push_back(1.0f);
-            buffer.push_back(0.0f);
-            buffer.push_back(0.0f);
-            // Bitangent
-            buffer.push_back(0.0f);
-            buffer.push_back(-1.0f);
-            buffer.push_back(0.0f);
+            (&buffer)
+                ->pos(x, y, 0.0f)
+                ->normal(0.0f, 0.0f, 1.0f)
+                ->tex((float)ix / (float)widthSegments, (float)iy / (float)heightSegments)
+                ->tangent(1.0f, 0.0f, 0.0f)
+                ->bitangent(0.0f, -1.0f, 0.0f)
+                ->end();
         }
     }
 
@@ -148,22 +140,12 @@ void Core::RenderContext::initPlane(float width, float height, int widthSegments
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * size, &indices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * buffer.size(), &buffer[0], GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * 4, (void*)(0));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * 4, (void*)(3 * 4));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * 4, (void*)(6 * 4));
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * 4, (void*)(8 * 4));
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * 4, (void*)(11 * 4));
+    vertexBuffer = buffer.uploadVBO();
+    buffer.configureVAO(0, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->pos);
+    buffer.configureVAO(1, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->normal);
+    buffer.configureVAO(2, 2, GL_FLOAT, GL_FALSE, buffer.getFormat()->tex);
+    buffer.configureVAO(3, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->tangent);
+    buffer.configureVAO(4, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->bitangent);
 }
 
 void Core::DrawVertexArray(const float* vertexArray, int numVertices, int elementSize) {
