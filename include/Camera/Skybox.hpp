@@ -10,5 +10,4 @@ class Skybox {
         unsigned int cubemapTexture;
 
         GLuint VAO = 0;
-        GLuint VBO = 0;
 };

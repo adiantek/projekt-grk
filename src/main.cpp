@@ -16,6 +16,7 @@
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
 #include <Camera/Skybox.hpp>
+#include <vertex/VertexFormats.hpp>
 
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
@@ -246,6 +247,7 @@ void init() {
 
 int main(int argc, char **argv)
 {
+	vertex::VertexFormats_load();
 	glfwSetErrorCallback(glfw_error_callback);
     if (glfwInit() != GL_TRUE)
     {
