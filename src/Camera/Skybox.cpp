@@ -30,7 +30,7 @@ Skybox::Skybox() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     skyboxVBO.uploadVBO();
-    skyboxVBO.configureVAO(0, 3, GL_FLOAT, GL_FALSE, skyboxVBO.getFormat()->color);
+    skyboxVBO.configureVAO(0, 3, GL_FLOAT, GL_FALSE, skyboxVBO.getFormat()->pos);
     cubemapTexture = resourceLoaderExternal->txt_skybox;
 };
 
