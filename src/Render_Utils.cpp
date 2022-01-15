@@ -16,21 +16,7 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
     vertexBuffer = 0;
     vertexIndexBuffer = 0;
 
-    std::vector<float> textureCoord;
     std::vector<unsigned int> indices;
-    //tex coord must be converted to 2d vecs
-    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-        if (mesh->mTextureCoords[0] != nullptr) {
-            textureCoord.push_back(mesh->mTextureCoords[0][i].x);
-            textureCoord.push_back(mesh->mTextureCoords[0][i].y);
-        } else {
-            textureCoord.push_back(0.0f);
-            textureCoord.push_back(0.0f);
-        }
-    }
-    if (mesh->mTextureCoords[0] == nullptr) {
-        LOGW("no uv coords");
-    }
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
         // retrieve all indices of the face and store them in the indices vector
@@ -138,29 +124,6 @@ void Core::RenderContext::initPlane(float width, float height, int widthSegments
     buffer.configureVAO(2, 2, GL_FLOAT, GL_FALSE, buffer.getFormat()->tex);
     buffer.configureVAO(3, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->tangent);
     buffer.configureVAO(4, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->bitangent);
-}
-
-void Core::DrawVertexArray(const float* vertexArray, int numVertices, int elementSize) {
-    glVertexAttribPointer(0, elementSize, GL_FLOAT, false, 0, vertexArray);
-    glEnableVertexAttribArray(0);
-
-    glDrawArrays(GL_TRIANGLES, 0, numVertices);
-}
-
-void Core::DrawVertexArrayIndexed(const float* vertexArray, const int* indexArray, int numIndexes, int elementSize) {
-    glVertexAttribPointer(0, elementSize, GL_FLOAT, false, 0, vertexArray);
-    glEnableVertexAttribArray(0);
-
-    glDrawElements(GL_TRIANGLES, numIndexes, GL_UNSIGNED_INT, indexArray);
-}
-
-void Core::DrawVertexArray(const VertexData& data) {
-    int numAttribs = std::min(8, data.NumActiveAttribs);
-    for (int i = 0; i < numAttribs; i++) {
-        glVertexAttribPointer(i, data.Attribs[i].Size, GL_FLOAT, false, 0, data.Attribs[i].Pointer);
-        glEnableVertexAttribArray(i);
-    }
-    glDrawArrays(GL_TRIANGLES, 0, data.NumVertices);
 }
 
 void Core::DrawContext(Core::RenderContext& context) {
