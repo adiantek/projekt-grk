@@ -25,8 +25,8 @@ void Model::loadModel(char* filename) {
     if (!scene || !scene->mRootNode) {
         LOGE("ERROR::ASSIMP Could not load model: %s\n", importer.GetErrorString());
     } else {
-        this->processNode(scene->mRootNode, scene, aiMatrix4x4());
         this->joints = this->loadJoints(scene);
+        this->processNode(scene->mRootNode, scene, aiMatrix4x4());
     }
 }
 
@@ -53,7 +53,7 @@ Mesh* Model::loadMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transforma
     std::string name = mesh->mName.C_Str();
     Mesh* finalMesh = new Mesh(name);
 
-    finalMesh->calculateRenderContext(mesh);
+    finalMesh->calculateRenderContext(mesh, this->bonesIds);
 
     printf("[] Model class work success!...\n");
     return finalMesh;
@@ -161,16 +161,16 @@ std::vector<Animator::Joint*> Model::loadJoints(const aiScene* scene) {
 
     for (auto const& [key, bone] : bones) {
         std::cout << key << ':' << bone << std::endl;
-        glm::mat4 transform = Model::to_mat4(bone->mNode->mTransformation);
+        glm::mat4 transform = glm::mat4(1.0f);
         Animator::Joint* newJoint = new Animator::Joint(index, key, transform);
-        newJoint->setLocalBindTransform(Model::to_mat4(bone->mOffsetMatrix));
+        newJoint->setLocalBindTransform(Model::to_mat4(bone->mOffsetMatrix) * glm::rotate(glm::radians(90.0f), glm::vec3(1, 0, 0)));
         ids.insert(std::pair<std::string, int>(key, index));
         _joints.push_back(newJoint);
         index++;
     }
 
     // Add root joint to front
-    Animator::Joint* rootJoint = new Animator::Joint(index, "root", glm::mat4(1.0f));
+    Animator::Joint* rootJoint = new Animator::Joint(0, "root", glm::mat4(1.0f));
 
     // Populate parents and children
     for (auto const& [key, bone] : bones) {
@@ -201,27 +201,45 @@ std::vector<Animator::Joint*> Model::loadJoints(const aiScene* scene) {
                 rootJoint->addChild(_joints[ids[key]]);
             }
         }
-        
     }
 
     _joints.insert(_joints.begin(), rootJoint);
 
-    // Print all transforms
-    for (Animator::Joint* joint : _joints) {
-        std::cout << joint->name << ": " << glm::to_string(joint->getLocalBindTransform()).c_str() << std::endl;
+    // Rebuild indexes
+    for (int i = 0; i < _joints.size(); i++) {
+        _joints[i]->index = i;
+        ids[_joints[i]->name] = i;
     }
 
+    // TODO: This is propably not used
     rootJoint->calculateInverseBindTransform(glm::mat4());
 
     if (bones.size() > 0) {
         Gizmos::printJointsTree(rootJoint);
     }
 
+    this->bonesIds = ids;
+
     return _joints;
 }
 
 std::vector<Animator::Joint*> Model::getJoints() {
     return this->joints;
+}
+
+bool Model::hasJoints() {
+    return this->joints.size() > 1;
+}
+
+Animator::Joint* Model::getRootJoint() {
+    return this->joints[0];
+}
+
+Animator::Joint* Model::getJoint(std::string name) {
+    std::cout << "Getting joint " << name << std::endl;
+    Animator::Joint* joint = this->joints[this->bonesIds[name]];
+    std::cout << "Found: " << joint->index << ", " << joint->name << std::endl;
+    return joint;
 }
 
 /** Convert from a row-major ASSIMP matrix to a column-major GLM matrix */

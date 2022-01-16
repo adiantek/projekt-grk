@@ -9,6 +9,8 @@ class Line {
         ~Line();
         int setMVP(glm::mat4 mvp);
         int setColor(glm::vec3 color);
+        int setStart(glm::vec3 start);
+        int setEnd(glm::vec3 end);
         int draw();
     private:
         int shaderProgram;
@@ -18,4 +20,9 @@ class Line {
         glm::vec3 endPoint;
         glm::mat4 MVP;
         glm::vec3 lineColor;
+
+        GLuint colorUni;
+        GLuint MVPUni;
+        GLuint startUni;
+        GLuint endUni;
 };

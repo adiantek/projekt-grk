@@ -17,6 +17,10 @@ void Time::update() {
     this->deltaTime = (float)(currentFrame - lastFrame);
     this->fps = (int)floor(1.0f / this->deltaTime);
     this->lastFrame = currentFrame;
+
+    Time::deltaTime = this->deltaTime;
+    Time::fps = this->fps;
+    Time::time = (float)currentFrame;
 }
 
 Time *timeExternal;

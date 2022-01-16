@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <vector>
 #include <glm/ext.hpp>
 #include <stdbool.h>
@@ -20,7 +21,7 @@ class Mesh {
     Mesh* setJointsCount(int jointsCount);
     Mesh* setJoints(std::vector<Animator::Joint*> joints);
 
-    void calculateRenderContext(aiMesh* mesh);
+    void calculateRenderContext(aiMesh* mesh, std::map<std::string, int> bonesIds);
 
     Core::RenderContext* getRenderContext();
     std::vector<Vertex> getVertices();

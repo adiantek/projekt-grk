@@ -1,6 +1,7 @@
 #pragma once
 #include "glm/glm.hpp"
 #include <opengl.h>
+#include <map>
 #include "objload.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -20,7 +21,7 @@ namespace Core
         void initFromOBJ(obj::Model& model);
 
 		void initFromAssimpMesh(aiMesh* mesh);
-		void initFromAssimpMeshWithArmature(aiMesh* mesh);
+		void initFromAssimpMeshWithArmature(aiMesh* mesh, std::map<std::string, int> bonesIds);
 
 		void initPlane(float width, float height, int widthSegments=1, int heightSegments=1);
 	};

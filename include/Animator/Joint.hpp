@@ -28,7 +28,6 @@ namespace Animator {
 
       Joint* setTransform(glm::mat4 transform);
 
-      //! TODO: Implement this function
       Joint* setLocalBindTransform(glm::mat4 localBindTransform);
       Joint* setParent(Joint* parent);
       Joint* addChild(Joint* child);

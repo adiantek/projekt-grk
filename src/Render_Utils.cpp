@@ -1,5 +1,6 @@
 #include "Render_Utils.h"
 
+#include <map>
 #include <algorithm>
 
 #include <assimp/Importer.hpp>
@@ -126,7 +127,7 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
     printf("TEST TEST");
 }
 
-void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh) {
+void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh, std::map<std::string, int> bonesIds) {
     vertexArray = 0;
     vertexBuffer = 0;
     vertexIndexBuffer = 0;
@@ -158,12 +159,13 @@ void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh) {
 
     printf("%d\n", mesh->mNumVertices);
     int* jointsBuffer = new int[mesh->mNumVertices];
-    int* jointsIds = new int[mesh->mNumVertices * 3];
+    float* jointsIds = new float[mesh->mNumVertices * 3];
     float* jointsWeights = new float[mesh->mNumVertices * 3];
     printf("%d\n", mesh->mNumVertices);
 
     for (unsigned int i = 0; i < mesh->mNumVertices * 3; i++) { jointsWeights[i] = 0.0f; }
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) { jointsBuffer[i] = 0; }
+    for (unsigned int i = 0; i < mesh->mNumVertices * 3; i++) { jointsIds[i] = 0.0f; }
 
     for (unsigned int i = 0; i < mesh->mNumBones; i++) {
         aiBone* bone = mesh->mBones[i];
@@ -175,9 +177,13 @@ void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh) {
             float weightValue = weight.mWeight;
 
             if (jointsBuffer[vertexId] < 3) {
-                jointsIds[vertexId * 3 + jointsBuffer[vertexId]] = i;
+                std::string boneName = bone->mName.C_Str();
+                // std::cout << boneName << ":" << bonesIds[boneName] << std::endl;
+                jointsIds[vertexId * 3 + jointsBuffer[vertexId]] = (float)bonesIds[boneName];
                 jointsWeights[vertexId * 3 + jointsBuffer[vertexId]] = weightValue;
                 jointsBuffer[vertexId]++;
+
+                // printf("VertexId: %d, JointId: %d, Weight: %f\n", vertexId, i, weightValue);
             }
         }
     }
@@ -188,7 +194,7 @@ void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh) {
     unsigned int vertexTexBufferSize = sizeof(float) * mesh->mNumVertices * 2;
     unsigned int vertexTangentBufferSize = sizeof(float) * mesh->mNumVertices * 3;
     unsigned int vertexBiTangentBufferSize = sizeof(float) * mesh->mNumVertices * 3;
-    unsigned int vertexJointsIdsBufferSize = sizeof(int) * mesh->mNumVertices * 3; // Maximum number of joints that can affect the vertex (indexes from the array)
+    unsigned int vertexJointsIdsBufferSize = sizeof(float) * mesh->mNumVertices * 3; // Maximum number of joints that can affect the vertex (indexes from the array)
     unsigned int vertexWeightsBufferSize = sizeof(float) * mesh->mNumVertices * 3; // Number of weights that affect the vertex (same as number of joints)
  
     printf("0\n");
@@ -224,7 +230,7 @@ void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh) {
 
     printf("3\n");
 
-    glBufferData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexBiTangentBufferSize, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexBiTangentBufferSize + vertexJointsIdsBufferSize + vertexWeightsBufferSize, NULL, GL_STATIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertexDataBufferSize, mesh->mVertices);
     glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize, vertexNormalBufferSize, mesh->mNormals);
     glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize, vertexTexBufferSize, &textureCoord[0]);
@@ -233,14 +239,19 @@ void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh) {
     glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexBiTangentBufferSize, vertexJointsIdsBufferSize, jointsIds);
     glBufferSubData(GL_ARRAY_BUFFER, vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexBiTangentBufferSize + vertexJointsIdsBufferSize, vertexWeightsBufferSize, jointsWeights);
 
-    printf("Weights: %.3f, %.3f, %.3f\n", jointsWeights[0], jointsWeights[1], jointsWeights[2]);
+    // for (int i = 0; i < mesh->mNumVertices * 3; i++) {
+    //     printf("%.3f, ", jointsIds[i]);
+    // }
+
+    // printf("ids: %d, %d, %d", jointsIds[8103], jointsIds[2701 * 3 + 1], jointsIds[2701 * 3 + 2]);
+    // printf("Weight: %.3f\n", jointsWeights[8103 + 2]);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)(0));
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize));
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(vertexNormalBufferSize + vertexDataBufferSize));
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize));
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize));
-    glVertexAttribPointer(5, 3, GL_INT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexJointsIdsBufferSize));
+    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexJointsIdsBufferSize));
     glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize + vertexJointsIdsBufferSize + vertexWeightsBufferSize));
 
     printf("END OF BONES\n");

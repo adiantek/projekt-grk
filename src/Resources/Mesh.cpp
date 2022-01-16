@@ -40,9 +40,9 @@ Core::RenderContext* Mesh::getRenderContext() {
 
 /* -- Joints -- */
 
-void Mesh::calculateRenderContext(aiMesh* mesh) {
+void Mesh::calculateRenderContext(aiMesh* mesh, std::map<std::string, int> bonesIds) {
     this->renderContext = Core::RenderContext();
-    this->renderContext.initFromAssimpMeshWithArmature(mesh);
+    this->renderContext.initFromAssimpMeshWithArmature(mesh, bonesIds);
 }
 
 Mesh* Mesh::setRootJoint(Animator::Joint* rootJoint) {

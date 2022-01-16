@@ -1,8 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-
 class Time {
   public:
     Time();
@@ -12,6 +9,8 @@ class Time {
     
     float deltaTime = 0.0f;
     int fps = 0;
+
+    inline static float time = 0.0f;
 
   private:
     double lastFrame = 0;

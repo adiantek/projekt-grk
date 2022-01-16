@@ -18,6 +18,8 @@ class GameObject {
     GameObject* setMaterial(Material* material);
     GameObject* setModel(Model* model);
 
+    glm::vec3 getScale();
+
     std::string getName();
 
     void init();
@@ -25,7 +27,8 @@ class GameObject {
     void draw();
 
     glm::mat4 getModelMatrix();
-    std::vector<glm::mat4> getJointTransforms(int meshIndex);
+    std::vector<glm::mat4> getJointTransforms();
+    Model* getModel();
     void addJointsToArray(Animator::Joint* headJoint, std::vector<glm::mat4>* jointMatrices);
 
    private:

@@ -6,17 +6,17 @@
 
 Line::Line(glm::vec3 start, glm::vec3 end) {
 
-    startPoint = start;
-    endPoint = end;
     lineColor = glm::vec3(1,1,1);
     MVP = glm::mat4(1.0f);
 
     const char *vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
         "uniform mat4 MVP;\n"
+        "uniform vec3 startPos;\n"
+        "uniform vec3 endPos;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = MVP * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "   gl_Position = MVP * vec4((1 - aPos.x) * startPos.x + (aPos.x * endPos.x), (1 - aPos.y) * startPos.y + (aPos.y * endPos.y), (1 - aPos.z) * startPos.z + (aPos.z * endPos.z), 1.0);\n"
         "}\0";
     const char *fragmentShaderSource = "#version 330 core\n"
         "out vec4 FragColor;\n"
@@ -49,9 +49,8 @@ Line::Line(glm::vec3 start, glm::vec3 end) {
     glDeleteShader(fragmentShader);
 
     vertices = {
-            start.x, start.y, start.z,
-            end.x, end.y, end.z,
-
+        0.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 1.0f,
     };
     
     glGenVertexArrays(1, &VAO);
@@ -65,8 +64,15 @@ Line::Line(glm::vec3 start, glm::vec3 end) {
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
-    glBindVertexArray(0); 
+    glBindVertexArray(0);
 
+    colorUni = glGetUniformLocation(shaderProgram, "color");
+    MVPUni = glGetUniformLocation(shaderProgram, "MVP");
+    startUni = glGetUniformLocation(shaderProgram, "startPos");
+    endUni = glGetUniformLocation(shaderProgram, "endPos");
+
+    this->setStart(start);
+    this->setEnd(end);
 }
 
 int Line::setMVP(glm::mat4 mvp) {
@@ -81,11 +87,23 @@ int Line::setColor(glm::vec3 color) {
 
 int Line::draw() {
     glUseProgram(shaderProgram);
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, &MVP[0][0]);
-    glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, &lineColor[0]);
+    glUniformMatrix4fv(this->MVPUni, 1, GL_FALSE, &MVP[0][0]);
+    glUniform3fv(this->colorUni, 1, &lineColor[0]);
+    glUniform3fv(this->startUni, 1, &startPoint[0]);
+    glUniform3fv(this->endUni, 1, &endPoint[0]);
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINES, 0, 2);
+    return 1;
+}
+
+int Line::setStart(glm::vec3 start) {
+    startPoint = start;
+    return 1;
+}
+
+int Line::setEnd(glm::vec3 end) {
+    endPoint = end;
     return 1;
 }
 

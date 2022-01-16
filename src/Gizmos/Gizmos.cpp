@@ -1,6 +1,8 @@
 #include <Render_Utils.h>
 #include <opengl.h>
 #include <iostream>
+#include <string>
+#include <map>
 
 #include <Animator/Joint.hpp>
 #include <Camera/Camera.hpp>
@@ -12,81 +14,77 @@
 
 void Gizmos::init() {}
 
-void Gizmos::cube(glm::vec3 position) {
+void Gizmos::cube(std::string id, glm::vec3 position) {
     glm::vec3 size = glm::vec3(0.05f);
     glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f);
 
-    return Gizmos::cube(position, size, color);
+    return Gizmos::cube(id, position, size, color);
 }
 
-void Gizmos::cube(glm::vec3 position, glm::vec3 size) {
+void Gizmos::cube(std::string id, glm::vec3 position, glm::vec3 size) {
     glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f);
 
-    return Gizmos::cube(position, size, color);
+    return Gizmos::cube(id, position, size, color);
 }
 
-void Gizmos::cube(glm::vec3 position, float size) {
+void Gizmos::cube(std::string id, glm::vec3 position, float size) {
     glm::vec3 sizeVector = glm::vec3(size);
     glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f);
 
-    return Gizmos::cube(position, sizeVector, color);
+    return Gizmos::cube(id, position, sizeVector, color);
 }
 
-void Gizmos::cube(glm::vec3 position, float size, glm::vec3 color) {
+void Gizmos::cube(std::string id, glm::vec3 position, float size, glm::vec3 color) {
     glm::vec3 sizeVector = glm::vec3(size);
 
-    return Gizmos::cube(position, sizeVector, color);
+    return Gizmos::cube(id, position, sizeVector, color);
 }
 
-void Gizmos::cube(glm::vec3 position, glm::vec3 size, glm::vec3 color) {
-    Gizmos::line(position + glm::vec3(-size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, -size.y / 2, size.z / 2), color);
-    Gizmos::line(position + glm::vec3(-size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, -size.y / 2, size.z / 2), color);
-    Gizmos::line(position + glm::vec3(size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, -size.y / 2, -size.z / 2), color);
-    Gizmos::line(position + glm::vec3(size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, -size.y / 2, -size.z / 2), color);
+void Gizmos::cube(std::string id, glm::vec3 position, glm::vec3 size, glm::vec3 color) {
+    Gizmos::line(id + "_1", position + glm::vec3(-size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, -size.y / 2, size.z / 2), color);
+    Gizmos::line(id + "_2", position + glm::vec3(-size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, -size.y / 2, size.z / 2), color);
+    Gizmos::line(id + "_3", position + glm::vec3(size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, -size.y / 2, -size.z / 2), color);
+    Gizmos::line(id + "_4", position + glm::vec3(size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, -size.y / 2, -size.z / 2), color);
 
-    Gizmos::line(position + glm::vec3(-size.x / 2, size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, size.z / 2), color);
-    Gizmos::line(position + glm::vec3(-size.x / 2, size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, size.z / 2), color);
-    Gizmos::line(position + glm::vec3(size.x / 2, size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, -size.z / 2), color);
-    Gizmos::line(position + glm::vec3(size.x / 2, size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, -size.z / 2), color);
+    Gizmos::line(id + "_5", position + glm::vec3(-size.x / 2, size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, size.z / 2), color);
+    Gizmos::line(id + "_6", position + glm::vec3(-size.x / 2, size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, size.z / 2), color);
+    Gizmos::line(id + "_7", position + glm::vec3(size.x / 2, size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, -size.z / 2), color);
+    Gizmos::line(id + "_8", position + glm::vec3(size.x / 2, size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, -size.z / 2), color);
 
-    Gizmos::line(position + glm::vec3(-size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, -size.z / 2), color);
-    Gizmos::line(position + glm::vec3(-size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, size.z / 2), color);
-    Gizmos::line(position + glm::vec3(size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, -size.z / 2), color);
-    Gizmos::line(position + glm::vec3(size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, size.z / 2), color);
+    Gizmos::line(id + "_9", position + glm::vec3(-size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, -size.z / 2), color);
+    Gizmos::line(id + "_10", position + glm::vec3(-size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(-size.x / 2, size.y / 2, size.z / 2), color);
+    Gizmos::line(id + "_11", position + glm::vec3(size.x / 2, -size.y / 2, -size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, -size.z / 2), color);
+    Gizmos::line(id + "_12", position + glm::vec3(size.x / 2, -size.y / 2, size.z / 2), position + glm::vec3(size.x / 2, size.y / 2, size.z / 2), color);
 }
 
-void Gizmos::line(glm::vec3 start, glm::vec3 end) {
-    return Gizmos::line(start, end, glm::vec3(1.0f, 0.0f, 0.0f));
+void Gizmos::line(std::string id, glm::vec3 start, glm::vec3 end) {
+    return Gizmos::line(id, start, end, glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
-void Gizmos::line(glm::vec3 start, glm::vec3 end, glm::vec3 color) {
-    Line* line = new Line(start, end);
+void Gizmos::line(std::string id, glm::vec3 start, glm::vec3 end, glm::vec3 color) {
+    std::map<std::string, Line*>::iterator iter = Gizmos::lines.find(id);
+    Line* line;
+
+    if (iter != Gizmos::lines.end()) {
+        line = iter->second;
+        line->setStart(start);
+        line->setEnd(end);
+        line->setColor(color);
+    } else {
+        line = new Line(start, end);
+        line->setColor(color);
+
+        Gizmos::lines[id] = line;
+    }
+
     line->setMVP(camera->getTransformationMatrix());
-    line->setColor(color);
     line->draw();
 }
 
-void Gizmos::joint(glm::vec3 offset, Animator::Joint* joint) {
-    glm::mat4 transformation = glm::inverse(joint->getLocalBindTransform());
-    Animator::Joint* parent = joint;
-
-    glm::vec3 position = glm::vec3(transformation[3]);
-
-    // for (Animator::Joint* child : joint->children) {
-    //     glm::vec3 childPosition = glm::vec3(child->getLocalBindTransform()[3]);
-    //     Gizmos::line(position, childPosition);
-    // }
-
-    Line* line = new Line(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.1f));
-    line->setMVP(camera->getTransformationMatrix() * transformation);
-    line->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-    line->draw();
+void Gizmos::grid(std::string id, float size) {
 }
 
-void Gizmos::grid(float size) {
-}
-
-void Gizmos::grid(float size, glm::vec3 color) {
+void Gizmos::grid(std::string id, float size, glm::vec3 color) {
 }
 
 void Gizmos::printJointsTree(Animator::Joint* joint) {
@@ -94,7 +92,7 @@ void Gizmos::printJointsTree(Animator::Joint* joint) {
 }
 
 void Gizmos::printJointsTree(Animator::Joint* joint, std::string prefix) {
-    std::cout << prefix << joint->name << std::endl;
+    std::cout << prefix << "(" << joint->index << ") " << joint->name << std::endl;
 
     for (Animator::Joint* child : joint->children) {
         Gizmos::printJointsTree(child, prefix + "  ");

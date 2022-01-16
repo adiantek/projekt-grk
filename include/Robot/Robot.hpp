@@ -5,6 +5,17 @@
 
 #include <Resources/GameObject.hpp>
 
+struct RobotLeg {
+    int id;
+
+    Animator::Joint *upperJoint;
+    Animator::Joint *lowerJoint;
+
+    glm::vec3 attachmentPoint;
+    glm::vec3 attachmentEstimation;
+    glm::vec3 relativeAttachmentDestination;
+};
+
 class Robot {
   public:
     // SPEEDS
@@ -32,7 +43,6 @@ class Robot {
 
     void setMoveDirectionVector(glm::vec3 direction);
 
-    void toggleIncreasedSpeedMode();
     void enableIncreasedSpeedMode();
     void disableIncreasedSpeedMode();
     
@@ -48,7 +58,13 @@ class Robot {
     float movementVector;
 
     void draw();
+    void createLegs();
+    void updateLegs();
+    void applyBodyTransformation(glm::mat4 transformation);
+
     GameObject* gameObject;
+    std::vector<RobotLeg*> legs;
+    Animator::Joint* body;
 };
 
 extern Robot *robot;
