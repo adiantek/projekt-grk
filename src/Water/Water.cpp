@@ -39,8 +39,8 @@ namespace water {
 
     void Water::update() {
         this->caustics.update();
-        for(int i=0; i<8; ++i)
-            this->simulation[i].update();
+        for(auto & object : this->simulation)
+            object.update();
     }
     
     void Water::useFramebuffer() {
