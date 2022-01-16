@@ -20,7 +20,7 @@ void main() {
 
         float ratio;
 
-        if (newArea == 0.) {
+        if (newArea == 0.0) {
             ratio = 2.0e+20;
         } else {
             ratio = oldArea / newArea;

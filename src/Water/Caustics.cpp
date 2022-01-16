@@ -68,7 +68,7 @@ namespace water {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->simulation.getHeightMap());
-        glUniform1i(resourceLoaderExternal->p_caustics_uni_depthMap, 0);
+        glUniform1i(resourceLoaderExternal->p_caustics_uni_heightMap, 0);
         glActiveTexture(GL_TEXTURE0 + 1);
         glBindTexture(GL_TEXTURE_2D, this->environmentMap.getMapTexture());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_environmentMap, 1);
@@ -80,8 +80,8 @@ namespace water {
         glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * glm::eulerAngleX(glm::radians(-90.0f));
         glm::mat4 lightCamera = this->environmentMap.getLightCamera();
 
-        glUniform1f(resourceLoaderExternal->p_caustics_uni_deltaEnvTexture, 1.0f / (float) this->textureSize);
-        glUniform3f(resourceLoaderExternal->p_caustics_uni_light, 0.0f, 0.0f, -1.0f); // TODO: remove hardcoded light dir
+        glUniform1f(resourceLoaderExternal->p_caustics_uni_height, this->y);
+        glUniform3f(resourceLoaderExternal->p_caustics_uni_lightDirection, 0.0f, 0.0f, -1.0f); // TODO: remove hardcoded light dir
         glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_transformation, 1, GL_FALSE, (float*)&lightCamera);
         glUniformMatrix4fv(resourceLoaderExternal->p_caustics_uni_modelMatrix, 1, GL_FALSE, (float*)&model);
 
