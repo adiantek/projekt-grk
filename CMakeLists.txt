@@ -53,7 +53,7 @@ if (EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libassimp.a")
     target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libzlibstatic.a")
     target_compile_definitions(${PROJECT_NAME} PUBLIC -DEMSCRIPTEN=1)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-O3 -g -s ALLOW_MEMORY_GROWTH=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s EXPORTED_RUNTIME_METHODS=ccall --preload-file ../assets")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-O0 -g -s ALLOW_MEMORY_GROWTH=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s EXPORTED_RUNTIME_METHODS=ccall --preload-file ../assets")
     add_custom_command(
         TARGET ${PROJECT_NAME}  POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
