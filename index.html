@@ -120,6 +120,9 @@
     <textarea id="output"></textarea>
 
     <script type='text/javascript'>
+      window.addEventListener("keyup", function (ev) {
+        ev.preventDefault();
+      });
       function loadMouse() {
         function pointerLockChange() {
           const pointerLock = document['pointerLockElement'] === Module['canvas'] ||

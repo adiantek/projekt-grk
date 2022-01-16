@@ -15,20 +15,16 @@
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
-#include <Camera/Skybox.hpp>
+#include <vertex/VertexFormats.hpp>
 
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
 #include <Time/Time.hpp>
-#include <Gizmos/Gizmos.hpp>
 #include <Resources/GameObject.hpp>
+#include <world/World.hpp>
 
-#include "Shader_Loader.h"
 #include "Render_Utils.h"
 #include "Texture.h"
-
-// Core elements
-Core::Shader_Loader shaderLoader;
 
 Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
@@ -51,8 +47,9 @@ bool initialized = false;
 
 ResourceLoader resourceLoader;
 
-// Skybox
-Skybox *skybox;
+world::World *w;
+
+
 
 void glfw_error_callback(int, const char *err_str)
 {
@@ -144,6 +141,7 @@ void do_frame()
 	
 	timeExternal->update();
 	controller->update();
+	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -169,16 +167,12 @@ void do_frame()
 	waterObject->drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)));
 	waterObject->stopUsingFramebuffer();
 
-
-	camera->update();
-
-	// SKYBOX
-	skybox->draw();
-
-	robot->update();
-
 	waterObject->simulate();
-	//ground->draw();
+	
+	w->update();
+	w->draw(viewMatrix);
+
+	ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -202,13 +196,14 @@ void do_frame()
 
 	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
 	
-	drawObjectTexNormalCaustics(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
-	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
-	drawObjectTexNormalCaustics(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
-	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
-	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
+	drawObjectTexNormalCaustics(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.tex_earth, resourceLoader.tex_earthNormal);
+	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_asteroidNormal);
+	drawObjectTexNormalCaustics(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal);
+	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
+	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
+
 	
 	// double st = glfwGetTime();
 	// for (int i = 0; i < 1000; i++)
@@ -241,21 +236,12 @@ void init() {
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();
 
-	// Initialize Gizmos (wireframe cubes, lines, etc... - For testing purposes)
-	Gizmos::init();
-
-	// SKYBOX
-	skybox = new Skybox();
-
 	// Basic 
 	ground
 		->setModel(Resources::MODELS.PLANE)
 		->setMaterial(Resources::MATERIALS.DEFAULT)
 		->setPosition(glm::vec3(0, 0.0f, 0))
 		->setScale(glm::vec3(10, 10, 10));
-
-	new Camera(1280, 768);
-	new Robot();
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -269,10 +255,12 @@ void init() {
 	planeContext.initPlane(2.0f, 2.0f);
 
 	new water::Water(50.0f, 9.0f, 270);
+	w = new world::World();
 }
 
 int main(int argc, char **argv)
 {
+	vertex::VertexFormats_load();
 	glfwSetErrorCallback(glfw_error_callback);
     if (glfwInit() != GL_TRUE)
     {
@@ -297,8 +285,10 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
+			glfwSwapInterval(0);
 			new Time();
 			new Controller(window);
+			new Camera(1280, 768);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {

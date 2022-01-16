@@ -1,14 +1,20 @@
 #pragma once
 
-class Skybox {
+#include <world/Object3D.hpp>
+
+namespace cam {
+
+class Skybox : world::Object3D {
     public:
         Skybox();
-        ~Skybox();
-        void draw();
+        virtual ~Skybox();
+
+        void update() override;
+        void draw(glm::mat4 mat) override;
 
     private:
-        unsigned int cubemapTexture;
-
         GLuint VAO = 0;
-        GLuint VBO = 0;
+        GLuint vbo;
 };
+
+}

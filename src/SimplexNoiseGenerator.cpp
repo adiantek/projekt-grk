@@ -43,7 +43,7 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r, ResourceLoader *res) {
     glBindTexture(GL_TEXTURE_2D, this->fbTxt);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 16, 16, 0, GL_RED, GL_FLOAT, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->fbTxt, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -70,7 +70,7 @@ void SimplexNoiseGenerator::draw(ResourceLoader *res) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indices);
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, 0);
 
-    glReadPixels(0, 0, 64, 64, GL_RGBA, GL_UNSIGNED_BYTE, this->noiseValues);
+    glReadPixels(0, 0, 16, 16, GL_RED, GL_FLOAT, this->noiseValues);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

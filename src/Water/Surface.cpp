@@ -10,7 +10,7 @@ namespace water {
         this->normalMap = normalMap;
         this->offset = offset;
         this->geometry.initPlane(size, size, textureSize, textureSize);
-        this->skybox = resourceLoaderExternal->txt_skybox;
+        this->skybox = resourceLoaderExternal->tex_skybox;
     }
 
     Surface::~Surface() {}

@@ -15,28 +15,35 @@ public:
      */
     bool loadResources();
     void dumpProgram(const char *name, GLuint program);
+    static char *readFile(const char *name, size_t *size);
+    static void saveFile(const char *file, const char *data, size_t size);
 
     int totalResources = 0;
     int loadedResources = 0;
 
     // textures
-    GLuint txt_grid = 0;
-    GLuint txt_gridColor = 0;
-    GLuint txt_earth = 0;
-    GLuint txt_earth2 = 0;
-    GLuint txt_moon = 0;
-    GLuint txt_ship = 0;
-    GLuint txt_earthNormal = 0;
-    GLuint txt_asteroidNormal = 0;
-    GLuint txt_shipNormal = 0;
-    GLuint txt_asteroid = 0;
-    GLuint txt_wall = 0;
-    GLuint txt_wallNormal = 0;
-    GLuint txt_wallHeight = 0;
-    GLuint txt_skybox = 0;
-    GLuint txt_dummy = 0;
+    GLuint tex_grid = 0;
+    GLuint tex_gridColor = 0;
+    GLuint tex_earth = 0;
+    GLuint tex_earth2 = 0;
+    GLuint tex_moon = 0;
+    GLuint tex_ship = 0;
+    GLuint tex_earthNormal = 0;
+    GLuint tex_asteroidNormal = 0;
+    GLuint tex_shipNormal = 0;
+    GLuint tex_asteroid = 0;
+    GLuint tex_wall = 0;
+    GLuint tex_wallNormal = 0;
+    GLuint tex_wallHeight = 0;
+    GLuint tex_skybox = 0;
+    GLuint tex_dummy = 0;
 
     // programs:
+    GLuint p_simple_color_shader = 0;
+    bool p_simple_color_shader_loaded = false;
+    GLint p_simple_color_shader_attr_vertexColor = -1;
+    GLint p_simple_color_shader_attr_vertexPosition = -1;
+    GLint p_simple_color_shader_uni_transformation = -1;
 
     GLuint p_skybox_shader = 0;
     bool p_skybox_shader_loaded = false;
@@ -190,7 +197,6 @@ private:
      * true if and only if program was loaded right now
      */
     bool loadProgram(const char *name, GLuint *out_program, bool *out_loaded, int shadersCount, ...);
-    char *readFile(const char *name, size_t *size);
     GLuint compileShader(GLenum shaderType, const char *name);
     GLuint createProgram(const char *name, int shadersCount, GLuint *shaders);
 };

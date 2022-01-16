@@ -3,7 +3,8 @@
 #include <Robot/Robot.hpp>
 #include <Resources/Resources.hpp>
 #include <Time/Time.hpp>
-#include <Gizmos/Gizmos.hpp>
+
+using namespace entity;
 
 Robot::Robot() {
     robot = this;
@@ -30,6 +31,10 @@ Robot::Robot() {
 
     this->mode = Robot::MODE_STATIONARY;
     this->movementSpeed = Robot::DEFAULT_WALKING_MOVEMENT_SPEED;
+}
+
+Robot::~Robot() {
+    // TODO oczyscic robota
 }
 
 // void Robot::toggleIncreasedSpeedMode() {
@@ -133,17 +138,11 @@ void Robot::update() {
         }
     }
 
-    // Draw Gizmos for testing purposes
-    Gizmos::cube(this->position);
-
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);
-
-    // Draw object
-    this->draw();
 }
 
-void Robot::draw() {
+void Robot::draw(glm::mat4 mat) {
     this->gameObject->draw();
 }
 

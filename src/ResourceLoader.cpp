@@ -23,25 +23,32 @@ ResourceLoader::~ResourceLoader() {
 }
 
 void ResourceLoader::loadTextures() {
-    loadTexture("assets/textures/grid.png", &this->txt_grid);
-    loadTexture("assets/textures/grid_color.png", &this->txt_gridColor);
-    loadTexture("assets/textures/earth.png", &this->txt_earth);
-    loadTexture("assets/textures/earth2.png", &this->txt_earth2);
-    loadTexture("assets/textures/moon.png", &this->txt_moon);
-    loadTexture("assets/textures/spaceship.png", &this->txt_ship);
-    loadTexture("assets/textures/earth2_normals.png", &this->txt_earthNormal);
-    loadTexture("assets/textures/moon_normals.png", &this->txt_asteroidNormal);
-    loadTexture("assets/textures/spaceship_normals.png", &this->txt_shipNormal);
-    loadTexture("assets/textures/asteroid.png", &this->txt_asteroid);
-    loadTexture("assets/textures/wall.png", &this->txt_wall);
-    loadTexture("assets/textures/wall_normal.png", &this->txt_wallNormal);
-    loadTexture("assets/textures/wall_height.png", &this->txt_wallHeight);
-    loadTexture("assets/textures/dummy.png", &this->txt_dummy);
-    loadTextureCubeMap(&this->txt_skybox);
+    loadTexture("assets/textures/grid.png", &this->tex_grid);
+    loadTexture("assets/textures/grid_color.png", &this->tex_gridColor);
+    loadTexture("assets/textures/earth.png", &this->tex_earth);
+    loadTexture("assets/textures/earth2.png", &this->tex_earth2);
+    loadTexture("assets/textures/moon.png", &this->tex_moon);
+    loadTexture("assets/textures/spaceship.png", &this->tex_ship);
+    loadTexture("assets/textures/earth2_normals.png", &this->tex_earthNormal);
+    loadTexture("assets/textures/moon_normals.png", &this->tex_asteroidNormal);
+    loadTexture("assets/textures/spaceship_normals.png", &this->tex_shipNormal);
+    loadTexture("assets/textures/asteroid.png", &this->tex_asteroid);
+    loadTexture("assets/textures/wall.png", &this->tex_wall);
+    loadTexture("assets/textures/wall_normal.png", &this->tex_wallNormal);
+    loadTexture("assets/textures/wall_height.png", &this->tex_wallHeight);
+    loadTexture("assets/textures/dummy.png", &this->tex_dummy);
+    loadTextureCubeMap(&this->tex_skybox);
 }
 
 void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
+
+    LOAD_PROGRAM(simple_color_shader, 2, "simple_color_shader.frag", "simple_color_shader.vert") {
+        // this->dumpProgram("simple_color_shader", this->p_simple_color_shader);
+        this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");
+        this->p_simple_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_color_shader, "vertexPosition");
+        this->p_simple_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_color_shader, "transformation");
+    }
 
     LOAD_PROGRAM(skybox_shader, 2, "cubemap/cubemap.frag", "cubemap/cubemap.vert") {
         // this->dumpProgram("skybox_shader", this->p_skybox_shader);
@@ -380,7 +387,7 @@ readFile:
     }
     char *mem = (char *)malloc(s);
     *size = s;
-    int r = fread(mem, 1, s, f);
+    size_t r = fread(mem, 1, s, f);
     if (r != s) {
         LOGE("fread %d != %d (ret, size): %d (%s)", r, s, errno, strerror(errno));
         free(mem);
@@ -390,6 +397,30 @@ readFile:
         LOGE("fclose: %d (%s)", errno, strerror(errno));
     }
     return mem;
+}
+
+void ResourceLoader::saveFile(const char *file, const char *data, size_t size) {
+    FILE *f = fopen(file, "wb");
+    if (!f) {
+        LOGE("fopen(%s): %d (%s)", file, errno, strerror(errno));
+        return;
+    }
+    goto writeFile;
+closeFile:
+    if (fclose(f)) {
+        LOGE("fclose: %d (%s)", errno, strerror(errno));
+    }
+    return;
+writeFile:
+    size_t r = fwrite(data, 1, size, f);
+    if (r != size) {
+        LOGE("fwrite %d != %d (ret, size): %d (%s)", r, size, errno, strerror(errno));
+        goto closeFile;
+    }
+    if (fclose(f)) {
+        LOGE("fclose: %d (%s)", errno, strerror(errno));
+    }
+    return;
 }
 
 GLuint ResourceLoader::compileShader(GLenum shaderType, const char *name) {

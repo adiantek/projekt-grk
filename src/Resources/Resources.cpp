@@ -28,7 +28,7 @@ void Resources::initTextures() {
 //---------------------------- MATERIALS --------------------------------//
 ///////////////////////////////////////////////////////////////////////////
 void Resources::initMaterials() {
-    LOGE("Initializing materials...\n");
+    LOGI("Initializing materials...");
 
     Resources::MATERIALS.DEFAULT
         ->setProgram(&resourceLoaderExternal->p_shader_color)

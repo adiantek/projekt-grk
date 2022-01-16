@@ -30,7 +30,7 @@ public:
     glm::vec3 getPosition();
     float getPitch();
 
-    float angleAroundChange;
+    float angleYawChange;
     float anglePitchChange;
 
     float horizontalDistance();
@@ -59,7 +59,7 @@ protected:
     /* default view distance value */
     float distance = 1.0f;
 
-    float angleAround = 180;
+    float angleYaw = 180;
     float anglePitch = 20;
     float yaw = 0;
 
