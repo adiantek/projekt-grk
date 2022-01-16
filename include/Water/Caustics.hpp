@@ -22,6 +22,7 @@ class Caustics {
     void addWorldObject(world::Object3D* object);
     void removeWorldObject(world::Object3D* object);
     void clearWorldObjects();
+
    private:
     EnvironmentMap environmentMap;
     Simulation simulation;

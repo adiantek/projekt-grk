@@ -19,9 +19,9 @@ class Water : world::Object3D {
     void addWorldObject(world::Object3D* object);
     void removeWorldObject(world::Object3D* object);
     void clearWorldObjects();
-    Caustics caustics;
 
    private:
+    Caustics caustics;
     Simulation simulation[8];
     Surface surface[9];
 };
