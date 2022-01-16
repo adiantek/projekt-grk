@@ -14,9 +14,10 @@ class ChunkBorderDebugRenderer : Object3D {
    private:
     bool prepared = false;
     ChunkCoords currCords;
-    GLuint vbo[2];
-    GLuint vao[2];
-    vertex::VertexBuffer *vb[2];
+    uint32_t sizeOne;
+    GLuint vbo;
+    GLuint vao;
+    vertex::VertexBuffer *vb;
 
    public:
     ChunkBorderDebugRenderer();

@@ -6,16 +6,14 @@
 using namespace world;
 
 ChunkBorderDebugRenderer::ChunkBorderDebugRenderer() {
-    glGenVertexArrays(2, this->vao);
-    glGenBuffers(2, this->vbo);
-    this->vb[0] = new vertex::VertexBuffer(&vertex::POS_COLOR, 976);
-    this->vb[1] = new vertex::VertexBuffer(&vertex::POS_COLOR, 144);
+    glGenVertexArrays(1, &this->vao);
+    glGenBuffers(1, &this->vbo);
+    this->vb = new vertex::VertexBuffer(&vertex::POS_COLOR, 976 + 144);
 }
 
 ChunkBorderDebugRenderer::~ChunkBorderDebugRenderer() {
-    glDeleteBuffers(2, this->vbo);
-    delete this->vb[0];
-    delete this->vb[1];
+    glDeleteBuffers(1, &this->vbo);
+    delete this->vb;
 }
 
 void ChunkBorderDebugRenderer::update() {
@@ -32,8 +30,7 @@ void ChunkBorderDebugRenderer::update() {
     this->currCords.x = pos.coords.x;
     this->currCords.z = pos.coords.z;
 
-    this->vb[0]->clear();
-    this->vb[1]->clear();
+    this->vb->clear();
 
     float minY = 0;
     float maxY = 256;
@@ -48,26 +45,26 @@ void ChunkBorderDebugRenderer::update() {
                 // skip dla granic sekcji
                 continue;
             }
-            this->vb[0]->pos(cx + (float)x, minY, cz + (float)z)->color(1.0F, 0.0F, 0.0F, 0.5F)->end();
-            this->vb[0]->pos(cx + (float)x, maxY, cz + (float)z)->color(1.0F, 0.0F, 0.0F, 0.5F)->end();
+            this->vb->pos(cx + (float)x, minY, cz + (float)z)->color(1.0F, 0.0F, 0.0F, 0.5F)->end();
+            this->vb->pos(cx + (float)x, maxY, cz + (float)z)->color(1.0F, 0.0F, 0.0F, 0.5F)->end();
         }
     }
 
     // scianki po dwie jednostki "na stojaco"
     for (int x = 2; x < 16; x += 2) {
-        this->vb[0]->pos(cx + (float)x, minY, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx + (float)x, maxY, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + (float)x, minY, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + (float)x, maxY, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
 
-        this->vb[0]->pos(cx + (float)x, minY, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx + (float)x, maxY, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + (float)x, minY, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + (float)x, maxY, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
     }
 
     for (int z = 2; z < 16; z += 2) {
-        this->vb[0]->pos(cx, minY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx, maxY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx, minY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx, maxY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
 
-        this->vb[0]->pos(cx + 16.0F, minY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx + 16.0F, maxY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, minY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, maxY, cz + (float)z)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
     }
 
     // scianki po dwie jednostki "na lezaco"
@@ -78,29 +75,24 @@ void ChunkBorderDebugRenderer::update() {
         }
         float fy = (float)y;
 
-        this->vb[0]->pos(cx, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
 
-        this->vb[0]->pos(cx, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx + 16.0F, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
 
-        this->vb[0]->pos(cx + 16.0F, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx + 16.0F, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz + 16.0F)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
 
-        this->vb[0]->pos(cx + 16.0F, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
-        this->vb[0]->pos(cx, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz)->color(1.0F, 1.0F, 0.0F, 1.0F)->end();
     }
-    glUseProgram(resourceLoaderExternal->p_simple_color_shader);
-    glBindVertexArray(this->vao[0]);
-    this->vb[0]->updateVBO(this->vbo[0]);
-    this->vb[0]->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor, 4, GL_FLOAT, GL_FALSE, this->vb[0]->getFormat()->color);
-    this->vb[0]->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition, 3, GL_FLOAT, GL_FALSE, this->vb[0]->getFormat()->pos);
-
+    this->sizeOne = this->vb->getVertices();
     // granice sekcji "na stojaco"
     for (int x = 0; x <= 16; x += 16) {
         for (int z = 0; z <= 16; z += 16) {
-            this->vb[1]->pos(cx + (float)x, minY, cz + (float)z)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-            this->vb[1]->pos(cx + (float)x, maxY, cz + (float)z)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+            this->vb->pos(cx + (float)x, minY, cz + (float)z)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+            this->vb->pos(cx + (float)x, maxY, cz + (float)z)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         }
     }
 
@@ -108,34 +100,34 @@ void ChunkBorderDebugRenderer::update() {
     for (int y = 0; y <= 256; y += 16) {
         float fy = (float) y;
 
-        this->vb[1]->pos(cx, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-        this->vb[1]->pos(cx, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         
-        this->vb[1]->pos(cx, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-        this->vb[1]->pos(cx + 16.0F, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         
-        this->vb[1]->pos(cx + 16.0F, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-        this->vb[1]->pos(cx + 16.0F, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         
-        this->vb[1]->pos(cx + 16.0F, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-        this->vb[1]->pos(cx, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx + 16.0F, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
+        this->vb->pos(cx, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
     }
 
-    glBindVertexArray(this->vao[1]);
-    this->vb[1]->updateVBO(this->vbo[1]);
-    this->vb[1]->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor, 4, GL_FLOAT, GL_FALSE, this->vb[1]->getFormat()->color);
-    this->vb[1]->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition, 3, GL_FLOAT, GL_FALSE, this->vb[1]->getFormat()->pos);
+    glUseProgram(resourceLoaderExternal->p_simple_color_shader);
+    glBindVertexArray(this->vao);
+    this->vb->updateVBO(this->vbo);
+    this->vb->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor, 4, GL_FLOAT, GL_FALSE, this->vb->getFormat()->color);
+    this->vb->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition, 3, GL_FLOAT, GL_FALSE, this->vb->getFormat()->pos);
 
-    LOGD("vertices: %d %d", this->vb[0]->getVertices(), this->vb[1]->getVertices());
+    // LOGD("vertices: %d + %d", this->sizeOne, this->vb->getVertices() - this->sizeOne);
 }
 
 void ChunkBorderDebugRenderer::draw(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_simple_color_shader);
     glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
-    glBindVertexArray(this->vao[0]);
+    glBindVertexArray(this->vao);
     glLineWidth(1.0F);
-    glDrawArrays(GL_LINES, 0, this->vb[0]->getVertices());
-    glBindVertexArray(this->vao[1]);
+    glDrawArrays(GL_LINES, 0, this->sizeOne);
     glLineWidth(2.0F);
-    glDrawArrays(GL_LINES, 0, this->vb[1]->getVertices());
+    glDrawArrays(GL_LINES, this->sizeOne, this->vb->getVertices() - this->sizeOne);
 }
