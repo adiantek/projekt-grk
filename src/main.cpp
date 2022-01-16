@@ -23,12 +23,8 @@
 #include <Resources/GameObject.hpp>
 #include <world/World.hpp>
 
-#include "Shader_Loader.h"
 #include "Render_Utils.h"
 #include "Texture.h"
-
-// Core elements
-Core::Shader_Loader shaderLoader;
 
 Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
