@@ -4,6 +4,8 @@
 #include <Resources/Resources.hpp>
 #include <Time/Time.hpp>
 
+using namespace entity;
+
 Robot::Robot() {
     robot = this;
 
@@ -29,6 +31,10 @@ Robot::Robot() {
 
     this->mode = Robot::MODE_STATIONARY;
     this->movementSpeed = Robot::DEFAULT_WALKING_MOVEMENT_SPEED;
+}
+
+Robot::~Robot() {
+    // TODO oczyscic robota
 }
 
 // void Robot::toggleIncreasedSpeedMode() {
@@ -136,7 +142,7 @@ void Robot::update() {
     this->gameObject->setRotation(this->rotation);
 }
 
-void Robot::draw() {
+void Robot::draw(glm::mat4 mat) {
     this->gameObject->draw();
 }
 

@@ -4,6 +4,7 @@
 #include <world/ChunkBorderDebugRenderer.hpp>
 #include <world/Crosshair.hpp>
 #include <Camera/Skybox.hpp>
+#include <Robot/Robot.hpp>
 
 namespace world {
 
@@ -12,6 +13,7 @@ class World : Object3D {
     cam::Skybox *skybox;
     ChunkBorderDebugRenderer *chunkBorderDebugRenderer;
     Crosshair *crosshair;
+    entity::Robot *robot;
 
    public:
     World();

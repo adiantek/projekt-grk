@@ -143,12 +143,9 @@ void do_frame()
 
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
-
-	robot->update();
 	
 	w->update();
 	w->draw(viewMatrix);
-	robot->draw();
 
 	ground->draw();
 
@@ -221,7 +218,6 @@ void init() {
 		->setScale(glm::vec3(10, 10, 10));
 
 	new Camera(1280, 768);
-	new Robot();
 
 	glEnable(GL_DEPTH_TEST);
 

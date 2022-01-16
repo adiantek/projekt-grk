@@ -4,8 +4,11 @@
 #include <glm/ext.hpp>
 
 #include <Resources/GameObject.hpp>
+#include <world/Object3D.hpp>
 
-class Robot {
+namespace entity {
+
+class Robot : world::Object3D {
   public:
     // SPEEDS
     inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 1.0f;
@@ -26,10 +29,10 @@ class Robot {
     float currentTurnSpeed = 0;
 
     Robot();
-    ~Robot();
+    virtual ~Robot();
 
-    void update();
-    void draw();
+    void update() override;
+    void draw(glm::mat4 mat) override;
 
     void setMoveDirectionVector(glm::vec3 direction);
 
@@ -51,4 +54,6 @@ class Robot {
     GameObject* gameObject;
 };
 
-extern Robot *robot;
+}
+
+extern entity::Robot *robot;
