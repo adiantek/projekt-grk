@@ -44,7 +44,7 @@ void Camera::setFov(float fov) {
 }
 
 void Camera::mouseMove(double deltaX, double deltaY) {
-    anglePitchChange = (float)deltaY * 9.0f * timeExternal->deltaTime;
+    anglePitchChange = (float)deltaY * 0.25f;
 
     // in SWIMMING MODE FROM (-70;70), in WALKING MODE FROM (0;70) !!!!!!
     
@@ -52,14 +52,14 @@ void Camera::mouseMove(double deltaX, double deltaY) {
         anglePitch += anglePitchChange;
     }
 
-    angleAroundChange = (float)deltaX * 9.0f * timeExternal->deltaTime;
-    if(angleAround > 360) {
-        angleAround -= 360;
+    angleYawChange = (float)deltaX * 0.25f;
+    if(angleYaw > 360) {
+        angleYaw -= 360;
     }
-    if(angleAround < 0) {
-        angleAround += 360;
+    if(angleYaw < 0) {
+        angleYaw += 360;
     }
-    angleAround -= angleAroundChange;
+    angleYaw -= angleYawChange;
 }
 
 float Camera::horizontalDistance() {
@@ -71,7 +71,7 @@ float Camera::verticalDistance() {
 }
 
 void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
-    float angle = angleAround;
+    float angle = angleYaw;
     float offsetX = horizontalD * sin(glm::radians(angle));
     float offsetZ = horizontalD * cos(glm::radians(angle));
     position.x = robot->position.x - offsetX;
