@@ -35,6 +35,13 @@ void VertexFormat::addBitangent() {
     this->size += 12;  // sizeof(vec3)
 }
 
+void VertexFormat::addJoint() {
+    this->jointID = this->size;
+    this->size += 3 * 4;
+    this->jointWeight = this->size;
+    this->size += 3 * 4;
+}
+
 int32_t VertexFormat::getGPUSize() {
     // padding - better performance
     return (this->size + 3) / 4 * 4;
@@ -44,6 +51,7 @@ VertexFormat vertex::POS;
 VertexFormat vertex::POS_COLOR;
 VertexFormat vertex::POS_TEX;
 VertexFormat vertex::POS_NORMAL_TEX_TANGENT_BITANGENT;
+VertexFormat vertex::POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT;
 
 void vertex::VertexFormats_load() {
     POS.addPos();
@@ -59,4 +67,11 @@ void vertex::VertexFormats_load() {
     POS_NORMAL_TEX_TANGENT_BITANGENT.addTex();
     POS_NORMAL_TEX_TANGENT_BITANGENT.addTangent();
     POS_NORMAL_TEX_TANGENT_BITANGENT.addBitangent();
+
+    POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT.addPos();
+    POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT.addNormal();
+    POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT.addTex();
+    POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT.addTangent();
+    POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT.addBitangent();
+    POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT.addJoint();
 }

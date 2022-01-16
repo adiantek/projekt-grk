@@ -22,6 +22,7 @@ class VertexBuffer {
     VertexBuffer *normal(float x, float y, float z);
     VertexBuffer *tangent(float x, float y, float z);
     VertexBuffer *bitangent(float x, float y, float z);
+    VertexBuffer *joint(int jointsIds[3], float jointsWeights[3]);
     VertexBuffer *end();
     void save(const char *name);
     void load(const char *name);

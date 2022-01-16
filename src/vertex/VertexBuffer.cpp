@@ -70,6 +70,22 @@ VertexBuffer *VertexBuffer::bitangent(float x, float y, float z) {
     return this;
 }
 
+VertexBuffer *VertexBuffer::joint(int jointsIds[3], float jointsWeights[3]) {
+    {
+        float *p = (float *)(this->buffPos + this->format->jointWeight);
+        *p++ = jointsWeights[0];
+        *p++ = jointsWeights[1];
+        *p++ = jointsWeights[2];
+    }
+    {
+        int *p = (int *)(this->buffPos + this->format->jointID);
+        *p++ = jointsIds[0];
+        *p++ = jointsIds[1];
+        *p++ = jointsIds[2];
+    }
+    return this;
+}
+
 VertexBuffer *VertexBuffer::end() {
     buffPos += this->format->getGPUSize();
     return this;
