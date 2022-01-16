@@ -8,10 +8,7 @@ VertexBuffer::VertexBuffer(VertexFormat *format, uint32_t vertices) {
     this->format = format;
     this->vertices = vertices;
     this->buff = new uint8_t[format->getGPUSize() * vertices];
-    this->buffPos = this->buff;
-    for (size_t i = 0; i < format->getGPUSize() * vertices; i++) {
-        this->buff[i] = 0;
-    }
+    this->clear();
 }
 
 VertexBuffer::~VertexBuffer() {
@@ -30,8 +27,8 @@ VertexBuffer *VertexBuffer::pos(float x, float y, float z) {
     return this;
 }
 
-VertexBuffer *VertexBuffer::color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-    uint8_t *p = (uint8_t *)(this->buffPos + this->format->color);
+VertexBuffer *VertexBuffer::color(float r, float g, float b, float a) {
+    float *p = (float *)(this->buffPos + this->format->color);
     *p++ = r;
     *p++ = g;
     *p++ = b;
@@ -105,28 +102,52 @@ void VertexBuffer::load(const char *name) {
 
 void VertexBuffer::save(const char *name) {
     uint32_t gotVertices = (uint32_t)(this->buffPos - this->buff) / this->format->getGPUSize();
-    if (gotVertices != this->vertices) {
-        LOGE("VertexBuffer failed: too many or too low vertices: got %d, expected %d", gotVertices, this->vertices);
+    if (gotVertices > this->vertices) {
+        LOGE("VertexBuffer failed: too many vertices: got %d, expected %d", gotVertices, this->vertices);
+        exit(0);
         return;
     }
-    ResourceLoader::saveFile(name, (const char *) this->buff, this->format->getGPUSize() * this->vertices);
+    ResourceLoader::saveFile(name, (const char *) this->buff, this->buffPos - this->buff);
+}
+
+void VertexBuffer::clear() {
+    this->buffPos = this->buff;
+    for (size_t i = 0; i < format->getGPUSize() * vertices; i++) {
+        this->buff[i] = 0;
+    }
 }
 
 GLuint VertexBuffer::uploadVBO() {
     uint32_t gotVertices = (uint32_t)(this->buffPos - this->buff) / this->format->getGPUSize();
-    if (gotVertices != this->vertices) {
-        LOGE("VertexBuffer failed: too many or too low vertices: got %d, expected %d", gotVertices, this->vertices);
+    if (gotVertices > this->vertices) {
+        LOGE("VertexBuffer failed: too many vertices: got %d, expected %d", gotVertices, this->vertices);
+        exit(0);
         return 0;
     }
     GLuint vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, this->format->getGPUSize() * this->vertices, this->buff, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, this->buffPos - this->buff, this->buff, GL_STATIC_DRAW);
     return vbo;
+}
+
+void VertexBuffer::updateVBO(GLuint vbo) {
+    uint32_t gotVertices = (uint32_t)(this->buffPos - this->buff) / this->format->getGPUSize();
+    if (gotVertices > this->vertices) {
+        LOGE("VertexBuffer failed: too many vertices: got %d, expected %d", gotVertices, this->vertices);
+        exit(0);
+        return;
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, this->buffPos - this->buff, this->buff, GL_STATIC_DRAW);
 }
 
 void VertexBuffer::configureVAO(GLuint index, GLint size, GLenum type, GLboolean normalized, int32_t pointer) {
     const void *p = (const void *)((const uint8_t *)0 + pointer);
     glEnableVertexAttribArray(index);
     glVertexAttribPointer(index, size, type, normalized, this->format->getGPUSize(), p);
+}
+
+uint32_t VertexBuffer::getVertices() {
+    return (uint32_t)(this->buffPos - this->buff) / this->format->getGPUSize();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <glm/glm.hpp>
 
 namespace world {
 
@@ -15,6 +16,7 @@ typedef union ChunkPosition {
     ChunkPosition();
     ChunkPosition(int32_t x, int32_t z);
     ChunkPosition(uint64_t id);
+    ChunkPosition(glm::vec3 vec);
 } ChunkPosition;
 
 }  // namespace world

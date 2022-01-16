@@ -17,7 +17,7 @@ class VertexBuffer {
     ~VertexBuffer();
     VertexFormat *getFormat();
     VertexBuffer *pos(float x, float y, float z);
-    VertexBuffer *color(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+    VertexBuffer *color(float r, float g, float b, float a);
     VertexBuffer *tex(float u, float v);
     VertexBuffer *normal(float x, float y, float z);
     VertexBuffer *tangent(float x, float y, float z);
@@ -26,7 +26,9 @@ class VertexBuffer {
     VertexBuffer *end();
     void save(const char *name);
     void load(const char *name);
+    void clear();
     GLuint uploadVBO();
+    void updateVBO(GLuint vbo);
     uint32_t getVertices();
     void configureVAO(GLuint index, GLint size, GLenum type, GLboolean normalized, int32_t pointer);
 };

@@ -42,6 +42,13 @@ void ResourceLoader::loadTextures() {
 void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
 
+    LOAD_PROGRAM(simple_color_shader, 2, "simple_color_shader.frag", "simple_color_shader.vert") {
+        // this->dumpProgram("simple_color_shader", this->p_simple_color_shader);
+        this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");
+        this->p_simple_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_color_shader, "vertexPosition");
+        this->p_simple_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_color_shader, "transformation");
+    }
+
     LOAD_PROGRAM(skybox_shader, 2, "cubemap/cubemap.frag", "cubemap/cubemap.vert") {
         // this->dumpProgram("skybox_shader", this->p_skybox_shader);
         this->p_skybox_shader_attr_aPos = glGetAttribLocation(this->p_skybox_shader, "aPos");

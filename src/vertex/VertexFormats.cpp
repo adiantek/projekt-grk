@@ -12,7 +12,7 @@ void VertexFormat::addPos() {
 
 void VertexFormat::addColor() {
     this->color = this->size;
-    this->size += 4;  // 4 * sizeof(char)
+    this->size += 4 * 4;  // sizeof(vec4)
 }
 
 void VertexFormat::addTex() {

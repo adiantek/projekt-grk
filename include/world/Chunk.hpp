@@ -2,10 +2,9 @@
 
 #include <stdint.h>
 
-#include <world/ChunkPosition.hpp>
 #include <Random.hpp>
 #include <SimplexNoiseGenerator.hpp>
-
+#include <world/ChunkPosition.hpp>
 
 namespace world {
 class Chunk {
