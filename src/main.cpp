@@ -213,8 +213,6 @@ void init() {
 		->setPosition(glm::vec3(0, 0.0f, 0))
 		->setScale(glm::vec3(10, 10, 10));
 
-	new Camera(1280, 768);
-
 	glEnable(GL_DEPTH_TEST);
 
 	// Other...
@@ -261,6 +259,7 @@ int main(int argc, char **argv)
 			glfwSwapInterval(0);
 			new Time();
 			new Controller(window);
+			new Camera(1280, 768);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {
