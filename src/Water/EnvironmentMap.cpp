@@ -10,10 +10,8 @@ EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, gl
     this->size = size;
     this->textureSize = textureSize;
     this->y = y;
-    this->lightDirection = lightDirection;
+    this->setLightDirection(lightDirection);
     this->lightCameraProjectionMatrix = glm::ortho(size / -2.0f, size / 2.0f, size / 2.0f, size / -2.0f, 0.0f, maxDepth);
-    this->lightCameraRotationMatrix = glm::eulerAngleX(glm::radians(90.0f));  // TODO use light direction to define rotation
-    this->lightCameraTranslation = glm::vec3(0.0f, 0.0f, 0.0f);               // TODO use light direction to define transition
     // Create framebuffer
     glGenFramebuffers(1, &this->framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
@@ -52,7 +50,9 @@ EnvironmentMap::~EnvironmentMap() {
 void EnvironmentMap::useFramebuffer() {
     glUseProgram(resourceLoaderExternal->p_environment_map);
 
-    this->lightCameraMatrix = this->lightCameraProjectionMatrix * this->lightCameraRotationMatrix * glm::translate(glm::vec3(-camera->position.x, -this->y, -camera->position.z));
+    this->lightCameraMatrix = this->lightCameraProjectionMatrix 
+        * this->lightCameraRotationMatrix 
+        * glm::translate(glm::vec3(this->lightCameraTranslation.x - camera->position.x, -this->y, this->lightCameraTranslation.y - camera->position.z));
 
     glGetIntegerv(GL_VIEWPORT, this->prevViewport);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
@@ -88,7 +88,11 @@ glm::vec3 EnvironmentMap::getLightDirection() {
 }
 
 void EnvironmentMap::setLightDirection(glm::vec3 newLightDirection) {
-    // TODO:
+    newLightDirection = glm::normalize(newLightDirection);
+    this->lightDirection = newLightDirection * glm::mat3(glm::eulerAngleX(glm::radians(90.0f)));
+    auto translation = newLightDirection / newLightDirection.y;
+    this->lightCameraTranslation = glm::vec2(translation.x, translation.z);
+    this->lightCameraRotationMatrix = glm::lookAt(-glm::vec3(translation.x, 0.0f, translation.z), -newLightDirection, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void EnvironmentMap::addWorldObject(world::Object3D* object) {

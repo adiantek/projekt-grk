@@ -9,7 +9,7 @@
 namespace water {
 class EnvironmentMap {
    public:
-    EnvironmentMap(float size, float y, unsigned int textureSize, glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, -1.0f), float maxDepth = 50.0f);
+    EnvironmentMap(float size, float y, unsigned int textureSize, glm::vec3 lightDirection = glm::vec3(0.0f, 1.0f, 0.0f), float maxDepth = 50.0f);
     ~EnvironmentMap();
     void useFramebuffer();
     void stopUsingFramebuffer();
@@ -30,7 +30,7 @@ class EnvironmentMap {
     glm::vec3 lightDirection;
     glm::mat4 lightCameraProjectionMatrix;
     glm::mat4 lightCameraRotationMatrix;
-    glm::vec3 lightCameraTranslation;
+    glm::vec2 lightCameraTranslation;
     std::vector<world::Object3D*> worldObjects;
     unsigned int framebuffer;
     unsigned int depthbuffer;
