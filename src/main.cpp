@@ -161,16 +161,16 @@ void do_frame()
 	glUseProgram(resourceLoader.p_shader_4_sun);
 	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 
-	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.txt_ship, resourceLoader.txt_shipNormal);
+	// drawObjectTexNormal(shipContext, shipModelMatrix, resourceLoader.tex_ship, resourceLoader.tex_shipNormal);
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
 	
-	drawObjectTexNormal(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.txt_earth, resourceLoader.txt_earthNormal);
-	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.txt_moon, resourceLoader.txt_asteroidNormal);
-	drawObjectTexNormalParallax(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
-	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal, resourceLoader.txt_wallHeight);
-	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.txt_wall, resourceLoader.txt_wallNormal);
+	drawObjectTexNormal(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.tex_earth, resourceLoader.tex_earthNormal);
+	drawObjectTexNormal(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_asteroidNormal);
+	drawObjectTexNormalParallax(planeContext, glm::translate(glm::vec3(-8, 0, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
+	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-8, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
+	drawObjectTexNormal(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal);
 	waterSurface->draw(viewMatrix, camera->position);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
@@ -258,6 +258,7 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
+			glfwSwapInterval(0);
 			new Time();
 			new Controller(window);
 #ifndef EMSCRIPTEN

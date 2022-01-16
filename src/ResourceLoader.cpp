@@ -23,20 +23,20 @@ ResourceLoader::~ResourceLoader() {
 }
 
 void ResourceLoader::loadTextures() {
-    loadTexture("assets/textures/grid.png", &this->txt_grid);
-    loadTexture("assets/textures/grid_color.png", &this->txt_gridColor);
-    loadTexture("assets/textures/earth.png", &this->txt_earth);
-    loadTexture("assets/textures/earth2.png", &this->txt_earth2);
-    loadTexture("assets/textures/moon.png", &this->txt_moon);
-    loadTexture("assets/textures/spaceship.png", &this->txt_ship);
-    loadTexture("assets/textures/earth2_normals.png", &this->txt_earthNormal);
-    loadTexture("assets/textures/moon_normals.png", &this->txt_asteroidNormal);
-    loadTexture("assets/textures/spaceship_normals.png", &this->txt_shipNormal);
-    loadTexture("assets/textures/asteroid.png", &this->txt_asteroid);
-    loadTexture("assets/textures/wall.png", &this->txt_wall);
-    loadTexture("assets/textures/wall_normal.png", &this->txt_wallNormal);
-    loadTexture("assets/textures/wall_height.png", &this->txt_wallHeight);
-    loadTextureCubeMap(&this->txt_skybox);
+    loadTexture("assets/textures/grid.png", &this->tex_grid);
+    loadTexture("assets/textures/grid_color.png", &this->tex_gridColor);
+    loadTexture("assets/textures/earth.png", &this->tex_earth);
+    loadTexture("assets/textures/earth2.png", &this->tex_earth2);
+    loadTexture("assets/textures/moon.png", &this->tex_moon);
+    loadTexture("assets/textures/spaceship.png", &this->tex_ship);
+    loadTexture("assets/textures/earth2_normals.png", &this->tex_earthNormal);
+    loadTexture("assets/textures/moon_normals.png", &this->tex_asteroidNormal);
+    loadTexture("assets/textures/spaceship_normals.png", &this->tex_shipNormal);
+    loadTexture("assets/textures/asteroid.png", &this->tex_asteroid);
+    loadTexture("assets/textures/wall.png", &this->tex_wall);
+    loadTexture("assets/textures/wall_normal.png", &this->tex_wallNormal);
+    loadTexture("assets/textures/wall_height.png", &this->tex_wallHeight);
+    loadTextureCubeMap(&this->tex_skybox);
 }
 
 void ResourceLoader::loadPrograms() {

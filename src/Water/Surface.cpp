@@ -5,7 +5,7 @@ namespace Water {
     : simulation(simulationWidth, simulationHeight, width, loader) {
         this->geometry.initPlane(width, height, simulationWidth, simulationHeight);
         this->translation = glm::vec3(x, y, z);
-        this->skybox = loader->txt_skybox;
+        this->skybox = loader->tex_skybox;
         this->program = loader->p_water_surface;
         this->uniformCamera = loader->p_water_surface_uni_cameraPosition;
         this->uniformModel = loader->p_water_surface_uni_model;

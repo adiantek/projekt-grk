@@ -51,7 +51,7 @@ void Skybox::draw(glm::mat4 mat) {
     // skybox cube
     glBindVertexArray(VAO);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, resourceLoaderExternal->txt_skybox);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, resourceLoaderExternal->tex_skybox);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 14);
     glEnable(GL_DEPTH_TEST);
 }

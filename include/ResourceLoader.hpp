@@ -22,20 +22,20 @@ public:
     int loadedResources = 0;
 
     // textures
-    GLuint txt_grid = 0;
-    GLuint txt_gridColor = 0;
-    GLuint txt_earth = 0;
-    GLuint txt_earth2 = 0;
-    GLuint txt_moon = 0;
-    GLuint txt_ship = 0;
-    GLuint txt_earthNormal = 0;
-    GLuint txt_asteroidNormal = 0;
-    GLuint txt_shipNormal = 0;
-    GLuint txt_asteroid = 0;
-    GLuint txt_wall = 0;
-    GLuint txt_wallNormal = 0;
-    GLuint txt_wallHeight = 0;
-    GLuint txt_skybox = 0;
+    GLuint tex_grid = 0;
+    GLuint tex_gridColor = 0;
+    GLuint tex_earth = 0;
+    GLuint tex_earth2 = 0;
+    GLuint tex_moon = 0;
+    GLuint tex_ship = 0;
+    GLuint tex_earthNormal = 0;
+    GLuint tex_asteroidNormal = 0;
+    GLuint tex_shipNormal = 0;
+    GLuint tex_asteroid = 0;
+    GLuint tex_wall = 0;
+    GLuint tex_wallNormal = 0;
+    GLuint tex_wallHeight = 0;
+    GLuint tex_skybox = 0;
 
     // programs:
     GLuint p_simple_color_shader = 0;
