@@ -349,7 +349,7 @@ readFile:
     }
     char *mem = (char *)malloc(s);
     *size = s;
-    int r = fread(mem, 1, s, f);
+    size_t r = fread(mem, 1, s, f);
     if (r != s) {
         LOGE("fread %d != %d (ret, size): %d (%s)", r, s, errno, strerror(errno));
         free(mem);
@@ -359,6 +359,30 @@ readFile:
         LOGE("fclose: %d (%s)", errno, strerror(errno));
     }
     return mem;
+}
+
+void ResourceLoader::saveFile(const char *file, const char *data, size_t size) {
+    FILE *f = fopen(file, "wb");
+    if (!f) {
+        LOGE("fopen(%s): %d (%s)", file, errno, strerror(errno));
+        return;
+    }
+    goto writeFile;
+closeFile:
+    if (fclose(f)) {
+        LOGE("fclose: %d (%s)", errno, strerror(errno));
+    }
+    return;
+writeFile:
+    size_t r = fwrite(data, 1, size, f);
+    if (r != size) {
+        LOGE("fwrite %d != %d (ret, size): %d (%s)", r, size, errno, strerror(errno));
+        goto closeFile;
+    }
+    if (fclose(f)) {
+        LOGE("fclose: %d (%s)", errno, strerror(errno));
+    }
+    return;
 }
 
 GLuint ResourceLoader::compileShader(GLenum shaderType, const char *name) {

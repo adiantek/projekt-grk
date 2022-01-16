@@ -16,6 +16,7 @@
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
 #include <Camera/Skybox.hpp>
+#include <vertex/VertexFormats.hpp>
 
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
@@ -133,6 +134,7 @@ void do_frame()
 	
 	timeExternal->update();
 	controller->update();
+	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -145,7 +147,6 @@ void do_frame()
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
-	camera->update();
 
 	// SKYBOX
 	skybox->draw();
@@ -246,6 +247,7 @@ void init() {
 
 int main(int argc, char **argv)
 {
+	vertex::VertexFormats_load();
 	glfwSetErrorCallback(glfw_error_callback);
     if (glfwInit() != GL_TRUE)
     {
