@@ -3,7 +3,6 @@
 #include <Robot/Robot.hpp>
 #include <Resources/Resources.hpp>
 #include <Time/Time.hpp>
-#include <Gizmos/Gizmos.hpp>
 
 Robot::Robot() {
     robot = this;
@@ -132,9 +131,6 @@ void Robot::update() {
             this->rotation.x += rotationSpeed;
         }
     }
-
-    // Draw Gizmos for testing purposes
-    Gizmos::cube(this->position);
 
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);

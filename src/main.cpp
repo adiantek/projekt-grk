@@ -21,7 +21,6 @@
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
 #include <Time/Time.hpp>
-#include <Gizmos/Gizmos.hpp>
 #include <Resources/GameObject.hpp>
 #include <world/World.hpp>
 
@@ -57,7 +56,7 @@ ResourceLoader resourceLoader;
 Skybox *skybox;
 
 Water::Surface *waterSurface;
-world::World *world;
+world::World *w;
 
 
 
@@ -186,8 +185,8 @@ void do_frame()
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
-	world->update();
-	world->draw(viewMatrix);
+	w->update();
+	w->draw(viewMatrix);
 	
 	// double st = glfwGetTime();
 	// for (int i = 0; i < 1000; i++)
@@ -219,9 +218,6 @@ void init() {
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();
 
-	// Initialize Gizmos (wireframe cubes, lines, etc... - For testing purposes)
-	Gizmos::init();
-
 	// SKYBOX
 	skybox = new Skybox();
 
@@ -248,7 +244,7 @@ void init() {
 
 	waterSurface = new Water::Surface(0.0f, 9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
 	waterSurface->simulation.generateRandomWaves();
-	world = new world::World();
+	w = new world::World();
 }
 
 int main(int argc, char **argv)
