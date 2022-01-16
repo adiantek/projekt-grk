@@ -18,7 +18,7 @@ EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, gl
     // Create depthbuffer
     glGenRenderbuffers(1, &this->depthbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, this->depthbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, this->textureSize, this->textureSize);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, this->textureSize, this->textureSize);
     // Bind depthbuffer to framebuffer
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depthbuffer);
     // Create texture
