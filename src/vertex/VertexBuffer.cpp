@@ -1,5 +1,5 @@
 #include <Logger.h>
-
+#include <ResourceLoader.hpp>
 #include <vertex/VertexBuffer.hpp>
 
 using namespace vertex;
@@ -73,6 +73,27 @@ VertexBuffer *VertexBuffer::bitangent(float x, float y, float z) {
 VertexBuffer *VertexBuffer::end() {
     buffPos += this->format->getGPUSize();
     return this;
+}
+
+void VertexBuffer::load(const char *name) {
+    size_t s = 0;
+    char *content = ResourceLoader::readFile(name, &s);
+    if (s != format->getGPUSize() * vertices) {
+        LOGE("VertexBuffer failed load %s: %zu != %zu", s, format->getGPUSize() * vertices);
+        return;
+    }
+    memcpy(this->buff, content, s);
+    free(content);
+    this->buffPos = this->buff + s;
+}
+
+void VertexBuffer::save(const char *name) {
+    uint32_t gotVertices = (uint32_t)(this->buffPos - this->buff) / this->format->getGPUSize();
+    if (gotVertices != this->vertices) {
+        LOGE("VertexBuffer failed: too many or too low vertices: got %d, expected %d", gotVertices, this->vertices);
+        return;
+    }
+    ResourceLoader::saveFile(name, (const char *) this->buff, this->format->getGPUSize() * this->vertices);
 }
 
 GLuint VertexBuffer::uploadVBO() {

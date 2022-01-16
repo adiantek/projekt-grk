@@ -15,6 +15,8 @@ public:
      */
     bool loadResources();
     void dumpProgram(const char *name, GLuint program);
+    static char *readFile(const char *name, size_t *size);
+    static void saveFile(const char *file, const char *data, size_t size);
 
     int totalResources = 0;
     int loadedResources = 0;
@@ -159,7 +161,6 @@ private:
      * true if and only if program was loaded right now
      */
     bool loadProgram(const char *name, GLuint *out_program, bool *out_loaded, int shadersCount, ...);
-    char *readFile(const char *name, size_t *size);
     GLuint compileShader(GLenum shaderType, const char *name);
     GLuint createProgram(const char *name, int shadersCount, GLuint *shaders);
 };

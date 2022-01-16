@@ -23,6 +23,8 @@ class VertexBuffer {
     VertexBuffer *tangent(float x, float y, float z);
     VertexBuffer *bitangent(float x, float y, float z);
     VertexBuffer *end();
+    void save(const char *name);
+    void load(const char *name);
     GLuint uploadVBO();
     uint32_t getVertices();
     void configureVAO(GLuint index, GLint size, GLenum type, GLboolean normalized, int32_t pointer);
