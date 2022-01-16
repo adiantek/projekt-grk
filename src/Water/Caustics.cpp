@@ -10,7 +10,7 @@ namespace water {
     : environmentMap(size, y, textureSize * 4), simulation(size, textureSize) {
         this->size = size;
         this->y = y;
-        this->textureSize = textureSize * 3;
+        this->textureSize = textureSize * 4;
         this->geometry.initPlane(size, size, this->textureSize, this->textureSize);
         // Create framebuffer
         glGenFramebuffers(1, &this->framebuffer);
@@ -49,8 +49,8 @@ namespace water {
         glDeleteFramebuffers(1, &this->framebuffer);
     }
 
-    void Caustics::render() {
-        this->simulation.simulate();
+    void Caustics::update() {
+        this->simulation.update();
 
         glUseProgram(resourceLoaderExternal->p_caustics);
 
@@ -120,5 +120,17 @@ namespace water {
 
     void Caustics::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
         this->environmentMap.drawObject(context, modelMatrix);
+    }
+
+    void Caustics::addWorldObject(world::Object3D* object) {
+        this->environmentMap.addWorldObject(object);
+    }
+
+    void Caustics::removeWorldObject(world::Object3D* object) {
+        this->environmentMap.removeWorldObject(object);
+    }
+
+    void Caustics::clearWorldObjects() {
+        this->environmentMap.clearWorldObjects();
     }
 }

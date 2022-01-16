@@ -49,8 +49,6 @@ ResourceLoader resourceLoader;
 
 world::World *w;
 
-
-
 void glfw_error_callback(int, const char *err_str)
 {
     LOGE("GLFW Error: %s", err_str);
@@ -167,12 +165,12 @@ void do_frame()
 	waterObject->drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)));
 	waterObject->stopUsingFramebuffer();
 
-	waterObject->simulate();
+	waterObject->update();
 	
 	w->update();
 	w->draw(viewMatrix);
 
-	ground->draw();
+	// ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -211,7 +209,7 @@ void do_frame()
 	// st = glfwGetTime() - st;
 	// LOGD("time: %.3f", st);
 
-	waterObject->draw();
+	waterObject->draw(viewMatrix);
     glfwSwapBuffers(window);
 }
 
@@ -254,7 +252,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(50.0f, 9.0f, 270);
+	new water::Water(30.0f, 9.0f, 300);
 	w = new world::World();
 }
 
