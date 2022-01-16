@@ -62,7 +62,6 @@ void EnvironmentMap::useFramebuffer() {
 }
 
 void EnvironmentMap::stopUsingFramebuffer() {
-    this->update();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
     glUseProgram(0);
@@ -99,7 +98,7 @@ void EnvironmentMap::addWorldObject(world::Object3D* object) {
     this->worldObjects.push_back(object);
 }
 
-void EnvironmentMap::removeWorldObject(world::Object3D* object) {  // TODO: rewrite this unsafe code
+void EnvironmentMap::removeWorldObject(world::Object3D* object) {  // TODO: rewrite this
     world::Object3D* lastObject = this->worldObjects.back();
     for (auto object3D : this->worldObjects) {
         if (object3D == object) {
@@ -114,9 +113,28 @@ void EnvironmentMap::clearWorldObjects() {
     this->worldObjects.clear();
 }
 
-void EnvironmentMap::update() {  // TODO: repair
+void EnvironmentMap::update() {
+    glUseProgram(resourceLoaderExternal->p_environment_map);
+
+    this->lightCameraMatrix = this->lightCameraProjectionMatrix * this->lightCameraRotationMatrix 
+        * glm::translate(glm::vec3(this->lightCameraTranslation.x - camera->position.x, -this->y, this->lightCameraTranslation.y - camera->position.z));
+
+    glGetIntegerv(GL_VIEWPORT, this->prevViewport);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+    glViewport(0, 0, this->textureSize, this->textureSize);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     for (auto object3D : this->worldObjects) {
         object3D->draw(this->lightCameraMatrix);
+        // glm::mat4 transformation = this->lightCameraMatrix * modelMatrix;
+        // glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&transformation);
+        // glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
+        // Core::DrawContext(context);
     }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
+    glUseProgram(0);
 }
 }  // namespace water
