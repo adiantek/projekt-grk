@@ -83,6 +83,14 @@ glm::mat4 EnvironmentMap::getLightCamera() {
     return this->lightCameraMatrix;
 }
 
+glm::vec3 EnvironmentMap::getLightDirection() {
+    return this->lightDirection;
+}
+
+void EnvironmentMap::setLightDirection(glm::vec3 newLightDirection) {
+    // TODO:
+}
+
 void EnvironmentMap::addWorldObject(world::Object3D* object) {
     this->worldObjects.push_back(object);
 }

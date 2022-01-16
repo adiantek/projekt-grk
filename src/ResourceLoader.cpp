@@ -164,12 +164,12 @@ void ResourceLoader::loadPrograms() {
         // this->dumpProgram("caustics", this->p_caustics);
         this->p_caustics_attr_texturePosition = glGetAttribLocation(this->p_caustics, "texturePosition");
         this->p_caustics_attr_vertexPosition = glGetAttribLocation(this->p_caustics, "vertexPosition");
-        this->p_caustics_uni_deltaEnvTexture = glGetUniformLocation(this->p_caustics, "deltaEnvTexture");
-        this->p_caustics_uni_light = glGetUniformLocation(this->p_caustics, "light");
+        this->p_caustics_uni_height = glGetUniformLocation(this->p_caustics, "height");
+        this->p_caustics_uni_lightDirection = glGetUniformLocation(this->p_caustics, "lightDirection");
         this->p_caustics_uni_modelMatrix = glGetUniformLocation(this->p_caustics, "modelMatrix");
         this->p_caustics_uni_transformation = glGetUniformLocation(this->p_caustics, "transformation");
-        this->p_caustics_uni_depthMap = glGetUniformLocation(this->p_caustics, "depthMap");
         this->p_caustics_uni_environmentMap = glGetUniformLocation(this->p_caustics, "environmentMap");
+        this->p_caustics_uni_heightMap = glGetUniformLocation(this->p_caustics, "heightMap");
         this->p_caustics_uni_normalMap = glGetUniformLocation(this->p_caustics, "normalMap");
     }
     LOAD_PROGRAM(caustics_env, 2, "water/env.frag", "water/env.vert") {

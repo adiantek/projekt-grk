@@ -16,6 +16,8 @@ class EnvironmentMap {
     void drawObject(Core::RenderContext context, glm::mat4 modelMatrix);
     unsigned int getMapTexture();
     glm::mat4 getLightCamera();
+    glm::vec3 getLightDirection();
+    void setLightDirection(glm::vec3 newLightDirection);
     void addWorldObject(world::Object3D* object);
     void removeWorldObject(world::Object3D* object);
     void clearWorldObjects();
