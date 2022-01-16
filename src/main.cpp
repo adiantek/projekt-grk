@@ -15,7 +15,6 @@
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
-#include <Camera/Skybox.hpp>
 #include <vertex/VertexFormats.hpp>
 
 #include <Resources/Resources.hpp>
@@ -51,9 +50,6 @@ glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
 bool initialized = false;
 
 ResourceLoader resourceLoader;
-
-// Skybox
-Skybox *skybox;
 
 Water::Surface *waterSurface;
 world::World *w;
@@ -148,11 +144,12 @@ void do_frame()
 	double time = glfwGetTime();
 	glm::vec3 lightPos = glm::vec3(0, 0, 0);
 
-
-	// SKYBOX
-	skybox->draw();
-
 	robot->update();
+	
+	w->update();
+	w->draw(viewMatrix);
+	robot->draw();
+
 	ground->draw();
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
@@ -185,8 +182,6 @@ void do_frame()
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
-	w->update();
-	w->draw(viewMatrix);
 	
 	// double st = glfwGetTime();
 	// for (int i = 0; i < 1000; i++)
@@ -217,9 +212,6 @@ void init() {
 
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();
-
-	// SKYBOX
-	skybox = new Skybox();
 
 	// Basic 
 	ground

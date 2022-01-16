@@ -29,6 +29,7 @@ class Robot {
     ~Robot();
 
     void update();
+    void draw();
 
     void setMoveDirectionVector(glm::vec3 direction);
 
@@ -47,7 +48,6 @@ class Robot {
     float movementSpeed;
     float movementVector;
 
-    void draw();
     GameObject* gameObject;
 };
 

@@ -134,9 +134,6 @@ void Robot::update() {
 
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);
-
-    // Draw object
-    this->draw();
 }
 
 void Robot::draw() {
