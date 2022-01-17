@@ -59,9 +59,9 @@ void main() {
     vec3 normal = normalize(vec3(texture(normalSampler, vec2(texturePosition.x, 1.0 - texturePosition.y))) * 2.0 - 1.0);
     vec3 reflected = reflect(-lightDirection, normal);
 
-    float ambient = 0.2;
-    float diffuse = max(0.0, dot(normal, lightDirection));
-    float specular = pow(max(0.0, dot(reflected, viewDirection)), 10.0);
+    float ambient = 0.3;
+    float diffuse = 0.8 * max(0.0, dot(normal, lightDirection));
+    float specular = 0.8 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
 
     float lightIntensity = computeCaustics(lightIntensity, caustics, positionLS);
 
