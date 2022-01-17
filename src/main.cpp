@@ -160,7 +160,7 @@ void do_frame()
 	waterObject->drawObject(sphereContext, eu * glm::scale(glm::vec3(0.7f)));
 	waterObject->drawObject(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)));
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
-	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
+	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-9, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
 	waterObject->drawObject(sphereContext2, glm::translate(lightPos));
 	waterObject->drawObject(planeContext, glm::translate(glm::vec3(0, -4, 0)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(50.0f)));
 	waterObject->stopUsingFramebuffer();
