@@ -39,21 +39,17 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
             blur(caustics, positionLS.xy, resolution, vec2(0.5, 0.0))
         );
         computedLightIntensity = 0.5 + 0.2 * lightIntensity + causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
-    } else {
-        float computedLightIntensity = 0.0;
-        vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0));
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(-1, -1) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(-1, 0) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(-1, 1) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(0, -1) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(0, 0) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(0, 1) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(1, -1) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(1, 0) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(1, 1) * texelSize).r ? 1.0 : 0.0;
-        computedLightIntensity /= 9.0;
     }
-    return computedLightIntensity;
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0)) * 3.5;
+    for(int x = -2; x <= 2; ++x) {
+        for(int y = -2; y <= 2; ++y) {
+            shadow += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(x, y) * texelSize).w ? 1.0 : 0.0;       
+        }    
+    }
+    shadow /= 25.0;
+    
+    return computedLightIntensity + shadow;
 }
 
 void main() {
@@ -69,7 +65,7 @@ void main() {
 
     float lightIntensity = computeCaustics(lightIntensity, caustics, positionLS);
 
-    objectColor = mix(objectColor, ambient * objectColor + diffuse * lightIntensity * objectColor + specular * lightIntensity * vec3(1.0), 0.9);
+    objectColor = mix(objectColor, ambient * objectColor + diffuse * lightIntensity * objectColor + specular * lightIntensity * vec3(1.0), 0.99);
 
     fragColor = vec4(objectColor, 1.0);
 }
