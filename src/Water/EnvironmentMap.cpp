@@ -92,6 +92,9 @@ void EnvironmentMap::setLightDirection(glm::vec3 newLightDirection) {
     auto translation = newLightDirection / newLightDirection.y;
     this->lightCameraTranslation = glm::vec2(translation.x, translation.z);
     this->lightCameraRotationMatrix = glm::lookAt(-glm::vec3(translation.x, 0.0f, translation.z), -newLightDirection, glm::vec3(0.0f, 0.0f, 1.0f));
+    glUseProgram(resourceLoaderExternal->p_caustics_shader);
+    glUniform3f(resourceLoaderExternal->p_caustics_shader_uni_lightDirection, this->lightDirection.x, this->lightDirection.y, this->lightDirection.z);
+    glUseProgram(0);
 }
 
 void EnvironmentMap::addWorldObject(world::Object3D* object) {

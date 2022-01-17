@@ -184,7 +184,6 @@ void do_frame()
 	glUseProgram(resourceLoader.p_caustics_shader);
 	glUniform3f(resourceLoader.p_caustics_shader_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_caustics_shader_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
-	glUniform3f(resourceLoader.p_caustics_shader_uni_lightDirection, 0.0f, 0.0f, -1.0f); // TODO
 
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
