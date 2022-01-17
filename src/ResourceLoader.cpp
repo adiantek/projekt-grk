@@ -36,6 +36,7 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/wall.png", &this->tex_wall);
     loadTexture("assets/textures/wall_normal.png", &this->tex_wallNormal);
     loadTexture("assets/textures/wall_height.png", &this->tex_wallHeight);
+    loadTexture("assets/textures/dummy.png", &this->tex_dummy);
     loadTextureCubeMap(&this->tex_skybox);
 }
 
@@ -152,6 +153,41 @@ void ResourceLoader::loadPrograms() {
         this->p_simplex_uni_alpha = glGetUniformLocation(this->p_simplex, "alpha");
         this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
         this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
+    }
+    LOAD_PROGRAM(environment_map, 2, "water/environment.frag", "water/environment.vert") {
+        // this->dumpProgram("environment_map", this->p_environment_map);
+        this->p_environment_map_attr_vertexPosition = glGetAttribLocation(this->p_environment_map, "vertexPosition");
+        this->p_environment_map_uni_modelMatrix = glGetUniformLocation(this->p_environment_map, "modelMatrix");
+        this->p_environment_map_uni_transformation = glGetUniformLocation(this->p_environment_map, "transformation");
+    }
+    LOAD_PROGRAM(caustics, 2, "water/caustics.frag", "water/caustics.vert") {
+        // this->dumpProgram("caustics", this->p_caustics);
+        this->p_caustics_attr_texturePosition = glGetAttribLocation(this->p_caustics, "texturePosition");
+        this->p_caustics_attr_vertexPosition = glGetAttribLocation(this->p_caustics, "vertexPosition");
+        this->p_caustics_uni_height = glGetUniformLocation(this->p_caustics, "height");
+        this->p_caustics_uni_lightDirection = glGetUniformLocation(this->p_caustics, "lightDirection");
+        this->p_caustics_uni_modelMatrix = glGetUniformLocation(this->p_caustics, "modelMatrix");
+        this->p_caustics_uni_transformation = glGetUniformLocation(this->p_caustics, "transformation");
+        this->p_caustics_uni_environmentMap = glGetUniformLocation(this->p_caustics, "environmentMap");
+        this->p_caustics_uni_heightMap = glGetUniformLocation(this->p_caustics, "heightMap");
+        this->p_caustics_uni_normalMap = glGetUniformLocation(this->p_caustics, "normalMap");
+    }
+    LOAD_PROGRAM(caustics_shader, 2, "caustics.frag", "caustics.vert") {
+        // this->dumpProgram("caustics_shader", this->p_caustics_shader);
+        this->p_caustics_shader_attr_vertexBitangent = glGetAttribLocation(this->p_caustics_shader, "vertexBitangent");
+        this->p_caustics_shader_attr_vertexNormal = glGetAttribLocation(this->p_caustics_shader, "vertexNormal");
+        this->p_caustics_shader_attr_vertexPosition = glGetAttribLocation(this->p_caustics_shader, "vertexPosition");
+        this->p_caustics_shader_attr_vertexTangent = glGetAttribLocation(this->p_caustics_shader, "vertexTangent");
+        this->p_caustics_shader_attr_vertexTexCoord = glGetAttribLocation(this->p_caustics_shader, "vertexTexCoord");
+        this->p_caustics_shader_uni_cameraPosition = glGetUniformLocation(this->p_caustics_shader, "cameraPosition");
+        this->p_caustics_shader_uni_lightDirection = glGetUniformLocation(this->p_caustics_shader, "lightDirection");
+        this->p_caustics_shader_uni_lightPosition = glGetUniformLocation(this->p_caustics_shader, "lightPosition");
+        this->p_caustics_shader_uni_lightTransformation = glGetUniformLocation(this->p_caustics_shader, "lightTransformation");
+        this->p_caustics_shader_uni_modelMatrix = glGetUniformLocation(this->p_caustics_shader, "modelMatrix");
+        this->p_caustics_shader_uni_transformation = glGetUniformLocation(this->p_caustics_shader, "transformation");
+        this->p_caustics_shader_uni_caustics = glGetUniformLocation(this->p_caustics_shader, "caustics");
+        this->p_caustics_shader_uni_colorTexture = glGetUniformLocation(this->p_caustics_shader, "colorTexture");
+        this->p_caustics_shader_uni_normalSampler = glGetUniformLocation(this->p_caustics_shader, "normalSampler");
     }
 
 #undef LOAD_PROGRAM

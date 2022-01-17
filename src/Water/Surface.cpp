@@ -1,45 +1,47 @@
-#include<Water/Surface.hpp>
+#include <Camera/Camera.hpp>
+#include <ResourceLoader.hpp>
+#include <Water/Surface.hpp>
 
-namespace Water {
-    Surface::Surface(float x, float y, float z, float width, float height, int simulationWidth, int simulationHeight, ResourceLoader* loader)
-    : simulation(simulationWidth, simulationHeight, width, loader) {
-        this->geometry.initPlane(width, height, simulationWidth, simulationHeight);
-        this->translation = glm::vec3(x, y, z);
-        this->skybox = loader->tex_skybox;
-        this->program = loader->p_water_surface;
-        this->uniformCamera = loader->p_water_surface_uni_cameraPosition;
-        this->uniformModel = loader->p_water_surface_uni_model;
-        this->uniformTransformation = loader->p_water_surface_uni_transformation;
-
-        glUseProgram(this->program);
-        glUniform1i(loader->p_water_surface_uni_heightMap, 0);
-        glUniform1i(loader->p_water_surface_uni_normalMap, 1);
-        glUniform1i(loader->p_water_surface_uni_skybox, 2);
-        glUseProgram(0);
-    }
-    
-    Surface::~Surface() {}
-
-    void Surface::draw(glm::mat4 viewMatrix, glm::vec3 cameraPos) {
-        this->simulation.simulate(this->translation);
-
-        glUseProgram(this->program);
-
-        glm::mat4 model = glm::translate(this->translation) * this->rotation;
-        glm::mat4 transformation = viewMatrix * model;
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, this->simulation.maps[0]);
-        glActiveTexture(GL_TEXTURE0 + 1);
-        glBindTexture(GL_TEXTURE_2D, this->simulation.maps[1]);
-        glActiveTexture(GL_TEXTURE0 + 2);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, this->skybox);
-        glUniformMatrix4fv(this->uniformTransformation, 1, GL_FALSE, (float*) &transformation);
-        glUniformMatrix4fv(this->uniformModel, 1, GL_FALSE, (float*) &model);
-        glUniform3f(this->uniformCamera, cameraPos.x, cameraPos.y, cameraPos.z);
-
-        Core::DrawContext(this->geometry);
-
-        glUseProgram(0);
-    }
+namespace water {
+Surface::Surface(float size, float y, unsigned int textureSize, unsigned int heightMap, unsigned int normalMap, glm::vec2 offset) {
+    this->size = size;
+    this->y = y;
+    this->heightMap = heightMap;
+    this->normalMap = normalMap;
+    this->offset = offset;
+    this->geometry.initPlane(size, size, textureSize, textureSize);
+    this->skybox = resourceLoaderExternal->tex_skybox;
+    this->lastCameraPosition = glm::vec2(camera->position.x, camera->position.z);
 }
+
+Surface::~Surface() {}
+
+void Surface::draw(glm::mat4 viewMatrix) {
+    glUseProgram(resourceLoaderExternal->p_water_surface);
+
+    glm::mat4 model = glm::translate(glm::vec3(this->lastCameraPosition.x + this->offset.x, this->y, this->lastCameraPosition.y + this->offset.y)) * this->rotation;
+    glm::mat4 transformation = viewMatrix * model;
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->heightMap);
+    glUniform1i(resourceLoaderExternal->p_water_surface_uni_heightMap, 0);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, this->normalMap);
+    glUniform1i(resourceLoaderExternal->p_water_surface_uni_normalMap, 1);
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, this->skybox);
+    glUniform1i(resourceLoaderExternal->p_water_surface_uni_skybox, 2);
+
+    glUniformMatrix4fv(resourceLoaderExternal->p_water_surface_uni_transformation, 1, GL_FALSE, (float*)&transformation);
+    glUniformMatrix4fv(resourceLoaderExternal->p_water_surface_uni_model, 1, GL_FALSE, (float*)&model);
+    glUniform3f(resourceLoaderExternal->p_water_surface_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
+
+    Core::DrawContext(this->geometry);
+
+    glUseProgram(0);
+}
+
+void Surface::update() {
+    this->lastCameraPosition = glm::vec2(camera->position.x, camera->position.z);
+}
+}  // namespace water

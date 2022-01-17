@@ -35,8 +35,16 @@ int32_t Random::nextInt(int32_t n) {
     return val;
 }
 
+int32_t Random::nextInt(int32_t begin, int32_t end) {
+    return this->nextInt() % (end - begin) + begin;
+}
+
 int64_t Random::nextLong() {
     return ((int64_t)(this->next(32)) << 32L) + this->next(32);
+}
+
+int64_t Random::nextLong(int64_t begin, int64_t end) {
+    return this->nextLong() % (end - begin) + begin;
 }
 
 bool Random::nextBoolean() {
@@ -47,6 +55,14 @@ float Random::nextFloat() {
     return this->next(24) / ((float)(1 << 24));
 }
 
+float Random::nextFloat(float begin, float end) {
+    return this->nextFloat() * (end - begin) + begin;
+}
+
 double Random::nextDouble() {
     return (((int64_t)(next(26)) << 27) + next(27)) / ((double)(1LL << 53LL));
+}
+
+double Random::nextDouble(double begin, double end) {
+    return this->nextDouble() * (end - begin) + begin;
 }

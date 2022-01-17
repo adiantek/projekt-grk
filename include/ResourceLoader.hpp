@@ -36,6 +36,7 @@ public:
     GLuint tex_wallNormal = 0;
     GLuint tex_wallHeight = 0;
     GLuint tex_skybox = 0;
+    GLuint tex_dummy = 0;
 
     // programs:
     GLuint p_simple_color_shader = 0;
@@ -145,6 +146,41 @@ public:
     GLint p_simplex_uni_alpha = -1;
     GLint p_simplex_uni_p = -1;
     GLint p_simplex_uni_scale = -1;
+    // environment_map:
+    GLuint p_environment_map = 0;
+    bool p_environment_map_loaded = false;
+    GLint p_environment_map_attr_vertexPosition = -1;
+    GLint p_environment_map_uni_modelMatrix = -1;
+    GLint p_environment_map_uni_transformation = -1;
+    // caustics:
+    GLuint p_caustics = 0;
+    bool p_caustics_loaded = false;
+    GLint p_caustics_attr_texturePosition = -1;
+    GLint p_caustics_attr_vertexPosition = -1;
+    GLint p_caustics_uni_height = -1;
+    GLint p_caustics_uni_lightDirection = -1;
+    GLint p_caustics_uni_modelMatrix = -1;
+    GLint p_caustics_uni_transformation = -1;
+    GLint p_caustics_uni_environmentMap = -1;
+    GLint p_caustics_uni_heightMap = -1;
+    GLint p_caustics_uni_normalMap = -1;
+    // caustics_shader:
+    GLuint p_caustics_shader = 0;
+    bool p_caustics_shader_loaded = false;
+    GLint p_caustics_shader_attr_vertexBitangent = -1;
+    GLint p_caustics_shader_attr_vertexNormal = -1;
+    GLint p_caustics_shader_attr_vertexPosition = -1;
+    GLint p_caustics_shader_attr_vertexTangent = -1;
+    GLint p_caustics_shader_attr_vertexTexCoord = -1;
+    GLint p_caustics_shader_uni_cameraPosition = -1;
+    GLint p_caustics_shader_uni_lightDirection = -1;
+    GLint p_caustics_shader_uni_lightPosition = -1;
+    GLint p_caustics_shader_uni_lightTransformation = -1;
+    GLint p_caustics_shader_uni_modelMatrix = -1;
+    GLint p_caustics_shader_uni_transformation = -1;
+    GLint p_caustics_shader_uni_caustics = -1;
+    GLint p_caustics_shader_uni_colorTexture = -1;
+    GLint p_caustics_shader_uni_normalSampler = -1;
 
     static void loadTextureExternal(char *name, GLuint *out);
     static void loadModelExternal(char *name, Model *out);

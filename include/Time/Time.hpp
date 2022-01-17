@@ -12,9 +12,9 @@ class Time {
     
     float deltaTime = 0.0f;
     int fps = 0;
+    double lastFrame = 0;
 
   private:
-    double lastFrame = 0;
     int frameCount = 0;
 };
 

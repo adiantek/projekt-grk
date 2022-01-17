@@ -1,27 +1,27 @@
 #pragma once
 
-#include<Render_Utils.h>
-#include<ResourceLoader.hpp>
-#include<Water/Simulation.hpp>
-#include<glm/ext.hpp>
+#include <Render_Utils.h>
 
-namespace Water {
-    class Surface
-    {
-    public:
-        Surface(float x, float y, float z, float width, float height, int simulationWidth, int simulationHeight, ResourceLoader* loader);
-        ~Surface();
-        void draw(glm::mat4 viewMatrix, glm::vec3 cameraPos);
-        Simulation simulation;
-    private:
-        Core::RenderContext geometry;
-        glm::mat4 rotation = glm::eulerAngleX(glm::radians(90.0f));
-        glm::vec3 translation;
-        unsigned int skybox;
-        unsigned int program;
-        int uniformCamera;
-        int uniformModel;
-        int uniformTransformation;
-        ResourceLoader* loader;
-    };
-}
+#include <glm/ext.hpp>
+#include <world/Object3D.hpp>
+
+namespace water {
+class Surface : world::Object3D {
+   public:
+    Surface(float size, float y, unsigned int textureSize, unsigned int heightMap, unsigned int normalMap, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    ~Surface();
+    void draw(glm::mat4 viewMatrix) override;
+    void update() override;
+
+   private:
+    float size;
+    float y;
+    unsigned int heightMap;
+    unsigned int normalMap;
+    glm::vec2 offset;
+    Core::RenderContext geometry;
+    unsigned int skybox;
+    glm::mat4 rotation = glm::eulerAngleX(glm::radians(90.0f));
+    glm::vec2 lastCameraPosition;
+};
+}  // namespace water
