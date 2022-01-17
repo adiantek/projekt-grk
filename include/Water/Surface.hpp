@@ -11,7 +11,7 @@ class Surface : world::Object3D {
     Surface(float size, float y, unsigned int textureSize, unsigned int heightMap, unsigned int normalMap, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     ~Surface();
     void draw(glm::mat4 viewMatrix) override;
-    void update() override {}
+    void update() override;
 
    private:
     float size;
@@ -22,5 +22,6 @@ class Surface : world::Object3D {
     Core::RenderContext geometry;
     unsigned int skybox;
     glm::mat4 rotation = glm::eulerAngleX(glm::radians(90.0f));
+    glm::vec2 lastCameraPosition;
 };
 }  // namespace water

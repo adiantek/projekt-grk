@@ -11,6 +11,7 @@ Surface::Surface(float size, float y, unsigned int textureSize, unsigned int hei
     this->offset = offset;
     this->geometry.initPlane(size, size, textureSize, textureSize);
     this->skybox = resourceLoaderExternal->tex_skybox;
+    this->lastCameraPosition = glm::vec2(camera->position.x, camera->position.z);
 }
 
 Surface::~Surface() {}
@@ -18,7 +19,7 @@ Surface::~Surface() {}
 void Surface::draw(glm::mat4 viewMatrix) {
     glUseProgram(resourceLoaderExternal->p_water_surface);
 
-    glm::mat4 model = glm::translate(glm::vec3(camera->position.x + this->offset.x, this->y, camera->position.z + this->offset.y)) * this->rotation;
+    glm::mat4 model = glm::translate(glm::vec3(this->lastCameraPosition.x + this->offset.x, this->y, this->lastCameraPosition.y + this->offset.y)) * this->rotation;
     glm::mat4 transformation = viewMatrix * model;
 
     glActiveTexture(GL_TEXTURE0);
@@ -38,5 +39,9 @@ void Surface::draw(glm::mat4 viewMatrix) {
     Core::DrawContext(this->geometry);
 
     glUseProgram(0);
+}
+
+void Surface::update() {
+    this->lastCameraPosition = glm::vec2(camera->position.x, camera->position.z);
 }
 }  // namespace water

@@ -24,6 +24,7 @@ class Water : world::Object3D {
     Caustics caustics;
     Simulation simulation[8];
     Surface surface[9];
+    double lastUpdateTime = -1.0;
 };
 }  // namespace water
 

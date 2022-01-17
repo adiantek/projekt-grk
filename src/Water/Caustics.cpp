@@ -11,7 +11,8 @@ namespace water {
         this->size = size;
         this->y = y;
         this->textureSize = textureSize * 3;
-        this->geometry.initPlane(size, size, textureSize, textureSize);
+        this->geometrySize = textureSize;
+        this->geometry.initPlane(size, size, this->geometrySize, this->geometrySize);
         // Create framebuffer
         glGenFramebuffers(1, &this->framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);

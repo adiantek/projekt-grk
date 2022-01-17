@@ -2,6 +2,7 @@
 #include<Time/Time.hpp>
 
 #define BIAS 0.15f
+#define DELTATIME 0.025
 
 namespace water {
     Water::Water(float size, float y, unsigned int texureSize)
@@ -33,26 +34,34 @@ namespace water {
     Water::~Water() {}
 
     void Water::draw(glm::mat4 viewMatrix) {
-        for(auto object : this->surface)
+        for(auto & object : this->surface)
             object.draw(viewMatrix);
     }
 
     void Water::update() {
-        this->caustics.update();
-        for(auto & object : this->simulation)
-            object.update();
+        if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME) {
+            this->caustics.update();
+            for(auto & object : this->surface)
+                object.update();
+            for(auto & object : this->simulation)
+                object.update();
+            this->lastUpdateTime = timeExternal->lastFrame;
+        }
     }
     
     void Water::useFramebuffer() {
-        this->caustics.useFramebuffer();
+        if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME)
+            this->caustics.useFramebuffer();
     }
 
     void Water::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
-        this->caustics.drawObject(context, modelMatrix);
+        if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME)
+            this->caustics.drawObject(context, modelMatrix);
     }
 
     void Water::stopUsingFramebuffer() {
-        this->caustics.stopUsingFramebuffer();
+        if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME)
+            this->caustics.stopUsingFramebuffer();
     }
 
     glm::mat4 Water::getLightCamera() {
@@ -77,5 +86,6 @@ namespace water {
 }
 
 #undef BIAS
+#undef DELTATIME
 
 water::Water* waterObject;

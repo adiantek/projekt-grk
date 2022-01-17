@@ -29,6 +29,7 @@ class Caustics {
     float size;
     float y;
     unsigned int textureSize;
+    unsigned int geometrySize;
     Core::RenderContext geometry;
     unsigned int framebuffer;
     unsigned int depthbuffer;
