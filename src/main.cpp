@@ -252,8 +252,9 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(25.0f, 9.0f, 400);
-	w = new world::World();
+	waterSurface = new Water::Surface(0.0f, 9.0f, 0.0f, 25.0f, 25.0f, 256, 256, &resourceLoader);
+	waterSurface->simulation.generateRandomWaves();
+	w = new world::World(0);
 }
 
 int main(int argc, char **argv)

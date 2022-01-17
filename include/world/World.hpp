@@ -2,7 +2,8 @@
 
 #include <Camera/Skybox.hpp>
 #include <Robot/Robot.hpp>
-#include <vector>
+#include <deque>
+#include <world/Chunk.hpp>
 #include <world/ChunkBorderDebugRenderer.hpp>
 #include <world/Crosshair.hpp>
 #include <world/Object3D.hpp>
@@ -11,6 +12,7 @@ namespace world {
 
 class World : Object3D {
    private:
+    int64_t seed;
     cam::Skybox *skybox;
     ChunkBorderDebugRenderer *chunkBorderDebugRenderer;
     Crosshair *crosshair;
@@ -18,15 +20,24 @@ class World : Object3D {
 
     glm::vec2 updateChunkRobotPos;
     ChunkPosition updateChunkLastPos;
-    std::vector<ChunkPosition> chunksQueue;
+    std::deque<ChunkPosition> chunksQueue;
+    std::deque<ChunkPosition> chunksQueueDrop;
     bool shouldChunkBeLoaded(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t viewDistance);
-    void loadChunk(ChunkPosition pos);
-    void unloadChunk(ChunkPosition pos);
-    void updateChunks(bool firstLoad);
+    void loadChunkQueue(ChunkPosition pos);
+    void unloadChunkQueue(ChunkPosition pos);
+    void loadChunkNow(ChunkPosition pos);
+    void unloadChunkNow(ChunkPosition pos);
+    void updateChunkMap(bool firstLoad);
+    std::unordered_map<uint64_t, Chunk *> chunks;
+
+    double lastLoadChunks = 0;
+    void loadChunks();
+    void updateChunks();
+    void drawChunks(glm::mat4 mat);
     bool matrix[20 * 20];
 
    public:
-    World();
+    World(int64_t seed);
     virtual ~World();
 
     void update() override;

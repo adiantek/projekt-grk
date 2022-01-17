@@ -10,11 +10,11 @@ class Time {
 
     void update();
 
+    double lastFrame = 0;
     float deltaTime = 0.0f;
     int fps = 0;
-    double lastFrame = 0;
 
-  private:
+   private:
     int frameCount = 0;
 };
 
