@@ -172,17 +172,22 @@ void ResourceLoader::loadPrograms() {
         this->p_caustics_uni_heightMap = glGetUniformLocation(this->p_caustics, "heightMap");
         this->p_caustics_uni_normalMap = glGetUniformLocation(this->p_caustics, "normalMap");
     }
-    LOAD_PROGRAM(caustics_env, 2, "water/env.frag", "water/env.vert") {
-        // this->dumpProgram("caustics_env", this->p_caustics_env);
-        this->p_caustics_env_attr_vertexBitangent = glGetAttribLocation(this->p_caustics_env, "vertexBitangent");
-        this->p_caustics_env_attr_vertexNormal = glGetAttribLocation(this->p_caustics_env, "vertexNormal");
-        this->p_caustics_env_attr_vertexPosition = glGetAttribLocation(this->p_caustics_env, "vertexPosition");
-        this->p_caustics_env_attr_vertexTangent = glGetAttribLocation(this->p_caustics_env, "vertexTangent");
-        this->p_caustics_env_attr_vertexTexCoord = glGetAttribLocation(this->p_caustics_env, "vertexTexCoord");
-        this->p_caustics_env_uni_cameraPos = glGetUniformLocation(this->p_caustics_env, "cameraPos");
-        this->p_caustics_env_uni_lightPos = glGetUniformLocation(this->p_caustics_env, "lightPos");
-        this->p_caustics_env_uni_modelMatrix = glGetUniformLocation(this->p_caustics_env, "modelMatrix");
-        this->p_caustics_env_uni_transformation = glGetUniformLocation(this->p_caustics_env, "transformation");
+    LOAD_PROGRAM(caustics_shader, 2, "caustics.frag", "caustics.vert") {
+        // this->dumpProgram("caustics_shader", this->p_caustics_shader);
+        this->p_caustics_shader_attr_vertexBitangent = glGetAttribLocation(this->p_caustics_shader, "vertexBitangent");
+        this->p_caustics_shader_attr_vertexNormal = glGetAttribLocation(this->p_caustics_shader, "vertexNormal");
+        this->p_caustics_shader_attr_vertexPosition = glGetAttribLocation(this->p_caustics_shader, "vertexPosition");
+        this->p_caustics_shader_attr_vertexTangent = glGetAttribLocation(this->p_caustics_shader, "vertexTangent");
+        this->p_caustics_shader_attr_vertexTexCoord = glGetAttribLocation(this->p_caustics_shader, "vertexTexCoord");
+        this->p_caustics_shader_uni_cameraPosition = glGetUniformLocation(this->p_caustics_shader, "cameraPosition");
+        this->p_caustics_shader_uni_lightDirection = glGetUniformLocation(this->p_caustics_shader, "lightDirection");
+        this->p_caustics_shader_uni_lightPosition = glGetUniformLocation(this->p_caustics_shader, "lightPosition");
+        this->p_caustics_shader_uni_lightTransformation = glGetUniformLocation(this->p_caustics_shader, "lightTransformation");
+        this->p_caustics_shader_uni_modelMatrix = glGetUniformLocation(this->p_caustics_shader, "modelMatrix");
+        this->p_caustics_shader_uni_transformation = glGetUniformLocation(this->p_caustics_shader, "transformation");
+        this->p_caustics_shader_uni_caustics = glGetUniformLocation(this->p_caustics_shader, "caustics");
+        this->p_caustics_shader_uni_colorTexture = glGetUniformLocation(this->p_caustics_shader, "colorTexture");
+        this->p_caustics_shader_uni_normalSampler = glGetUniformLocation(this->p_caustics_shader, "normalSampler");
     }
 
 #undef LOAD_PROGRAM
