@@ -1,7 +1,7 @@
-#include <ResourceLoader.hpp>
-#include <vertex/VertexBuffer.hpp>
-#include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
+#include <ResourceLoader.hpp>
+#include <Robot/Robot.hpp>
+#include <vertex/VertexBuffer.hpp>
 #include <world/Crosshair.hpp>
 
 using namespace world;
@@ -13,13 +13,13 @@ Crosshair::Crosshair() {
 
     vbo.pos(0.0f, 0.0f, 0.0f)->color(1.0f, 0.0f, 0.0f, 1.0f)->end();
     vbo.pos(size, 0.0f, 0.0f)->color(1.0f, 0.0f, 0.0f, 1.0f)->end();
-    
+
     vbo.pos(0.0f, 0.0f, 0.0f)->color(0.0f, 1.0f, 0.0f, 1.0f)->end();
     vbo.pos(0.0f, size, 0.0f)->color(0.0f, 1.0f, 0.0f, 1.0f)->end();
-    
+
     vbo.pos(0.0f, 0.0f, 0.0f)->color(0.5f, 0.5f, 1.0f, 1.0f)->end();
     vbo.pos(0.0f, 0.0f, size)->color(0.5f, 0.5f, 1.0f, 1.0f)->end();
-    
+
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
     this->vbo = vbo.uploadVBO();

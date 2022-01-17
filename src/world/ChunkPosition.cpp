@@ -16,8 +16,8 @@ ChunkPosition::ChunkPosition(uint64_t id) {
 }
 
 ChunkPosition::ChunkPosition(glm::vec3 vec) {
-    int32_t ix = (int32_t) vec.x;
-    int32_t iz = (int32_t) vec.z;
+    int32_t ix = (int32_t)vec.x;
+    int32_t iz = (int32_t)vec.z;
     this->coords.x = (vec.x < (float)ix ? ix - 1 : ix) >> 4;
     this->coords.z = (vec.z < (float)iz ? iz - 1 : iz) >> 4;
 }

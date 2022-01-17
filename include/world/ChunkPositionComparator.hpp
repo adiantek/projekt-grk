@@ -7,7 +7,7 @@
 
 namespace world {
 
-extern glm::vec3 ChunkPositionComparator_translate;
+extern glm::vec2 ChunkPositionComparator_translate;
 bool ChunkPositionComparator_comparator(ChunkPosition a, ChunkPosition b);
 bool ChunkPositionComparator_comparatorP(ChunkPosition *a, ChunkPosition *b);
 

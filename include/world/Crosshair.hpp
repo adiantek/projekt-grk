@@ -4,7 +4,7 @@
 
 #include <world/Object3D.hpp>
 
-namespace world { // powinno byc to na etapie GUI rysowane, ale nie mamy kamery na kwaternionach
+namespace world {  // powinno byc to na etapie GUI rysowane, ale nie mamy kamery na kwaternionach
 
 class Crosshair : Object3D {
    private:

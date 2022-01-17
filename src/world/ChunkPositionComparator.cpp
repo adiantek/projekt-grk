@@ -2,7 +2,7 @@
 
 using namespace world;
 
-glm::vec3 world::ChunkPositionComparator_translate;
+glm::vec2 world::ChunkPositionComparator_translate;
 
 bool world::ChunkPositionComparator_comparator(ChunkPosition a, ChunkPosition b) {
     return ChunkPositionComparator_comparatorP(&a, &b);
@@ -13,9 +13,9 @@ bool world::ChunkPositionComparator_comparatorP(ChunkPosition *a, ChunkPosition 
         return 0;
     }
     float ax = a->coords.x - ChunkPositionComparator_translate.x;
-    float az = a->coords.z - ChunkPositionComparator_translate.z;
+    float az = a->coords.z - ChunkPositionComparator_translate.y;
     float bx = b->coords.x - ChunkPositionComparator_translate.x;
-    float bz = b->coords.z - ChunkPositionComparator_translate.z;
+    float bz = b->coords.z - ChunkPositionComparator_translate.y;
 
     // a^2 - b^2 = (a-b)(a+b)
     int result = (int)(((ax - bx) * (ax + bx)) + ((az - bz) * (az + bz)));

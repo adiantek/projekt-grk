@@ -1,15 +1,15 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/glm.hpp>
 
 class Time {
-  public:
+   public:
     Time();
     ~Time();
 
     void update();
-    
+
     float deltaTime = 0.0f;
     int fps = 0;
     double lastFrame = 0;

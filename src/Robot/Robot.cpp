@@ -9,7 +9,7 @@ using namespace entity;
 Robot::Robot() {
     robot = this;
 
-    this->position = glm::vec3(0.0f, 0.0f, 6.0f);
+    this->position = glm::vec3(8.0f, 0.0f, 8.0f);
     this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     this->direction = glm::vec3(0.0f, 0.0f, 0.0f);
 

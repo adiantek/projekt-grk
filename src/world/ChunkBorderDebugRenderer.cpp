@@ -1,7 +1,8 @@
+#include <Logger.h>
+
 #include <Camera/Camera.hpp>
 #include <ResourceLoader.hpp>
 #include <world/ChunkBorderDebugRenderer.hpp>
-#include <Logger.h>
 
 using namespace world;
 
@@ -35,8 +36,8 @@ void ChunkBorderDebugRenderer::update() {
     float minY = 0;
     float maxY = 256;
 
-    float cx = (float) (pos.coords.x << 4);
-    float cz = (float) (pos.coords.z << 4);
+    float cx = (float)(pos.coords.x << 4);
+    float cz = (float)(pos.coords.z << 4);
 
     // glowne granice chunka
     for (int x = -16; x <= 32; x += 16) {
@@ -98,17 +99,17 @@ void ChunkBorderDebugRenderer::update() {
 
     // granice sekcji "na lezaco"
     for (int y = 0; y <= 256; y += 16) {
-        float fy = (float) y;
+        float fy = (float)y;
 
         this->vb->pos(cx, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         this->vb->pos(cx, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-        
+
         this->vb->pos(cx, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         this->vb->pos(cx + 16.0F, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-        
+
         this->vb->pos(cx + 16.0F, fy, cz + 16.0F)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         this->vb->pos(cx + 16.0F, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
-        
+
         this->vb->pos(cx + 16.0F, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
         this->vb->pos(cx, fy, cz)->color(0.25F, 0.25F, 1.0F, 1.0F)->end();
     }
