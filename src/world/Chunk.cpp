@@ -1,9 +1,10 @@
-#include <world/Chunk.hpp>
 #include <Logger.h>
-#include <world/World.hpp>
-#include <vertex/VertexBuffer.hpp>
+
 #include <ResourceLoader.hpp>
 #include <Time/Time.hpp>
+#include <vertex/VertexBuffer.hpp>
+#include <world/Chunk.hpp>
+#include <world/World.hpp>
 
 using namespace world;
 
@@ -15,12 +16,12 @@ Chunk::Chunk(World *world, ChunkPosition pos) {
     glGenVertexArrays(1, &this->vao);
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->elements);
-    LOGD("Chunk: loading %d %d", pos.coords.x, pos.coords.z);
+    // LOGD("Chunk: loading %d %d", pos.coords.x, pos.coords.z);
     this->generate();
 }
 
 Chunk::~Chunk() {
-    LOGD("Chunk: unloading %d %d", pos.coords.x, pos.coords.z);
+    // LOGD("Chunk: unloading %d %d", pos.coords.x, pos.coords.z);
     glDeleteBuffers(1, &this->vbo);
     glDeleteBuffers(1, &this->elements);
     glDeleteVertexArrays(1, &this->vao);
@@ -44,26 +45,37 @@ void Chunk::generate() {
             this->heightMap[x * 17 + y] = noise[(x + 1) * 19 + y + 1];
         }
     }
-    vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX, 17 * 17);
+    vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX_TANGENT_BITANGENT, 17 * 17);
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
-            glm::vec3 squares[3][3];
-            for (int x1 = 0; x1 < 3; x1++) {
-                for (int y1 = 0; y1 < 3; y1++) {
-                    float locX = (float)(x + minX + x1 - 1);
-                    float locY = noise[(z + y1) * 19 + (x + x1)] * 128 + 128;
-                    float locZ = (float)(z + minZ + y1 - 1);
+            glm::vec3 squares[2][2];
+            for (int x1 = 0; x1 < 2; x1++) {
+                for (int y1 = 0; y1 < 2; y1++) {
+                    float locX = (float)(x + minX + x1);
+                    float locY = noise[(z + y1 + 1) * 19 + (x + x1 + 1)] * 128 + 128;
+                    float locZ = (float)(z + minZ + y1);
                     squares[x1][y1] = glm::vec3(locX, locY, locZ);
                 }
             }
-            glm::vec3 normal = glm::normalize(
-                glm::cross(squares[1][2] - squares[1][1], squares[2][1] - squares[1][1]) +
-                glm::cross(squares[1][0] - squares[1][1], squares[0][1] - squares[1][1]) +
-                glm::cross(squares[0][1] - squares[1][1], squares[1][2] - squares[1][1]) +
-                glm::cross(squares[2][1] - squares[1][1], squares[1][0] - squares[1][1]));
+
+            glm::vec3 deltaPos1 = squares[1][2] - squares[1][1];
+            glm::vec3 deltaPos2 = squares[2][1] - squares[1][1];
+
+            glm::vec2 deltaUV1 = glm::vec2(deltaPos1.x, deltaPos1.z);
+            glm::vec2 deltaUV2 = glm::vec2(deltaPos2.x, deltaPos2.z);
+
+            float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+
+            glm::vec3 normal = glm::normalize(glm::cross(deltaPos1, deltaPos2));
+            glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+            glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
             vertices.tex((float)x, (float)z);
             vertices.pos(squares[1][1]);
             vertices.normal(normal.x, normal.y, normal.z);
+            vertices.tangent(tangent.x, tangent.y, tangent.z);
+            vertices.bitangent(bitangent.x, bitangent.y, bitangent.z);
+            
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
         }
@@ -75,7 +87,7 @@ void Chunk::generate() {
             lines[lineNum++] = x * 17 + z;
             lines[lineNum++] = x * 17 + z + 1;
             lines[lineNum++] = x * 17 + z + 17;
-            
+
             lines[lineNum++] = x * 17 + z + 17 + 1;
             lines[lineNum++] = x * 17 + z + 17;
             lines[lineNum++] = x * 17 + z + 1;
@@ -88,7 +100,7 @@ void Chunk::generate() {
     vertices.configureTex(resourceLoaderExternal->p_shader_tex_attr_vertexTexCoord);
     vertices.configurePos(resourceLoaderExternal->p_shader_tex_attr_vertexPosition);
     vertices.configureNormal(resourceLoaderExternal->p_shader_tex_attr_vertexNormal);
-    
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
 }
@@ -100,7 +112,7 @@ void Chunk::draw(glm::mat4 mat) {
     double alpha = (timeExternal->lastFrame - this->created) / 1.0;
     if (alpha >= 0.0 && alpha < 1.0) {
         glEnable(GL_BLEND);
-        glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat) alpha);
+        glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
         glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
     }
     glUseProgram(resourceLoaderExternal->p_shader_tex);
@@ -108,11 +120,11 @@ void Chunk::draw(glm::mat4 mat) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_uv);
     glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
-	glUniform3f(resourceLoaderExternal->p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
+    glUniform3f(resourceLoaderExternal->p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
     glUniformMatrix4fv(resourceLoaderExternal->p_shader_tex_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
     glUniformMatrix4fv(resourceLoaderExternal->p_shader_tex_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(mat));
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0); // 1536 = sizeof(lines) / sizeof(int)
+    glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
     }

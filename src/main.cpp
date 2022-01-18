@@ -73,7 +73,6 @@ void drawObjectTexture(Core::RenderContext context, glm::mat4 modelMatrix, GLuin
 
 	glUseProgram(program);
 
-	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 	Core::SetActiveTexture(textureId, "colorTexture", program, 0);
 
 	glm::mat4 transformation = viewMatrix * modelMatrix;
@@ -170,6 +169,8 @@ void do_frame()
 	w->draw(viewMatrix);
 
 	// ground->draw();
+	glUseProgram(resourceLoader.p_shader_tex);
+	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
