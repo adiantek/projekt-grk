@@ -39,9 +39,9 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
 
     vertex::VertexBuffer vertices(&vertex::POS_TEX, 4);
     vertices.pos(-1, -1, 0)->tex(-1.0f / 32.0f, -1.0f / 32.0f)->end();
-    vertices.pos(1, -1, 0)->tex(31.0f / 32.0f, -1.0f / 32.0f)->end();
-    vertices.pos(-1, 1, 0)->tex(-1.0f / 32.0f, 31.0f / 32.0f)->end();
-    vertices.pos(1, 1, 0)->tex(31.0f / 32.0f, 31.0f / 32.0f)->end();
+    vertices.pos(1, -1, 0)->tex(33.0f / 32.0f, -1.0f / 32.0f)->end();
+    vertices.pos(-1, 1, 0)->tex(-1.0f / 32.0f, 33.0f / 32.0f)->end();
+    vertices.pos(1, 1, 0)->tex(33.0f / 32.0f, 33.0f / 32.0f)->end();
 
     ResourceLoader *res = resourceLoaderExternal;
 
@@ -57,7 +57,7 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
     glBindTexture(GL_TEXTURE_2D, this->fbTxt);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 16, 16, 0, GL_RED, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 17, 17, 0, GL_RED, GL_FLOAT, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->fbTxt, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -73,7 +73,7 @@ void SimplexNoiseGenerator::draw(float x, float y) {
     ResourceLoader *res = resourceLoaderExternal;
 
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
-    glViewport(0, 0, 16, 16);
+    glViewport(0, 0, 17, 17);
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE);
@@ -88,15 +88,15 @@ void SimplexNoiseGenerator::draw(float x, float y) {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
-    glReadPixels(0, 0, 16, 16, GL_RED, GL_FLOAT, this->noiseValues);
+    glReadPixels(0, 0, 17, 17, GL_RED, GL_FLOAT, this->noiseValues);
 
     glDisable(GL_BLEND);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     camera->useCameraViewport();
 
-    for (int y = 0; y < 16; y++) {
-        for (int x = 0; x < 16; x++) {
-            printf("%.3f   ", this->noiseValues[y * 16 + x]);
+    for (int y = 0; y < 17; y++) {
+        for (int x = 0; x < 17; x++) {
+            printf("%.3f   ", this->noiseValues[y * 17 + x]);
         }
         printf("\n");
     }
