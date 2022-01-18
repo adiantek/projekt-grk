@@ -25,6 +25,8 @@
 #include "Render_Utils.h"
 #include "Texture.h"
 
+#include <zlib/zlib.h>
+
 Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
 Core::RenderContext sphereContext2;
@@ -255,6 +257,7 @@ void init() {
 int main(int argc, char **argv)
 {
 	vertex::VertexFormats_load();
+	LOGD("ZLIB version: %s", zlibVersion());
 	glfwSetErrorCallback(glfw_error_callback);
     if (glfwInit() != GL_TRUE)
     {
