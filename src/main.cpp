@@ -248,7 +248,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(128.0f, 256.0f, 40.0f, 400, 250.0f, 1000);
+	new water::Water(128.0f, 256.0f, 40.0f, 400, 16.0f * 32.0f, 1000);
 	w = new world::World(0);
 	waterObject->addWorldObject((world::Object3D*) w);
 }
