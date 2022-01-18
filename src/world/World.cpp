@@ -129,12 +129,10 @@ void World::loadChunks() {
     if (this->chunksQueue.size() > 0) {
         this->loadChunkNow(this->chunksQueue.front());
         this->chunksQueue.pop_front();
-        return;
     }
     if (this->chunksQueueDrop.size() > 0) {
         this->unloadChunkNow(this->chunksQueueDrop.back());
         this->chunksQueueDrop.pop_back();
-        return;
     }
 }
 
@@ -163,6 +161,8 @@ void World::update() {
 }
 
 void World::draw(glm::mat4 mat) {
+    glEnable(GL_CULL_FACE);
+
     this->skybox->draw(mat);  // na poczatku - depth offniety
 
     // this->chunkBorderDebugRenderer->draw(mat);
@@ -170,4 +170,6 @@ void World::draw(glm::mat4 mat) {
     this->robot->draw(mat);
 
     this->crosshair->draw(mat);  // na koncu - depth offniety
+
+    glDisable(GL_CULL_FACE);
 }

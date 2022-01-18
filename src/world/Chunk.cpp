@@ -41,13 +41,13 @@ void Chunk::generate() {
     for (int i = 0; i < 17 * 17; i++) {
         this->heightMap[i] = noise[i];
     }
-    vertex::VertexBuffer vertices(&vertex::POS_COLOR, 17 * 17);
-    int32_t lines[2 * 16 * 16 * 2 + 16 * 4];
+    vertex::VertexBuffer vertices(&vertex::POS_TEX, 17 * 17);
+    int32_t lines[2 * 3 * 16 * 16];
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
-            // vertices.tex((float)x, (float)z);
+            vertices.tex((float)x, (float)z);
             vertices.pos((float)(x + minX), noise[z * 17 + x] * 128 + 128, (float)(z + minZ));
-            vertices.color(x / 16.0f, (noise[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
+            // vertices.color(x / 16.0f, (noise[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
         }
     }
@@ -56,24 +56,19 @@ void Chunk::generate() {
         for (int z = 0; z < 16; z++) {
             lines[lineNum++] = x * 17 + z;
             lines[lineNum++] = x * 17 + z + 1;
-            
-            lines[lineNum++] = x * 17 + z;
             lines[lineNum++] = x * 17 + z + 17;
+            
+            lines[lineNum++] = x * 17 + z + 17 + 1;
+            lines[lineNum++] = x * 17 + z + 17;
+            lines[lineNum++] = x * 17 + z + 1;
         }
     }
-    for (int i = 0; i < 16; i++) {
-        lines[lineNum++] = 16 * 17 + i;
-        lines[lineNum++] = 16 * 17 + i + 1;
-        
-        lines[lineNum++] = i * 17 + 16;
-        lines[lineNum++] = i * 17 + 16 + 17;
-    }
 
-    glUseProgram(resourceLoaderExternal->p_simple_color_shader);
+    glUseProgram(resourceLoaderExternal->p_simple_tex_shader);
     glBindVertexArray(this->vao);
     vertices.updateVBO(this->vbo);
-    vertices.configureColor(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor);
-    vertices.configurePos(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition);
+    vertices.configureTex(resourceLoaderExternal->p_simple_tex_shader_attr_vertexTex);
+    vertices.configurePos(resourceLoaderExternal->p_simple_tex_shader_attr_vertexPosition);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
@@ -89,10 +84,13 @@ void Chunk::draw(glm::mat4 mat) {
         glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat) alpha);
         glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
     }
-    glUseProgram(resourceLoaderExternal->p_simple_color_shader);
-    glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glUseProgram(resourceLoaderExternal->p_simple_tex_shader);
+    glUniform1i(resourceLoaderExternal->p_simple_tex_shader_uni_textureSampler, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_uv);
+    glUniformMatrix4fv(resourceLoaderExternal->p_simple_tex_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glBindVertexArray(this->vao);
-    glDrawElements(GL_LINES, 1088, GL_UNSIGNED_INT, 0); // 1088 = sizeof(lines) / sizeof(int)
+    glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0); // 1536 = sizeof(lines) / sizeof(int)
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
     }

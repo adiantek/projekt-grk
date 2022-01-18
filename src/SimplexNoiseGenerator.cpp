@@ -7,7 +7,7 @@
 #include <vertex/VertexBuffer.hpp>
 
 SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
-    double scale = 0.5; // im mniejsza wartosc tym teren lagodniejszy
+    double scale = 0.25; // im mniejsza wartosc tym teren lagodniejszy
     double weight = 1.0 / ((1 << 4) - 1);
 
     for (int l = 0; l < 4; l++) {

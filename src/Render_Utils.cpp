@@ -99,6 +99,8 @@ void Core::RenderContext::initPlane(float width, float height, int widthSegments
             unsigned int c = (ix + 1) + (widthSegments + 1) * (iy + 1);
             unsigned int d = (ix + 1) + (widthSegments + 1) * iy;
 
+            // GL_CCW = GL_BACK
+
             indices.push_back(a);
             indices.push_back(b);
             indices.push_back(d);

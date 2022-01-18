@@ -50,6 +50,7 @@ int32_t VertexFormat::getGPUSize() {
 VertexFormat vertex::POS;
 VertexFormat vertex::POS_COLOR;
 VertexFormat vertex::POS_TEX;
+VertexFormat vertex::POS_NORMAL_TEX;
 VertexFormat vertex::POS_NORMAL_TEX_TANGENT_BITANGENT;
 VertexFormat vertex::POS_NORMAL_TEX_TANGENT_BITANGENT_JOINT;
 
@@ -61,6 +62,10 @@ void vertex::VertexFormats_load() {
 
     POS_TEX.addPos();
     POS_TEX.addTex();
+
+    POS_NORMAL_TEX.addPos();
+    POS_NORMAL_TEX.addNormal();
+    POS_NORMAL_TEX.addTex();
 
     POS_NORMAL_TEX_TANGENT_BITANGENT.addPos();
     POS_NORMAL_TEX_TANGENT_BITANGENT.addNormal();

@@ -23,6 +23,7 @@ ResourceLoader::~ResourceLoader() {
 }
 
 void ResourceLoader::loadTextures() {
+    loadTexture("assets/textures/uv_grid.png", &this->tex_uv);
     loadTexture("assets/textures/grid.png", &this->tex_grid);
     loadTexture("assets/textures/grid_color.png", &this->tex_gridColor);
     loadTexture("assets/textures/earth.png", &this->tex_earth);
@@ -48,6 +49,14 @@ void ResourceLoader::loadPrograms() {
         this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");
         this->p_simple_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_color_shader, "vertexPosition");
         this->p_simple_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_color_shader, "transformation");
+    }
+
+    LOAD_PROGRAM(simple_tex_shader, 2, "simple_tex_shader.frag", "simple_tex_shader.vert") {
+        this->dumpProgram("simple_tex_shader", this->p_simple_tex_shader);
+        this->p_simple_tex_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_tex_shader, "vertexPosition");
+        this->p_simple_tex_shader_attr_vertexTex = glGetAttribLocation(this->p_simple_tex_shader, "vertexTex");
+        this->p_simple_tex_shader_uni_textureSampler = glGetUniformLocation(this->p_simple_tex_shader, "textureSampler");
+        this->p_simple_tex_shader_uni_transformation = glGetUniformLocation(this->p_simple_tex_shader, "transformation");
     }
 
     LOAD_PROGRAM(skybox_shader, 2, "cubemap/cubemap.frag", "cubemap/cubemap.vert") {
