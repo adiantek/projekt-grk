@@ -1,19 +1,18 @@
 #include <Logger.h>
-#include <SOIL/SOIL.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <errno.h>
+#include <png/png.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <filesystem>
-#include <unordered_set>
-#include <iostream>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 
 #include <ResourceLoader.hpp>
 #include <Resources/Model.hpp>
-
+#include <assimp/Importer.hpp>
+#include <filesystem>
+#include <iostream>
+#include <unordered_set>
 
 ResourceLoader::ResourceLoader() {
     resourceLoaderExternal = this;
@@ -262,7 +261,7 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out) {
         return;
     }
     LOGI("[ %3.0f%% ] Loading txt: %s", this->loadedResources * 100.0 / this->totalResources, "CubeMap");
-    char *names[] = {"assets/textures/skybox/left.png", "assets/textures/skybox/right.png", "assets/textures/skybox/top.png", "assets/textures/skybox/bottom.png", "assets/textures/skybox/front.png", "assets/textures/skybox/back.png"};
+    const char *names[] = {"assets/textures/skybox/left.png", "assets/textures/skybox/right.png", "assets/textures/skybox/top.png", "assets/textures/skybox/bottom.png", "assets/textures/skybox/front.png", "assets/textures/skybox/back.png"};
     GLuint id;
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_CUBE_MAP, id);
@@ -271,14 +270,70 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    int w, h;
+
     for (unsigned int i = 0; i < 6; i++) {
-        unsigned char *image = SOIL_load_image(names[i], &w, &h, 0, SOIL_LOAD_RGBA);
-        if (!image) {
-            LOGE("Failed loading %s: %s", names[i], SOIL_last_result());
-        } else {
+        FILE *fp = fopen(names[i], "rb");
+        if (!fp) {
+            LOGE("fopen failed");
+            goto done;
+        }
+        png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+        if (!png) {
+            LOGE("png_create_read_struct failed");
+            goto done;
+        }
+        png_infop info = png_create_info_struct(png);
+        if (!info) {
+            LOGE("png_create_info_struct failed");
+            goto done;
+        }
+        if (setjmp(png_jmpbuf(png))) {
+            LOGE("setjmp(png_jmpbuf(png)) failed");
+            goto done;
+        }
+        png_init_io(png, fp);
+        png_read_info(png, info);
+
+        png_uint_32 w = png_get_image_width(png, info);
+        png_uint_32 h = png_get_image_height(png, info);
+        png_byte color_type = png_get_color_type(png, info);
+        png_byte bit_depth = png_get_bit_depth(png, info);
+
+        if (color_type == PNG_COLOR_TYPE_PALETTE) {
+            png_set_palette_to_rgb(png);
+        }
+        if (png_get_valid(png, info, PNG_INFO_tRNS)) {
+            png_set_tRNS_to_alpha(png);
+        }
+        png_read_update_info(png, info);
+        color_type = png_get_color_type(png, info);
+        bit_depth = png_get_bit_depth(png, info);
+
+        size_t row = png_get_rowbytes(png, info);
+        png_byte *image = new png_byte[row * h];
+        png_bytep *row_pointers = new png_bytep[h];
+        for (png_uint_32 y = 0; y < h; y++) {
+            row_pointers[y] = image + row * y;
+        }
+        png_read_image(png, row_pointers);
+
+        if (color_type == PNG_COLOR_TYPE_RGB_ALPHA && bit_depth == 8) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-            SOIL_free_image_data(image);
+        } else if (color_type == PNG_COLOR_TYPE_RGB && bit_depth == 8) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+        } else {
+            LOGE("Unsupported color_type: %d / bit_depth: %d", color_type, bit_depth);
+        }
+
+        delete[] image;
+        delete[] row_pointers;
+
+    done:
+        if (png && info) {
+            png_destroy_read_struct(&png, &info, NULL);
+        }
+        if (fp) {
+            fclose(fp);
         }
     }
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
@@ -301,14 +356,71 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     glBindTexture(GL_TEXTURE_2D, id);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    int w, h;
-    unsigned char *image = SOIL_load_image(name, &w, &h, 0, SOIL_LOAD_RGBA);
-    if (!image) {
-        LOGE("Failed loading %s: %s", name, SOIL_last_result());
-    } else {
+
+    FILE *fp = fopen(name, "rb");
+    if (!fp) {
+        LOGE("fopen failed");
+        goto done;
+    }
+    png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png) {
+        LOGE("png_create_read_struct failed");
+        goto done;
+    }
+    png_infop info = png_create_info_struct(png);
+    if (!info) {
+        LOGE("png_create_info_struct failed");
+        goto done;
+    }
+    if (setjmp(png_jmpbuf(png))) {
+        LOGE("setjmp(png_jmpbuf(png)) failed");
+        goto done;
+    }
+    png_init_io(png, fp);
+    png_read_info(png, info);
+
+    png_uint_32 w = png_get_image_width(png, info);
+    png_uint_32 h = png_get_image_height(png, info);
+    png_byte color_type = png_get_color_type(png, info);
+    png_byte bit_depth = png_get_bit_depth(png, info);
+
+    if (color_type == PNG_COLOR_TYPE_PALETTE) {
+        png_set_palette_to_rgb(png);
+    }
+    if (png_get_valid(png, info, PNG_INFO_tRNS)) {
+        png_set_tRNS_to_alpha(png);
+    }
+    png_read_update_info(png, info);
+    color_type = png_get_color_type(png, info);
+    bit_depth = png_get_bit_depth(png, info);
+
+    size_t row = png_get_rowbytes(png, info);
+    png_byte *image = new png_byte[row * h];
+    png_bytep *row_pointers = new png_bytep[h];
+    for (png_uint_32 y = 0; y < h; y++) {
+        row_pointers[y] = image + row * y;
+    }
+    png_read_image(png, row_pointers);
+
+    if (color_type == PNG_COLOR_TYPE_RGB_ALPHA && bit_depth == 8) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
         glGenerateMipmap(GL_TEXTURE_2D);
-        SOIL_free_image_data(image);
+    } else if (color_type == PNG_COLOR_TYPE_RGB && bit_depth == 8) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        LOGE("Unsupported color_type: %d / bit_depth: %d", color_type, bit_depth);
+    }
+
+    delete[] image;
+    delete[] row_pointers;
+
+done:
+    if (png && info) {
+        png_destroy_read_struct(&png, &info, NULL);
+    }
+    if (fp) {
+        fclose(fp);
     }
     *out = id;
     this->loadedResources++;
@@ -583,7 +695,7 @@ void ResourceLoader::loadTextureExternal(char *name, GLuint *out) {
 }
 
 void ResourceLoader::loadModelExternal(char *name, Model *out) {
-    Model* model = new Model();
+    Model *model = new Model();
     model->loadModel(name);
 
     *out = *model;
