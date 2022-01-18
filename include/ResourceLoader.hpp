@@ -146,6 +146,7 @@ public:
     GLint p_simplex_attr_tex = -1;
     GLint p_simplex_uni_p = -1;
     GLint p_simplex_uni_scale = -1;
+    GLint p_simplex_uni_translation = -1;
     // environment_map:
     GLuint p_environment_map = 0;
     bool p_environment_map_loaded = false;

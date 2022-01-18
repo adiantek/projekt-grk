@@ -5,6 +5,7 @@ precision highp int;
 in vec2 fragPos;
 out vec4 FragColor;
 
+uniform vec2 translation;
 uniform float scale;
 uniform int p[256];
 
@@ -85,6 +86,6 @@ float getValue(vec2 v) {
 }
 void main()
 {
-    float noise = getValue(fragPos.xy * scale);
+    float noise = getValue((fragPos.xy + translation) * scale);
     FragColor.r = noise;
 }

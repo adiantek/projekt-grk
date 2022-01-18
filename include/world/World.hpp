@@ -4,6 +4,7 @@
 #include <Robot/Robot.hpp>
 #include <SimplexNoiseGenerator.hpp>
 #include <deque>
+#include <unordered_map>
 #include <world/Chunk.hpp>
 #include <world/ChunkBorderDebugRenderer.hpp>
 #include <world/Crosshair.hpp>

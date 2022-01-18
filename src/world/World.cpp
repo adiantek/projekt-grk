@@ -16,7 +16,7 @@ World::World(int64_t seed) {
     this->robot = new entity::Robot();
     Random r(seed);
     this->noise = new SimplexNoiseGenerator(&r);
-    this->noise->draw();
+    this->noise->draw(-123, -123);
 
     for (int i = 0; i < 20 * 20; i++) {
         this->matrix[i] = false;

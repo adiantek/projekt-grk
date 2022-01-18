@@ -22,7 +22,7 @@ Random *Chunk::createChunkRandom() {
 }
 
 void Chunk::generate(SimplexNoiseGenerator *noise) {
-    noise->draw();
+    noise->draw(0, 0);
 }
 
 void Chunk::update() {

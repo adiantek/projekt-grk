@@ -1,40 +1,56 @@
-#include <SimplexNoiseGenerator.hpp>
-#include <Render_Utils.h>
-#include <ResourceLoader.hpp>
 #include <Logger.h>
+#include <Render_Utils.h>
+
 #include <Camera/Camera.hpp>
+#include <ResourceLoader.hpp>
+#include <SimplexNoiseGenerator.hpp>
 #include <vertex/VertexBuffer.hpp>
 
-GLuint fbTxtTest = 0;
-
 SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
-    this->x = r->nextDouble() * 256.0;
-    this->y = r->nextDouble() * 256.0;
-    this->z = r->nextDouble() * 256.0;
-    for (int i = 0; i < 256; i++) {
-        this->permutationTable[i] = i;
-    }
-    for (int i = 0; i < 256; i++) {
-        int j = r->nextInt(256 - i);
-        int k = this->permutationTable[i];
-        this->permutationTable[i] = this->permutationTable[j + i];
-        this->permutationTable[j + i] = k;
+    double scale = 1.0;
+    double weight = 1.0 / ((1 << 4) - 1);
+
+    for (int l = 0; l < 4; l++) {
+        double x = r->nextDouble() * 256.0;
+        double y = r->nextDouble() * 256.0;
+        double z = r->nextDouble() * 256.0;
+        for (int i = 0; i < 256; i++) {
+            this->layers[l].permutationTable[i] = i;
+        }
+        for (int i = 0; i < 256; i++) {
+            int j = r->nextInt(256 - i);
+            int k = this->layers[l].permutationTable[i];
+            this->layers[l].permutationTable[i] = this->layers[l].permutationTable[j + i];
+            this->layers[l].permutationTable[j + i] = k;
+        }
+        this->layers[l].weight = (float)weight;
+        this->layers[l].scale = (float)scale;
+
+        LOGD("Created new simplex layer: %.3f %.3f %3.f, w: %.3f, s: %.3f",
+             x, y, z, this->layers[l].weight, this->layers[l].scale);
+
+        this->layers[l].x = (float)(x / this->layers[l].scale);
+        this->layers[l].y = (float)(y / this->layers[l].scale);
+        this->layers[l].z = (float)(z / this->layers[l].scale);
+
+        scale /= 2.0;
+        weight *= 2.0;
     }
 
     vertex::VertexBuffer vertices(&vertex::POS_TEX, 4);
-    vertices.pos(-1, -1, 0)->tex(-1.0f/32.0f, -1.0f/32.0f)->end();
-    vertices.pos(1, -1, 0)->tex(31.0f/32.0f, -1.0f/32.0f)->end();
-    vertices.pos(-1, 1, 0)->tex(-1.0f/32.0f, 31.0f/32.0f)->end();
-    vertices.pos(1, 1, 0)->tex(31.0f/32.0f, 31.0f/32.0f)->end();
+    vertices.pos(-1, -1, 0)->tex(-1.0f / 32.0f, -1.0f / 32.0f)->end();
+    vertices.pos(1, -1, 0)->tex(31.0f / 32.0f, -1.0f / 32.0f)->end();
+    vertices.pos(-1, 1, 0)->tex(-1.0f / 32.0f, 31.0f / 32.0f)->end();
+    vertices.pos(1, 1, 0)->tex(31.0f / 32.0f, 31.0f / 32.0f)->end();
 
     ResourceLoader *res = resourceLoaderExternal;
-    
+
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
     this->vbo = vertices.uploadVBO();
     vertices.configureVAO(res->p_simplex_attr_pos, 3, GL_FLOAT, GL_FALSE, vertices.getFormat()->pos);
     vertices.configureVAO(res->p_simplex_attr_tex, 2, GL_FLOAT, GL_FALSE, vertices.getFormat()->tex);
-    
+
     glGenFramebuffers(1, &this->fb);
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
     glGenTextures(1, &this->fbTxt);
@@ -53,25 +69,28 @@ SimplexNoiseGenerator::~SimplexNoiseGenerator() {
     glDeleteTextures(1, &this->fbTxt);
 }
 
-void SimplexNoiseGenerator::draw() {
+void SimplexNoiseGenerator::draw(float x, float y) {
     ResourceLoader *res = resourceLoaderExternal;
 
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
     glViewport(0, 0, 16, 16);
-
-    glUseProgram(res->p_simplex);
-    glUniform1iv(res->p_simplex_uni_p, 256, this->permutationTable);
-    glUniform1f(res->p_simplex_uni_scale, 1.0F);
-
-    //glEnable(GL_BLEND);
-    //glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
-    //glBlendFunc(GL_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
-
+    glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE);
     glBindVertexArray(this->vao);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glUseProgram(res->p_simplex);
+
+    for (int l = 0; l < 4; l++) {
+        glUniform1iv(res->p_simplex_uni_p, 256, this->layers[l].permutationTable);
+        glUniform1f(res->p_simplex_uni_scale, this->layers[l].scale);
+        glUniform2f(res->p_simplex_uni_translation, x + this->layers[l].x, y + this->layers[l].y);
+        glBlendColor(0.0f, 0.0f, 0.0f, this->layers[l].weight);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
 
     glReadPixels(0, 0, 16, 16, GL_RED, GL_FLOAT, this->noiseValues);
 
+    glDisable(GL_BLEND);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     camera->useCameraViewport();
 

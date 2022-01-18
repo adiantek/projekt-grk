@@ -153,6 +153,7 @@ void ResourceLoader::loadPrograms() {
         this->p_simplex_attr_tex = glGetAttribLocation(this->p_simplex, "tex");
         this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
         this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
+        this->p_simplex_uni_translation = glGetUniformLocation(this->p_simplex, "translation");
     }
     LOAD_PROGRAM(environment_map, 2, "water/environment.frag", "water/environment.vert") {
         // this->dumpProgram("environment_map", this->p_environment_map);
