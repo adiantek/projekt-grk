@@ -9,7 +9,7 @@
 namespace water {
 class EnvironmentMap {
    public:
-    EnvironmentMap(float size, float y, unsigned int textureSize, glm::vec3 lightDirection = glm::vec3(0.0f, 1.0f, 0.0f), float maxDepth = 50.0f);
+    EnvironmentMap(float size, float y, unsigned int textureSize, float maxDepth, glm::vec3 lightDirection = glm::vec3(0.0f, 1.0f, 0.0f));
     ~EnvironmentMap();
     void useFramebuffer();
     void stopUsingFramebuffer();
