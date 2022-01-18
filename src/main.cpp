@@ -209,7 +209,7 @@ void do_frame()
 
 	
 	glEnable(GL_BLEND);
-	glBlendColor(1.0f, 1.0f, 1.0f, 0.75f);
+	glBlendColor(1.0f, 1.0f, 1.0f, 0.9f);
 	glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 	waterObject->draw(viewMatrix);
 	glDisable(GL_BLEND);
