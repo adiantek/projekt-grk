@@ -28,12 +28,12 @@ Wymagane jest zrobienie jednej prostej i jednej trudniejszej metody dodatkowej.
 -	[ ] [joint-based submarine or fish model](https://github.com/adiantek/projekt-grk/issues/14),
 -	[ ] [Proceduralne generowanie geometrii roślin morskich](https://github.com/adiantek/projekt-grk/issues/15),
 -	[ ] [SSAO](https://github.com/adiantek/projekt-grk/issues/17),
--	[ ] [Shadow maps](https://github.com/adiantek/projekt-grk/issues/18),
+-	[x] [Shadow maps](https://github.com/adiantek/projekt-grk/issues/18),
 -	[ ] [Subsurface scattering (show close-ups)](https://github.com/adiantek/projekt-grk/issues/19)
 
 ### Łatwe (15%)
 -	[ ] [Bloom](https://github.com/adiantek/projekt-grk/issues/20),
--	[ ] [Parallax Mapping](https://github.com/adiantek/projekt-grk/issues/21),
+-	[x] [Parallax Mapping](https://github.com/adiantek/projekt-grk/issues/21),
 -	[ ] [Boids](https://github.com/adiantek/projekt-grk/issues/22),
 -	[ ] [Realistic swimming motion (shader level)](https://github.com/adiantek/projekt-grk/issues/23),
 -	[ ] [Particle generator](https://github.com/adiantek/projekt-grk/issues/24)
