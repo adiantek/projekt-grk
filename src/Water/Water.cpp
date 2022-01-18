@@ -1,5 +1,6 @@
 #include<Water/Water.hpp>
 #include<Time/Time.hpp>
+#include<ResourceLoader.hpp>
 
 #define DELTATIME 0.025
 
@@ -7,6 +8,9 @@ namespace water {
     Water::Water(float y, float maxDepth, float causticsSize, unsigned int causticsTexureSize, float surfaceSize, unsigned int surfaceTexureSize)
     : caustics(causticsSize, y, causticsTexureSize, maxDepth), surface(surfaceSize, y, surfaceTexureSize) {
         waterObject = this;
+        glUseProgram(resourceLoaderExternal->p_caustics_shader);
+        glUniform1f(resourceLoaderExternal->p_caustics_shader_uni_waterHeight, y);
+        glUseProgram(0);
     }
 
     Water::~Water() {}

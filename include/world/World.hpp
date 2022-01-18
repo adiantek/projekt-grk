@@ -35,6 +35,7 @@ class World : Object3D {
     void loadChunks();
     void updateChunks();
     void drawChunks(glm::mat4 mat);
+    void drawShadowChunks(glm::mat4 mat);
 
    public:
     int64_t seed;
@@ -45,6 +46,7 @@ class World : Object3D {
 
     void update() override;
     void draw(glm::mat4 mat) override;
+    void drawShadow(glm::mat4 mat) override;
 };
 
 }  // namespace world

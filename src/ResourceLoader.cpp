@@ -198,6 +198,7 @@ void ResourceLoader::loadPrograms() {
         this->p_caustics_shader_uni_caustics = glGetUniformLocation(this->p_caustics_shader, "caustics");
         this->p_caustics_shader_uni_colorTexture = glGetUniformLocation(this->p_caustics_shader, "colorTexture");
         this->p_caustics_shader_uni_normalSampler = glGetUniformLocation(this->p_caustics_shader, "normalSampler");
+        this->p_caustics_shader_uni_waterHeight = glGetUniformLocation(this->p_caustics_shader, "waterHeight");
     }
 
 #undef LOAD_PROGRAM

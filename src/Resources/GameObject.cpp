@@ -88,3 +88,26 @@ void GameObject::draw() {
         Core::DrawContext(*context);
     }
 }
+
+void GameObject::drawShadow(glm::mat4 mat) {
+    glm::mat4 viewMatrix = mat;
+    glm::mat4 modelMatrix = this->getModelMatrix();
+    std::vector<Mesh *> meshes = this->model->meshes;
+
+    glm::mat4 modelViewProjectionMatrix = viewMatrix * modelMatrix;
+
+    // Iterate over meshes
+    for (int i = 0; i < meshes.size(); i++) {
+        Mesh* mesh = meshes[i];
+
+        Core::RenderContext* context = this->model->meshes[i]->getRenderContext();
+
+        glUseProgram(resourceLoaderExternal->p_environment_map);
+
+        // Set transformation
+        glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&(modelMatrix));
+        glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&(modelViewProjectionMatrix));
+
+        Core::DrawContext(*context);
+    }
+}

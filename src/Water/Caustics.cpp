@@ -6,8 +6,8 @@
 #include<glm/ext.hpp>
 
 namespace water {
-    Caustics::Caustics(float size, float y, unsigned int textureSize) 
-    : environmentMap(size, y, textureSize * 2), simulation(size, textureSize) {
+    Caustics::Caustics(float size, float y, unsigned int textureSize, float maxDepth) 
+    : environmentMap(size, y, textureSize * 2, maxDepth), simulation(size, textureSize) {
         this->size = size;
         this->y = y;
         this->textureSize = textureSize * 3;

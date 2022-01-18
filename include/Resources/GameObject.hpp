@@ -23,6 +23,7 @@ class GameObject {
     void init();
     void update();
     void draw();
+    void drawShadow(glm::mat4 viewMatrix);
 
     glm::mat4 getModelMatrix();
 

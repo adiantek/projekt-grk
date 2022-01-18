@@ -5,6 +5,7 @@
 #include <vertex/VertexBuffer.hpp>
 #include <world/Chunk.hpp>
 #include <world/World.hpp>
+#include <Water/Water.hpp>
 
 using namespace world;
 
@@ -58,8 +59,8 @@ void Chunk::generate() {
                 }
             }
 
-            glm::vec3 deltaPos1 = squares[1][2] - squares[1][1];
-            glm::vec3 deltaPos2 = squares[2][1] - squares[1][1];
+            glm::vec3 deltaPos1 = squares[0][1] - squares[0][0];
+            glm::vec3 deltaPos2 = squares[1][0] - squares[0][0];
 
             glm::vec2 deltaUV1 = glm::vec2(deltaPos1.x, deltaPos1.z);
             glm::vec2 deltaUV2 = glm::vec2(deltaPos2.x, deltaPos2.z);
@@ -67,11 +68,11 @@ void Chunk::generate() {
             float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
 
             glm::vec3 normal = glm::normalize(glm::cross(deltaPos1, deltaPos2));
-            glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
-            glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+            glm::vec3 tangent = glm::normalize((deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r);
+            glm::vec3 bitangent = glm::normalize((deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r);
 
             vertices.tex((float)x, (float)z);
-            vertices.pos(squares[1][1]);
+            vertices.pos(squares[0][0]);
             vertices.normal(normal.x, normal.y, normal.z);
             vertices.tangent(tangent.x, tangent.y, tangent.z);
             vertices.bitangent(bitangent.x, bitangent.y, bitangent.z);
@@ -115,17 +116,32 @@ void Chunk::draw(glm::mat4 mat) {
         glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
         glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
     }
-    glUseProgram(resourceLoaderExternal->p_shader_tex);
-    glUniform1i(resourceLoaderExternal->p_shader_tex_uni_textureSampler, 0);
+    glUseProgram(resourceLoaderExternal->p_caustics_shader);
+    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_colorTexture, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_uv);
-    glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
-    glUniform3f(resourceLoaderExternal->p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
-    glUniformMatrix4fv(resourceLoaderExternal->p_shader_tex_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
-    glUniformMatrix4fv(resourceLoaderExternal->p_shader_tex_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(mat));
+    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_normalSampler, 1);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_dummy);
+    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_caustics, 2);
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
+    glm::vec3 lightDir = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
+    glUniform3f(resourceLoaderExternal->p_caustics_shader_uni_lightDirection, lightDir.x, lightDir.y, lightDir.z);
+    glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+    glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
     }
+}
+
+void Chunk::drawShadow(glm::mat4 mat) {
+    glUseProgram(resourceLoaderExternal->p_environment_map);
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glBindVertexArray(this->vao);
+    glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
 }
