@@ -7,21 +7,9 @@
 #include <Resources/Material.hpp>
 
 void Resources::init() {
-    Resources::initTextures();
     Resources::initMaterials();
     Resources::initShaders();
     Resources::initModels();
-}
-
-//////////////////////////////////////////////////////////////////////////
-//---------------------------- TEXTURES --------------------------------//
-//////////////////////////////////////////////////////////////////////////
-void Resources::initTextures() {
-    // Robot textures
-    ResourceLoader::loadTextureExternal("assets/textures/robot/body/diffuse.png", &Resources::TEXTURES.ROBOT_BODY_DIFFUSE);
-    ResourceLoader::loadTextureExternal("assets/textures/robot/body/ao.png", &Resources::TEXTURES.ROBOT_BODY_AO);
-    ResourceLoader::loadTextureExternal("assets/textures/robot/body/normal.png", &Resources::TEXTURES.ROBOT_BODY_NORMAL);
-    ResourceLoader::loadTextureExternal("assets/textures/robot/body/roughness.png", &Resources::TEXTURES.ROBOT_BODY_ROUGHNESS);
 }
 
 ///////////////////////////////////////////////////////////////////////////

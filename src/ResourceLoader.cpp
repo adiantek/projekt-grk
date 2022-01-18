@@ -272,17 +272,25 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     for (unsigned int i = 0; i < 6; i++) {
+        png_uint_32 w, h;
+        png_byte color_type, bit_depth;
+        png_structp png;
+        png_infop info;
+        size_t row;
+        png_byte *image;
+        png_bytep *row_pointers;
+
         FILE *fp = fopen(names[i], "rb");
         if (!fp) {
             LOGE("fopen failed");
             goto done;
         }
-        png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+        png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (!png) {
             LOGE("png_create_read_struct failed");
             goto done;
         }
-        png_infop info = png_create_info_struct(png);
+        info = png_create_info_struct(png);
         if (!info) {
             LOGE("png_create_info_struct failed");
             goto done;
@@ -294,10 +302,10 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out) {
         png_init_io(png, fp);
         png_read_info(png, info);
 
-        png_uint_32 w = png_get_image_width(png, info);
-        png_uint_32 h = png_get_image_height(png, info);
-        png_byte color_type = png_get_color_type(png, info);
-        png_byte bit_depth = png_get_bit_depth(png, info);
+        w = png_get_image_width(png, info);
+        h = png_get_image_height(png, info);
+        color_type = png_get_color_type(png, info);
+        bit_depth = png_get_bit_depth(png, info);
 
         if (color_type == PNG_COLOR_TYPE_PALETTE) {
             png_set_palette_to_rgb(png);
@@ -309,9 +317,9 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out) {
         color_type = png_get_color_type(png, info);
         bit_depth = png_get_bit_depth(png, info);
 
-        size_t row = png_get_rowbytes(png, info);
-        png_byte *image = new png_byte[row * h];
-        png_bytep *row_pointers = new png_bytep[h];
+        row = png_get_rowbytes(png, info);
+        image = new png_byte[row * h];
+        row_pointers = new png_bytep[h];
         for (png_uint_32 y = 0; y < h; y++) {
             row_pointers[y] = image + row * y;
         }
@@ -357,17 +365,25 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+    png_uint_32 w, h;
+    png_byte color_type, bit_depth;
+    png_structp png;
+    png_infop info;
+    size_t row;
+    png_byte *image;
+    png_bytep *row_pointers;
+
     FILE *fp = fopen(name, "rb");
     if (!fp) {
         LOGE("fopen failed");
         goto done;
     }
-    png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
         LOGE("png_create_read_struct failed");
         goto done;
     }
-    png_infop info = png_create_info_struct(png);
+    info = png_create_info_struct(png);
     if (!info) {
         LOGE("png_create_info_struct failed");
         goto done;
@@ -379,10 +395,10 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     png_init_io(png, fp);
     png_read_info(png, info);
 
-    png_uint_32 w = png_get_image_width(png, info);
-    png_uint_32 h = png_get_image_height(png, info);
-    png_byte color_type = png_get_color_type(png, info);
-    png_byte bit_depth = png_get_bit_depth(png, info);
+    w = png_get_image_width(png, info);
+    h = png_get_image_height(png, info);
+    color_type = png_get_color_type(png, info);
+    bit_depth = png_get_bit_depth(png, info);
 
     if (color_type == PNG_COLOR_TYPE_PALETTE) {
         png_set_palette_to_rgb(png);
@@ -394,9 +410,9 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     color_type = png_get_color_type(png, info);
     bit_depth = png_get_bit_depth(png, info);
 
-    size_t row = png_get_rowbytes(png, info);
-    png_byte *image = new png_byte[row * h];
-    png_bytep *row_pointers = new png_bytep[h];
+    row = png_get_rowbytes(png, info);
+    image = new png_byte[row * h];
+    row_pointers = new png_bytep[h];
     for (png_uint_32 y = 0; y < h; y++) {
         row_pointers[y] = image + row * y;
     }
@@ -690,11 +706,7 @@ void ResourceLoader::dumpProgram(const char *name, GLuint program) {
     printf("    }\n");
 }
 
-void ResourceLoader::loadTextureExternal(char *name, GLuint *out) {
-    return resourceLoaderExternal->loadTexture(name, out);
-}
-
-void ResourceLoader::loadModelExternal(char *name, Model *out) {
+void ResourceLoader::loadModelExternal(const char *name, Model *out) {
     Model *model = new Model();
     model->loadModel(name);
 
