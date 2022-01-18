@@ -41,6 +41,8 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/sand.png", &this->tex_sand);
     loadTexture("assets/textures/sand_normal.png", &this->tex_sandNormal);
     loadTexture("assets/textures/sand_height.png", &this->tex_sandHeight);
+    loadTexture("assets/textures/sand_roughness.png", &this->tex_sandRoughness);
+    loadTexture("assets/textures/sand_AO.png", &this->tex_sandAO);
     loadTextureCubeMap(&this->tex_skybox);
 }
 
@@ -187,22 +189,25 @@ void ResourceLoader::loadPrograms() {
     }
     LOAD_PROGRAM(caustics_shader, 2, "caustics.frag", "caustics.vert") {
         // this->dumpProgram("caustics_shader", this->p_caustics_shader);
+        this->p_caustics_shader_uni_lightDirection = glGetUniformLocation(this->p_caustics_shader, "lightDirection");
         this->p_caustics_shader_attr_vertexBitangent = glGetAttribLocation(this->p_caustics_shader, "vertexBitangent");
         this->p_caustics_shader_attr_vertexNormal = glGetAttribLocation(this->p_caustics_shader, "vertexNormal");
         this->p_caustics_shader_attr_vertexPosition = glGetAttribLocation(this->p_caustics_shader, "vertexPosition");
         this->p_caustics_shader_attr_vertexTangent = glGetAttribLocation(this->p_caustics_shader, "vertexTangent");
         this->p_caustics_shader_attr_vertexTexCoord = glGetAttribLocation(this->p_caustics_shader, "vertexTexCoord");
         this->p_caustics_shader_uni_cameraPosition = glGetUniformLocation(this->p_caustics_shader, "cameraPosition");
-        this->p_caustics_shader_uni_lightDirection = glGetUniformLocation(this->p_caustics_shader, "lightDirection");
         this->p_caustics_shader_uni_lightPosition = glGetUniformLocation(this->p_caustics_shader, "lightPosition");
         this->p_caustics_shader_uni_lightTransformation = glGetUniformLocation(this->p_caustics_shader, "lightTransformation");
         this->p_caustics_shader_uni_modelMatrix = glGetUniformLocation(this->p_caustics_shader, "modelMatrix");
         this->p_caustics_shader_uni_transformation = glGetUniformLocation(this->p_caustics_shader, "transformation");
+        this->p_caustics_shader_uni_waterHeight = glGetUniformLocation(this->p_caustics_shader, "waterHeight");
+        this->p_caustics_shader_uni_aoMap = glGetUniformLocation(this->p_caustics_shader, "aoMap");
         this->p_caustics_shader_uni_caustics = glGetUniformLocation(this->p_caustics_shader, "caustics");
         this->p_caustics_shader_uni_colorTexture = glGetUniformLocation(this->p_caustics_shader, "colorTexture");
-        this->p_caustics_shader_uni_normalSampler = glGetUniformLocation(this->p_caustics_shader, "normalSampler");
         this->p_caustics_shader_uni_waterHeight = glGetUniformLocation(this->p_caustics_shader, "waterHeight");
         this->p_caustics_shader_uni_depthMap = glGetUniformLocation(this->p_caustics_shader, "depthMap");
+        this->p_caustics_shader_uni_normalSampler = glGetUniformLocation(this->p_caustics_shader, "normalSampler");
+        this->p_caustics_shader_uni_roughnessMap = glGetUniformLocation(this->p_caustics_shader, "roughnessMap");
     }
 
 #undef LOAD_PROGRAM
