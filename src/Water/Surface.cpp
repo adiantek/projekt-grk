@@ -15,6 +15,10 @@ Surface::Surface(float size, float y, unsigned int textureSize, glm::vec2 offset
 Surface::~Surface() {}
 
 void Surface::draw(glm::mat4 viewMatrix) {
+    glEnable(GL_BLEND);
+	glBlendColor(1.0f, 1.0f, 1.0f, 0.9f);
+	glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+
     glUseProgram(resourceLoaderExternal->p_water_surface);
 
     glm::mat4 model = glm::translate(glm::vec3(this->lastCameraPosition.x + this->offset.x, this->y, this->lastCameraPosition.y + this->offset.y)) * this->rotation;
@@ -35,6 +39,8 @@ void Surface::draw(glm::mat4 viewMatrix) {
     glUniform3f(resourceLoaderExternal->p_water_surface_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
 
     Core::DrawContext(this->geometry);
+
+    glDisable(GL_BLEND);
 
     glUseProgram(0);
 }

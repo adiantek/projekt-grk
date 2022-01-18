@@ -208,11 +208,7 @@ void do_frame()
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
 	
-	glEnable(GL_BLEND);
-	glBlendColor(1.0f, 1.0f, 1.0f, 0.9f);
-	glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 	waterObject->draw(viewMatrix);
-	glDisable(GL_BLEND);
 
     glfwSwapBuffers(window);
 }
