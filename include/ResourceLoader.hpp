@@ -190,6 +190,7 @@ public:
     GLint p_caustics_shader_uni_caustics = -1;
     GLint p_caustics_shader_uni_colorTexture = -1;
     GLint p_caustics_shader_uni_normalSampler = -1;
+    GLint p_caustics_shader_uni_waterHeight = -1;
 
     static void loadTextureExternal(char *name, GLuint *out);
     static void loadModelExternal(char *name, Model *out);

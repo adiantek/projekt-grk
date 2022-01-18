@@ -8,6 +8,7 @@ const float bias = 0.003;
 uniform sampler2D colorTexture;
 uniform sampler2D normalSampler;
 uniform sampler2D caustics;
+uniform float waterHeight;
 
 in vec3 position;
 in vec2 texturePosition;
@@ -60,12 +61,21 @@ void main() {
     vec3 reflected = reflect(-lightDirection, normal);
 
     float ambient = 0.3;
-    float diffuse = 0.8 * max(0.0, dot(normal, lightDirection));
-    float specular = 0.8 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
+    float ambient2 = 0.7;
+    //float diffuse = 0.8 * max(0.0, dot(normal, lightDirection));
+    //float specular = 0.8 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
 
-    float lightIntensity = computeCaustics(lightIntensity, caustics, positionLS);
+    float lightIntensity = 1.0;
 
-    objectColor = mix(objectColor, ambient * objectColor + diffuse * lightIntensity * objectColor + specular * lightIntensity * vec3(1.0), 0.99);
+    if(position.y < waterHeight) {
+        vec3 pos2 = positionLS * vec3(1.15, 1.15, 0.0);
+        if(positionLS.x > 1.0 || positionLS.y > 1.0 || positionLS.x < 0.0 || positionLS.y < 0.0) {
+            pos2.z = 0.0;
+        }
+        lightIntensity = computeCaustics(lightIntensity, caustics, pos2);
+    }
+
+    objectColor = mix(objectColor, ambient * objectColor + ambient2 * lightIntensity * objectColor + 0.0 * lightIntensity * vec3(1.0), 0.99);
 
     fragColor = vec4(objectColor, 1.0);
 }

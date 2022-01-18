@@ -7,7 +7,7 @@
 namespace water {
 class Water : world::Object3D {
    public:
-    Water(float size, float y, unsigned int texureSize);
+    Water(float y, float maxDepth, float causticsSize, unsigned int causticsTexureSize, float surfaceSize, unsigned int surfaceTexureSize);
     ~Water();
     void draw(glm::mat4 viewMatrix) override;
     void update() override;
@@ -22,8 +22,7 @@ class Water : world::Object3D {
 
    private:
     Caustics caustics;
-    Simulation simulation[8];
-    Surface surface[9];
+    Surface surface;
     double lastUpdateTime = -1.0;
 };
 }  // namespace water
