@@ -31,6 +31,10 @@ float blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
 }
 
 float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS) {
+    // If someone is drawing from outside of space
+    if(positionLS.x > 1.0 || positionLS.y > 1.0 || positionLS.x < 0.0 || positionLS.y < 0.0) {
+        positionLS.z = 0.0;
+    }
     float computedLightIntensity = 0.0;
     float shadow = 0.0;
     float causticsDepth = texture(caustics, positionLS.xy).w;
@@ -68,11 +72,7 @@ void main() {
     float lightIntensity = 1.0;
 
     if(position.y < waterHeight) {
-        vec3 pos2 = positionLS * vec3(1.15, 1.15, 0.0);
-        if(positionLS.x > 1.0 || positionLS.y > 1.0 || positionLS.x < 0.0 || positionLS.y < 0.0) {
-            pos2.z = 0.0;
-        }
-        lightIntensity = computeCaustics(lightIntensity, caustics, pos2);
+        lightIntensity = computeCaustics(lightIntensity, caustics, positionLS);
     }
 
     objectColor = mix(objectColor, ambient * objectColor + ambient2 * lightIntensity * objectColor + 0.0 * lightIntensity * vec3(1.0), 0.99);
