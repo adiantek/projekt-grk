@@ -8,10 +8,12 @@
 namespace water {
 EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, float maxDepth, glm::vec3 lightDirection) {
     this->size = size;
+    this->maxDepth = maxDepth;
     this->textureSize = textureSize;
     this->y = y;
     this->setLightDirection(lightDirection);
     this->lightCameraProjectionMatrix = glm::ortho(size / -2.0f, size / 2.0f, size / 2.0f, size / -2.0f, 0.0f, maxDepth);
+    this->geometry.initPlane(size, size);
     // Create framebuffer
     glGenFramebuffers(1, &this->framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
@@ -63,6 +65,11 @@ void EnvironmentMap::useFramebuffer() {
 
 void EnvironmentMap::stopUsingFramebuffer() {
     this->update();
+    glm::mat4 modelMatrix = glm::translate(glm::vec3(camera->position.x, this->y - this->maxDepth + 1.0f, camera->position.z)) * glm::eulerAngleX(glm::radians(90.0f));
+    glm::mat4 transformation = this->lightCameraMatrix * modelMatrix;
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&transformation);
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
+    Core::DrawContext(this->geometry);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
     glUseProgram(0);

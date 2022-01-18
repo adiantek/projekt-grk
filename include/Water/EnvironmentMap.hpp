@@ -24,6 +24,8 @@ class EnvironmentMap {
     void update();
 
    private:
+    Core::RenderContext geometry;
+    float maxDepth;
     float size;
     unsigned int textureSize;
     float y;
