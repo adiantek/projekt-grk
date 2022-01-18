@@ -8,6 +8,7 @@ const float bias = 0.003;
 uniform sampler2D colorTexture;
 uniform sampler2D normalSampler;
 uniform sampler2D caustics;
+uniform sampler2D depthMap;
 uniform float waterHeight;
 
 in vec3 position;
@@ -18,6 +19,31 @@ in vec3 positionLS;
 in float lightIntensity;
 
 out vec4 fragColor;
+
+vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float heightScale) {
+    // Number of iterations based on angle to view direction
+    float numLayers = mix(8.0, 32.0, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));
+    // Size of every iteration step on depth
+    float layerDepth = 1.0 / numLayers;
+    // Size of every iteration change in texture coords
+    vec2 deltaTexCoords = (viewDir.xy / viewDir.z * heightScale) / numLayers;
+    // Initial itaration values
+    float currentLayerDepth = 1.0;
+    vec2  currentTexCoords = texCoords;
+    float currentDepthMapValue = texture(depthMap, currentTexCoords).r;
+    // Iterate until intersect with texture
+    while(currentLayerDepth > currentDepthMapValue) {
+        currentTexCoords -= deltaTexCoords;
+        currentDepthMapValue = texture(depthMap, currentTexCoords).r;  
+        currentLayerDepth -= layerDepth;
+    }
+    // Previous coords
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+    // Weight for linear interpolation between before and afer intersection
+    float weight = (currentLayerDepth - currentDepthMapValue) / (layerDepth - currentDepthMapValue - texture(depthMap, prevTexCoords).r);
+    // Return interpolated point of intersection with texture
+    return prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+}
 
 float blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
     vec2 off1 = vec2(1.3846153846) * direction;
@@ -58,16 +84,16 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
 }
 
 void main() {
-    vec3 objectColor = texture(colorTexture, vec2(texturePosition.x, 1.0 - texturePosition.y)).xyz;
     vec3 lightDirection = normalize(lightDirectionTS);
     vec3 viewDirection = normalize(viewDirectionTS);
-    vec3 normal = normalize(vec3(texture(normalSampler, vec2(texturePosition.x, 1.0 - texturePosition.y))) * 2.0 - 1.0);
+    vec2 textureCoords = parallaxMapping(vec2(texturePosition.x, 1.0 - texturePosition.y), viewDirection, depthMap, 0.1);
+    vec3 objectColor = texture(colorTexture, textureCoords).xyz;
+    vec3 normal = normalize(vec3(texture(normalSampler, textureCoords)) * 2.0 - 1.0);
     vec3 reflected = reflect(-lightDirection, normal);
 
     float ambient = 0.3;
-    float ambient2 = 0.7;
-    float diffuse = 0.8 * max(0.0, dot(normal, lightDirection));
-    float specular = 0.8 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
+    float diffuse = 0.7 * max(0.0, dot(normal, lightDirection));
+    float specular = 0.4 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
 
     float lightIntensity = 1.0;
 

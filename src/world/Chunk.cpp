@@ -54,6 +54,9 @@ void Chunk::generate() {
                 for (int y1 = 0; y1 < 2; y1++) {
                     float locX = (float)(x + minX + x1);
                     float locY = noise[(z + y1 + 1) * 19 + (x + x1 + 1)] * 128 + 128;
+                    if(locY > 128.0f) {
+                        locY = 128.0f + (locY - 128.0f) / 2.0f;
+                    }
                     float locZ = (float)(z + minZ + y1);
                     squares[x1][y1] = glm::vec3(locX, locY, locZ);
                 }
@@ -121,13 +124,16 @@ void Chunk::draw(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_caustics_shader);
     glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_colorTexture, 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_uv);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sand);
     glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_normalSampler, 1);
     glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_dummy);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandNormal);
     glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_caustics, 2);
     glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
+    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_depthMap, 3);
+    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandHeight);
     glm::vec3 lightDir = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
     glUniform3f(resourceLoaderExternal->p_caustics_shader_uni_lightDirection, lightDir.x, lightDir.y, lightDir.z);
     glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
