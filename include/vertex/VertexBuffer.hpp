@@ -2,6 +2,7 @@
 
 #include <opengl.h>
 
+#include <glm/glm.hpp>
 #include <vertex/VertexFormats.hpp>
 
 namespace vertex {
@@ -18,6 +19,7 @@ class VertexBuffer {
     ~VertexBuffer();
     VertexFormat *getFormat();
     VertexBuffer *pos(float x, float y, float z);
+    VertexBuffer *pos(glm::vec3 vec);
     VertexBuffer *color(float r, float g, float b);
     VertexBuffer *color(float r, float g, float b, float a);
     VertexBuffer *tex(float u, float v);

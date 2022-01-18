@@ -52,7 +52,7 @@ void ResourceLoader::loadPrograms() {
     }
 
     LOAD_PROGRAM(simple_tex_shader, 2, "simple_tex_shader.frag", "simple_tex_shader.vert") {
-        this->dumpProgram("simple_tex_shader", this->p_simple_tex_shader);
+        // this->dumpProgram("simple_tex_shader", this->p_simple_tex_shader);
         this->p_simple_tex_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_tex_shader, "vertexPosition");
         this->p_simple_tex_shader_attr_vertexTex = glGetAttribLocation(this->p_simple_tex_shader, "vertexTex");
         this->p_simple_tex_shader_uni_textureSampler = glGetUniformLocation(this->p_simple_tex_shader, "textureSampler");
@@ -131,7 +131,7 @@ void ResourceLoader::loadPrograms() {
         this->p_shader_tex_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_tex, "vertexTexCoord");
         this->p_shader_tex_uni_lightDir = glGetUniformLocation(this->p_shader_tex, "lightDir");
         this->p_shader_tex_uni_modelMatrix = glGetUniformLocation(this->p_shader_tex, "modelMatrix");
-        this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "transformation");
+        this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "modelViewProjectionMatrix");
         this->p_shader_tex_uni_textureSampler = glGetUniformLocation(this->p_shader_tex, "textureSampler");
     }
 

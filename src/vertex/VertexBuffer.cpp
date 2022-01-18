@@ -27,6 +27,10 @@ VertexBuffer *VertexBuffer::pos(float x, float y, float z) {
     return this;
 }
 
+VertexBuffer *VertexBuffer::pos(glm::vec3 vec) {
+    return this->pos(vec.x, vec.y, vec.z);
+}
+
 VertexBuffer *VertexBuffer::color(float r, float g, float b) {
     return this->color(r, g, b, 1.0f);
 }
