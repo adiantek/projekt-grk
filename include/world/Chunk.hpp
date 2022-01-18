@@ -19,7 +19,7 @@ class Chunk : Object3D {
      * delete Random after use
      */
     Random *createChunkRandom();
-    void generate(SimplexNoiseGenerator *noise, ResourceLoader *res);
+    void generate(SimplexNoiseGenerator *noise);
 
     void update() override;
     void draw(glm::mat4 mat) override;

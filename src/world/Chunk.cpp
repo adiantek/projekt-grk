@@ -21,8 +21,8 @@ Random *Chunk::createChunkRandom() {
     return r;
 }
 
-void Chunk::generate(SimplexNoiseGenerator *noise, ResourceLoader *res) {
-    noise->draw(res);
+void Chunk::generate(SimplexNoiseGenerator *noise) {
+    noise->draw();
 }
 
 void Chunk::update() {

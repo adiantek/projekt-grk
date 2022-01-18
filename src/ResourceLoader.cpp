@@ -149,8 +149,8 @@ void ResourceLoader::loadPrograms() {
 
     LOAD_PROGRAM(simplex, 2, "simplex.frag", "simplex.vert") {
         // this->dumpProgram("simplex", this->p_simplex);
-        this->p_simplex_attr_vertexPosition = glGetAttribLocation(this->p_simplex, "vertexPosition");
-        this->p_simplex_uni_alpha = glGetUniformLocation(this->p_simplex, "alpha");
+        this->p_simplex_attr_pos = glGetAttribLocation(this->p_simplex, "pos");
+        this->p_simplex_attr_tex = glGetAttribLocation(this->p_simplex, "tex");
         this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
         this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
     }

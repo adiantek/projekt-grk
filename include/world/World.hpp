@@ -2,6 +2,7 @@
 
 #include <Camera/Skybox.hpp>
 #include <Robot/Robot.hpp>
+#include <SimplexNoiseGenerator.hpp>
 #include <deque>
 #include <world/Chunk.hpp>
 #include <world/ChunkBorderDebugRenderer.hpp>
@@ -18,6 +19,7 @@ class World : Object3D {
     Crosshair *crosshair;
     entity::Robot *robot;
 
+    SimplexNoiseGenerator *noise;
     glm::vec2 updateChunkRobotPos;
     ChunkPosition updateChunkLastPos;
     std::deque<ChunkPosition> chunksQueue;

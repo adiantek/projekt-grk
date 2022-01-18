@@ -1,8 +1,13 @@
 #include <SimplexNoiseGenerator.hpp>
 #include <Render_Utils.h>
+#include <ResourceLoader.hpp>
 #include <Logger.h>
+#include <Camera/Camera.hpp>
+#include <vertex/VertexBuffer.hpp>
 
-SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r, ResourceLoader *res) {
+GLuint fbTxtTest = 0;
+
+SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
     this->x = r->nextDouble() * 256.0;
     this->y = r->nextDouble() * 256.0;
     this->z = r->nextDouble() * 256.0;
@@ -16,27 +21,20 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r, ResourceLoader *res) {
         this->permutationTable[j + i] = k;
     }
 
-    float vertexArray[16] = {
-            -1, -1, 0, 1,
-            1, -1, 0, 1,
-            -1, 1, 0, 1,
-            1, 1, 0, 1
-    };
+    vertex::VertexBuffer vertices(&vertex::POS_TEX, 4);
+    vertices.pos(-1, -1, 0)->tex(-1.0f/32.0f, -1.0f/32.0f)->end();
+    vertices.pos(1, -1, 0)->tex(31.0f/32.0f, -1.0f/32.0f)->end();
+    vertices.pos(-1, 1, 0)->tex(-1.0f/32.0f, 31.0f/32.0f)->end();
+    vertices.pos(1, 1, 0)->tex(31.0f/32.0f, 31.0f/32.0f)->end();
+
+    ResourceLoader *res = resourceLoaderExternal;
     
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
-    glGenBuffers(1, &this->vertices);
-    glBindBuffer(GL_ARRAY_BUFFER, this->vertices);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, vertexArray, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(res->p_simplex_attr_vertexPosition);
-    glVertexAttribPointer(res->p_simplex_attr_vertexPosition, 4, GL_FLOAT, false, 0, 0);
-    glBindVertexArray(0);
+    this->vbo = vertices.uploadVBO();
+    vertices.configureVAO(res->p_simplex_attr_pos, 3, GL_FLOAT, GL_FALSE, vertices.getFormat()->pos);
+    vertices.configureVAO(res->p_simplex_attr_tex, 2, GL_FLOAT, GL_FALSE, vertices.getFormat()->tex);
     
-    int indexArray[4] = {0, 1, 2, 3};
-    glGenBuffers(1, &this->indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * 4, indexArray, GL_STATIC_DRAW);
-
     glGenFramebuffers(1, &this->fb);
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
     glGenTextures(1, &this->fbTxt);
@@ -50,31 +48,37 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r, ResourceLoader *res) {
 
 SimplexNoiseGenerator::~SimplexNoiseGenerator() {
     glDeleteVertexArrays(1, &this->vao);
-    glDeleteBuffers(1, &this->vertices);
-    glDeleteVertexArrays(1, &this->indices);
+    glDeleteBuffers(1, &this->vbo);
     glDeleteFramebuffers(1, &this->fb);
     glDeleteTextures(1, &this->fbTxt);
 }
 
-void SimplexNoiseGenerator::draw(ResourceLoader *res) {
-    // we can skip glClear, bcuz GL_BLEND is disabled
+void SimplexNoiseGenerator::draw() {
+    ResourceLoader *res = resourceLoaderExternal;
 
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
+    glViewport(0, 0, 16, 16);
 
     glUseProgram(res->p_simplex);
     glUniform1iv(res->p_simplex_uni_p, 256, this->permutationTable);
-    glUniform1f(res->p_simplex_uni_scale, 10.0F);
-    glUniform1f(res->p_simplex_uni_alpha, 1.0F);
-    
+    glUniform1f(res->p_simplex_uni_scale, 1.0F);
+
+    //glEnable(GL_BLEND);
+    //glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //glBlendFunc(GL_CONSTANT_ALPHA, GL_CONSTANT_ALPHA);
+
     glBindVertexArray(this->vao);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indices);
-    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     glReadPixels(0, 0, 16, 16, GL_RED, GL_FLOAT, this->noiseValues);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    camera->useCameraViewport();
 
-    // LOGD("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f",
-    //     this->noiseValues[0], this->noiseValues[1], this->noiseValues[2], this->noiseValues[3],
-    //     this->noiseValues[4], this->noiseValues[5], this->noiseValues[6], this->noiseValues[7]);
+    for (int y = 0; y < 16; y++) {
+        for (int x = 0; x < 16; x++) {
+            printf("%.3f   ", this->noiseValues[y * 16 + x]);
+        }
+        printf("\n");
+    }
 }

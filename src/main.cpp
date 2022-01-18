@@ -11,7 +11,6 @@
 #include <Controller/Controller.hpp>
 #include <Water/Water.hpp>
 #include <Random.hpp>
-#include <SimplexNoiseGenerator.hpp>
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
@@ -127,7 +126,6 @@ void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMat
 void init();
 
 Random r(0);
-SimplexNoiseGenerator *noise;
 
 void do_frame()
 {
@@ -243,9 +241,6 @@ void init() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	// Other...
-	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
-
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
@@ -284,7 +279,7 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
-			glfwSwapInterval(0);
+			// glfwSwapInterval(0);
 			new Time();
 			new Controller(window);
 			new Camera(1280, 768);

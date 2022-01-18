@@ -1,23 +1,25 @@
 #pragma once
 
 #include <Random.hpp>
-#include <ResourceLoader.hpp>
 #include <opengl.h>
+
+typedef struct SimplexNoiseLayer {
+
+} SimplexNoiseLayer;
 
 class SimplexNoiseGenerator {
     private:
         double x, y, z;
         int permutationTable[256];
-        GLuint vertices;
-        GLuint indices;
+        GLuint vbo;
         GLuint vao;
         GLuint fb;
         GLuint fbTxt;
         GLuint fbBuf;
 
     public:
-        SimplexNoiseGenerator(Random *r, ResourceLoader *res);
+        SimplexNoiseGenerator(Random *r);
         ~SimplexNoiseGenerator();
-        void draw(ResourceLoader *res);
+        void draw();
         float noiseValues[16 * 16];
 };

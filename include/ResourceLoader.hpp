@@ -142,8 +142,8 @@ public:
     // simplex:
     GLuint p_simplex = 0;
     bool p_simplex_loaded = false;
-    GLint p_simplex_attr_vertexPosition = -1;
-    GLint p_simplex_uni_alpha = -1;
+    GLint p_simplex_attr_pos = -1;
+    GLint p_simplex_attr_tex = -1;
     GLint p_simplex_uni_p = -1;
     GLint p_simplex_uni_scale = -1;
     // environment_map:

@@ -1,11 +1,12 @@
 #version 300 es
 
-layout(location = 0) in vec4 vertexPosition;
+in vec3 pos;
+in vec2 tex;
 
-out vec4 fragPos;
+out vec2 fragPos;
 
 void main()
 {
-	gl_Position = vertexPosition;
-	fragPos = vertexPosition;
+	gl_Position = vec4(pos, 1.0);
+	fragPos = tex;
 }

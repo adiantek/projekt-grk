@@ -14,6 +14,9 @@ World::World(int64_t seed) {
     this->crosshair = new Crosshair();
     this->skybox = new cam::Skybox();
     this->robot = new entity::Robot();
+    Random r(seed);
+    this->noise = new SimplexNoiseGenerator(&r);
+    this->noise->draw();
 
     for (int i = 0; i < 20 * 20; i++) {
         this->matrix[i] = false;
@@ -163,14 +166,14 @@ void World::loadChunks() {
 }
 
 void World::updateChunks() {
-    for (auto& it : this->chunks) {
+    for (auto &it : this->chunks) {
         Chunk *ch = it.second;
         ch->update();
     }
 }
 
 void World::drawChunks(glm::mat4 mat) {
-    for (auto& it : this->chunks) {
+    for (auto &it : this->chunks) {
         Chunk *ch = it.second;
         ch->draw(mat);
     }
