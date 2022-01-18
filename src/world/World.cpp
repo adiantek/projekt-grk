@@ -6,7 +6,7 @@
 
 using namespace world;
 
-#define VIEW_DISTANCE 8
+#define VIEW_DISTANCE 32
 
 World::World(int64_t seed) {
     this->seed = seed;
@@ -122,7 +122,7 @@ void World::updateChunkMap(bool firstLoad) {
 }
 
 void World::loadChunks() {
-    if (timeExternal->lastFrame - this->lastLoadChunks < 0.05) {  // 20 chunks per sec
+    if (timeExternal->lastFrame - this->lastLoadChunks < 0.01) {  // 100 chunks per sec
         return;
     }
     this->lastLoadChunks = timeExternal->lastFrame;
