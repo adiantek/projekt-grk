@@ -31,7 +31,7 @@ Skybox::Skybox() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     this->vbo = skyboxVBO.uploadVBO();
-    skyboxVBO.configureVAO(0, 3, GL_FLOAT, GL_FALSE, skyboxVBO.getFormat()->pos);
+    skyboxVBO.configurePos(0);
 }
 
 Skybox::~Skybox(){

@@ -56,11 +56,11 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexElementBufferSize, &indices[0], GL_STATIC_DRAW);
 
     vertexBuffer = buffer.uploadVBO();
-    buffer.configureVAO(0, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->pos);
-    buffer.configureVAO(1, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->normal);
-    buffer.configureVAO(2, 2, GL_FLOAT, GL_FALSE, buffer.getFormat()->tex);
-    buffer.configureVAO(3, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->tangent);
-    buffer.configureVAO(4, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->bitangent);
+    buffer.configurePos(0);
+    buffer.configureNormal(1);
+    buffer.configureTex(2);
+    buffer.configureTangent(3);
+    buffer.configureBitangent(4);
 }
 
 void Core::RenderContext::initPlane(float width, float height, int widthSegments, int heightSegments) {
@@ -119,11 +119,11 @@ void Core::RenderContext::initPlane(float width, float height, int widthSegments
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * size, &indices[0], GL_STATIC_DRAW);
 
     vertexBuffer = buffer.uploadVBO();
-    buffer.configureVAO(0, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->pos);
-    buffer.configureVAO(1, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->normal);
-    buffer.configureVAO(2, 2, GL_FLOAT, GL_FALSE, buffer.getFormat()->tex);
-    buffer.configureVAO(3, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->tangent);
-    buffer.configureVAO(4, 3, GL_FLOAT, GL_FALSE, buffer.getFormat()->bitangent);
+    buffer.configurePos(0);
+    buffer.configureNormal(1);
+    buffer.configureTex(2);
+    buffer.configureTangent(3);
+    buffer.configureBitangent(4);
 }
 
 void Core::DrawContext(Core::RenderContext& context) {

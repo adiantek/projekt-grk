@@ -27,6 +27,10 @@ VertexBuffer *VertexBuffer::pos(float x, float y, float z) {
     return this;
 }
 
+VertexBuffer *VertexBuffer::color(float r, float g, float b) {
+    return this->color(r, g, b, 1.0f);
+}
+
 VertexBuffer *VertexBuffer::color(float r, float g, float b, float a) {
     float *p = (float *)(this->buffPos + this->format->color);
     *p++ = r;
@@ -146,6 +150,43 @@ void VertexBuffer::configureVAO(GLuint index, GLint size, GLenum type, GLboolean
     const void *p = (const void *)((const uint8_t *)0 + pointer);
     glEnableVertexAttribArray(index);
     glVertexAttribPointer(index, size, type, normalized, this->format->getGPUSize(), p);
+}
+
+VertexBuffer *VertexBuffer::configurePos(GLuint index) {
+    this->configureVAO(index, 3, GL_FLOAT, GL_FALSE, this->getFormat()->pos);
+    return this;
+}
+
+VertexBuffer *VertexBuffer::configureColor(GLuint index) {
+    this->configureVAO(index, 4, GL_FLOAT, GL_FALSE, this->getFormat()->color);
+    return this;
+}
+
+VertexBuffer *VertexBuffer::configureTex(GLuint index) {
+    this->configureVAO(index, 2, GL_FLOAT, GL_FALSE, this->getFormat()->tex);
+    return this;
+}
+
+VertexBuffer *VertexBuffer::configureNormal(GLuint index) {
+    this->configureVAO(index, 3, GL_FLOAT, GL_FALSE, this->getFormat()->normal);
+    return this;
+}
+
+VertexBuffer *VertexBuffer::configureTangent(GLuint index) {
+    this->configureVAO(index, 3, GL_FLOAT, GL_FALSE, this->getFormat()->tangent);
+    return this;
+}
+
+VertexBuffer *VertexBuffer::configureBitangent(GLuint index) {
+    this->configureVAO(index, 3, GL_FLOAT, GL_FALSE, this->getFormat()->bitangent);
+    return this;
+}
+
+VertexBuffer *VertexBuffer::configureJoint(GLuint indexID, GLuint indexWeight) {
+    // TODO @Marcin
+    // this->configureVAO(indexID, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointID);
+    // this->configureVAO(indexWeight, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointWeight);
+    return this;
 }
 
 uint32_t VertexBuffer::getVertices() {

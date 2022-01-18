@@ -7,7 +7,7 @@
 #include <vertex/VertexBuffer.hpp>
 
 SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
-    double scale = 1.0;
+    double scale = 0.5; // im mniejsza wartosc tym teren lagodniejszy
     double weight = 1.0 / ((1 << 4) - 1);
 
     for (int l = 0; l < 4; l++) {
@@ -48,8 +48,8 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
     this->vbo = vertices.uploadVBO();
-    vertices.configureVAO(res->p_simplex_attr_pos, 3, GL_FLOAT, GL_FALSE, vertices.getFormat()->pos);
-    vertices.configureVAO(res->p_simplex_attr_tex, 2, GL_FLOAT, GL_FALSE, vertices.getFormat()->tex);
+    vertices.configurePos(res->p_simplex_attr_pos);
+    vertices.configureTex(res->p_simplex_attr_tex);
 
     glGenFramebuffers(1, &this->fb);
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
@@ -69,7 +69,7 @@ SimplexNoiseGenerator::~SimplexNoiseGenerator() {
     glDeleteTextures(1, &this->fbTxt);
 }
 
-void SimplexNoiseGenerator::draw(float x, float y) {
+float *SimplexNoiseGenerator::draw(float x, float y) {
     ResourceLoader *res = resourceLoaderExternal;
 
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
@@ -94,6 +94,19 @@ void SimplexNoiseGenerator::draw(float x, float y) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     camera->useCameraViewport();
 
+    // for (int y = 0; y < 17; y++) {
+    //     for (int x = 0; x < 17; x++) {
+    //         printf("%.3f   ", this->noiseValues[y * 17 + x]);
+    //     }
+    //     printf("\n");
+    // }
+
+    return this->noiseValues;
+}
+
+void SimplexNoiseGenerator::debugNoise(float x, float y) {
+    LOGD("Debug noise: [%.1f, %.1f]", x, y);
+    this->draw(x, y);
     for (int y = 0; y < 17; y++) {
         for (int x = 0; x < 17; x++) {
             printf("%.3f   ", this->noiseValues[y * 17 + x]);

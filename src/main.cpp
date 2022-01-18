@@ -137,6 +137,7 @@ void do_frame()
 	
 	timeExternal->update();
 	controller->update();
+	robot->update();
 	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
@@ -267,7 +268,7 @@ int main(int argc, char **argv)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        window = glfwCreateWindow(1280, 768, "GLFW test", NULL, NULL);
+        window = glfwCreateWindow(1280, 720, "Lubię trójkąty", NULL, NULL);
         if (!window)
         {
             LOGE("glfwCreateWindow() failed");
@@ -278,10 +279,10 @@ int main(int argc, char **argv)
         {
             LOGI("glfwCreateWindow() success");
             glfwMakeContextCurrent(window);
-			// glfwSwapInterval(0);
+			glfwSwapInterval(0);
 			new Time();
 			new Controller(window);
-			new Camera(1280, 768);
+			new Camera(1280, 720);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {

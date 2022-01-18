@@ -23,8 +23,8 @@ Crosshair::Crosshair() {
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
     this->vbo = vbo.uploadVBO();
-    vbo.configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor, 4, GL_FLOAT, GL_FALSE, vbo.getFormat()->color);
-    vbo.configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition, 3, GL_FLOAT, GL_FALSE, vbo.getFormat()->pos);
+    vbo.configureColor(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor);
+    vbo.configurePos(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition);
 }
 
 Crosshair::~Crosshair() {

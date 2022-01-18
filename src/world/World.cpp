@@ -6,7 +6,7 @@
 
 using namespace world;
 
-#define VIEW_DISTANCE 2
+#define VIEW_DISTANCE 8
 
 World::World(int64_t seed) {
     this->seed = seed;
@@ -16,11 +16,9 @@ World::World(int64_t seed) {
     this->robot = new entity::Robot();
     Random r(seed);
     this->noise = new SimplexNoiseGenerator(&r);
-    this->noise->draw(-123, -123);
-
-    for (int i = 0; i < 20 * 20; i++) {
-        this->matrix[i] = false;
-    }
+    // this->noise->debugNoise(0, 0);
+    // this->noise->debugNoise(0, 1);
+    // this->noise->debugNoise(0, 2);
 
     this->updateChunkMap(true);
 }
@@ -40,7 +38,7 @@ bool World::shouldChunkBeLoaded(int32_t x1, int32_t y1, int32_t x2, int32_t y2, 
 }
 
 void World::loadChunkNow(ChunkPosition pos) {
-    Chunk *ch = new Chunk(this->seed, pos);
+    Chunk *ch = new Chunk(this, pos);
     this->chunks[pos.id] = ch;
 }
 
@@ -50,15 +48,6 @@ void World::unloadChunkNow(ChunkPosition pos) {
 }
 
 void World::loadChunkQueue(ChunkPosition pos) {
-    int32_t x = pos.coords.x;
-    int32_t z = pos.coords.z;
-    int32_t rx = x + 10;
-    int32_t rz = z + 10;
-    if (rx >= 0 && rx <= 19 && rz >= 0 && rz <= 19) {
-        int32_t ci = rx * 20 + rz;
-        this->matrix[ci] = true;
-    }
-    this->chunksQueue.push_back(pos);
     for (std::deque<ChunkPosition>::reverse_iterator it = this->chunksQueueDrop.rbegin(); it != this->chunksQueueDrop.rend(); ++it) {
         if ((*it).id == pos.id) {
             if (this->chunksQueueDrop.back().id == pos.id) {
@@ -67,21 +56,13 @@ void World::loadChunkQueue(ChunkPosition pos) {
                 *it = this->chunksQueueDrop.back();
                 this->chunksQueueDrop.pop_back();
             }
-            break;
+            return;
         }
     }
+    this->chunksQueue.push_back(pos);
 }
 
 void World::unloadChunkQueue(ChunkPosition pos) {
-    int32_t x = pos.coords.x;
-    int32_t z = pos.coords.z;
-    int32_t rx = x + 10;
-    int32_t rz = z + 10;
-    if (rx >= 0 && rx <= 19 && rz >= 0 && rz <= 19) {
-        int32_t ci = rx * 20 + rz;
-        this->matrix[ci] = false;
-    }
-    this->chunksQueueDrop.push_back(pos);
     for (std::deque<ChunkPosition>::reverse_iterator it = this->chunksQueue.rbegin(); it != this->chunksQueue.rend(); ++it) {
         if ((*it).id == pos.id) {
             if (this->chunksQueue.back().id == pos.id) {
@@ -90,9 +71,10 @@ void World::unloadChunkQueue(ChunkPosition pos) {
                 *it = this->chunksQueue.back();
                 this->chunksQueue.pop_back();
             }
-            break;
+            return;
         }
     }
+    this->chunksQueueDrop.push_back(pos);
 }
 
 void World::updateChunkMap(bool firstLoad) {
@@ -137,15 +119,6 @@ void World::updateChunkMap(bool firstLoad) {
     ChunkPositionComparator_translate = glm::vec2(pos.x, pos.z) / 16.0F;
     std::sort(this->chunksQueue.begin(), this->chunksQueue.end(), ChunkPositionComparator_comparator);
     std::sort(this->chunksQueueDrop.begin(), this->chunksQueueDrop.end(), ChunkPositionComparator_comparator);
-    for (int32_t x = 0; x < 20; x++) {
-        for (int32_t z = 0; z < 20; z++) {
-            printf("%s", this->matrix[x * 20 + z] ? "#" : x == 10 && z == 10 ? "+"
-                                                      : x == 10              ? "-"
-                                                      : z == 10              ? "|"
-                                                                             : " ");
-        }
-        printf("\n");
-    }
 }
 
 void World::loadChunks() {
@@ -183,15 +156,16 @@ void World::update() {
     this->chunkBorderDebugRenderer->update();
     this->crosshair->update();
     this->skybox->update();
-    this->robot->update();
+    // this->robot->update();
     this->updateChunkMap(false);
     this->loadChunks();
+    this->updateChunks();
 }
 
 void World::draw(glm::mat4 mat) {
     this->skybox->draw(mat);  // na poczatku - depth offniety
 
-    this->chunkBorderDebugRenderer->draw(mat);
+    // this->chunkBorderDebugRenderer->draw(mat);
     this->drawChunks(mat);
     this->robot->draw(mat);
 

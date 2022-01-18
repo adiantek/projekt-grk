@@ -14,13 +14,11 @@ namespace world {
 
 class World : Object3D {
    private:
-    int64_t seed;
     cam::Skybox *skybox;
     ChunkBorderDebugRenderer *chunkBorderDebugRenderer;
     Crosshair *crosshair;
     entity::Robot *robot;
 
-    SimplexNoiseGenerator *noise;
     glm::vec2 updateChunkRobotPos;
     ChunkPosition updateChunkLastPos;
     std::deque<ChunkPosition> chunksQueue;
@@ -37,9 +35,11 @@ class World : Object3D {
     void loadChunks();
     void updateChunks();
     void drawChunks(glm::mat4 mat);
-    bool matrix[20 * 20];
 
    public:
+    int64_t seed;
+    SimplexNoiseGenerator *noise;
+
     World(int64_t seed);
     virtual ~World();
 

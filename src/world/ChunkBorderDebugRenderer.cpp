@@ -14,6 +14,7 @@ ChunkBorderDebugRenderer::ChunkBorderDebugRenderer() {
 
 ChunkBorderDebugRenderer::~ChunkBorderDebugRenderer() {
     glDeleteBuffers(1, &this->vbo);
+    glDeleteVertexArrays(1, &this->vao);
     delete this->vb;
 }
 
@@ -117,8 +118,8 @@ void ChunkBorderDebugRenderer::update() {
     glUseProgram(resourceLoaderExternal->p_simple_color_shader);
     glBindVertexArray(this->vao);
     this->vb->updateVBO(this->vbo);
-    this->vb->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor, 4, GL_FLOAT, GL_FALSE, this->vb->getFormat()->color);
-    this->vb->configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition, 3, GL_FLOAT, GL_FALSE, this->vb->getFormat()->pos);
+    this->vb->configureColor(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor);
+    this->vb->configurePos(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition);
 
     // LOGD("vertices: %d + %d", this->sizeOne, this->vb->getVertices() - this->sizeOne);
 }
