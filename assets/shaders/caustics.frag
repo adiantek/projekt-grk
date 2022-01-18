@@ -66,8 +66,8 @@ void main() {
 
     float ambient = 0.3;
     float ambient2 = 0.7;
-    //float diffuse = 0.8 * max(0.0, dot(normal, lightDirection));
-    //float specular = 0.8 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
+    float diffuse = 0.8 * max(0.0, dot(normal, lightDirection));
+    float specular = 0.8 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
 
     float lightIntensity = 1.0;
 
@@ -75,7 +75,7 @@ void main() {
         lightIntensity = computeCaustics(lightIntensity, caustics, positionLS);
     }
 
-    objectColor = mix(objectColor, ambient * objectColor + ambient2 * lightIntensity * objectColor + 0.0 * lightIntensity * vec3(1.0), 0.99);
+    objectColor = mix(objectColor, ambient * objectColor + diffuse * lightIntensity * objectColor + specular * lightIntensity * vec3(1.0), 0.99);
 
     fragColor = vec4(objectColor, 1.0);
 }
