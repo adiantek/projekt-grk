@@ -78,7 +78,7 @@ namespace water {
         glUniform1i(resourceLoaderExternal->p_caustics_uni_normalMap, 2);
 
 
-        glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * glm::eulerAngleX(glm::radians(-90.0f));
+        glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(1.15f));
         glm::mat4 lightCamera = this->environmentMap.getLightCamera();
 
         glUniform1f(resourceLoaderExternal->p_caustics_uni_height, this->y);
