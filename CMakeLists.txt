@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 message(STATUS "Cmake prefix path: ${CMAKE_PREFIX_PATH}")
 
-include_directories(include)
+include_directories("include" "libraries")
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.c)
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_DEBUG_POSTFIX _d)
