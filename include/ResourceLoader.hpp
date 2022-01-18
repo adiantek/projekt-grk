@@ -38,6 +38,9 @@ public:
     GLuint tex_skybox = 0;
     GLuint tex_dummy = 0;
     GLuint tex_uv = 0;
+    GLuint tex_sand = 0;
+    GLuint tex_sandNormal = 0;
+    GLuint tex_sandHeight = 0;
 
     // programs:
     GLuint p_simple_color_shader = 0;
@@ -191,6 +194,7 @@ public:
     GLint p_caustics_shader_uni_colorTexture = -1;
     GLint p_caustics_shader_uni_normalSampler = -1;
     GLint p_caustics_shader_uni_waterHeight = -1;
+    GLint p_caustics_shader_uni_depthMap = -1;
 
     static void loadTextureExternal(char *name, GLuint *out);
     static void loadModelExternal(char *name, Model *out);

@@ -38,6 +38,9 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/wall_normal.png", &this->tex_wallNormal);
     loadTexture("assets/textures/wall_height.png", &this->tex_wallHeight);
     loadTexture("assets/textures/dummy.png", &this->tex_dummy);
+    loadTexture("assets/textures/sand.png", &this->tex_sand);
+    loadTexture("assets/textures/sand_normal.png", &this->tex_sandNormal);
+    loadTexture("assets/textures/sand_height.png", &this->tex_sandHeight);
     loadTextureCubeMap(&this->tex_skybox);
 }
 
@@ -199,6 +202,7 @@ void ResourceLoader::loadPrograms() {
         this->p_caustics_shader_uni_colorTexture = glGetUniformLocation(this->p_caustics_shader, "colorTexture");
         this->p_caustics_shader_uni_normalSampler = glGetUniformLocation(this->p_caustics_shader, "normalSampler");
         this->p_caustics_shader_uni_waterHeight = glGetUniformLocation(this->p_caustics_shader, "waterHeight");
+        this->p_caustics_shader_uni_depthMap = glGetUniformLocation(this->p_caustics_shader, "depthMap");
     }
 
 #undef LOAD_PROGRAM

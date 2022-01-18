@@ -148,7 +148,7 @@ void do_frame()
 	glm::mat4 shipModelMatrix = glm::translate(robot->position) * shipInitialTransformation;
 
 	double time = glfwGetTime();
-	glm::vec3 lightPos = glm::vec3(0, 0, 0);
+	glm::vec3 lightPos = glm::normalize(glm::vec3(-92.0f, 222.0f, -256.0f)) * 1000000.0f;
 	glm::mat4 eu = glm::eulerAngleY(time / 2.0);
 	glm::mat4 eu2 = glm::eulerAngleY(2.5 / 2.0);
 	eu = glm::translate(eu, glm::vec3(-5, 0, 0));
@@ -182,7 +182,7 @@ void do_frame()
 	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.06f);
 
 	glUseProgram(resourceLoader.p_caustics_shader);
-	glUniform3f(resourceLoader.p_caustics_shader_uni_lightPosition, lightPos.x, 128.0f/*lightPos.y*/, lightPos.z);
+	glUniform3f(resourceLoader.p_caustics_shader_uni_lightPosition, lightPos.x, lightPos.x, lightPos.z);
 	glUniform3f(resourceLoader.p_caustics_shader_uni_cameraPosition, -camera->position.x, -camera->position.y, -camera->position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_1);
@@ -248,7 +248,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(128.0f, 256.0f, 40.0f, 400, 16.0f * 32.0f, 1000);
+	new water::Water(128.0f, 256.0f, 40.0f, 400, 256.0f, 1000);
 	w = new world::World(0);
 	waterObject->addWorldObject((world::Object3D*) w);
 }

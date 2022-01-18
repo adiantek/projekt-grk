@@ -6,7 +6,7 @@
 
 using namespace world;
 
-#define VIEW_DISTANCE 32
+#define VIEW_DISTANCE 16
 
 World::World(int64_t seed) {
     this->seed = seed;
