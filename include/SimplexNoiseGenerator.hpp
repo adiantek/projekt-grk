@@ -14,7 +14,7 @@ typedef struct SimplexNoiseLayer {
 class SimplexNoiseGenerator {
    private:
     SimplexNoiseLayer layers[4];
-    float noiseValues[17 * 17];
+    float noiseValues[19 * 19];
     GLuint vbo;
     GLuint vao;
     GLuint fb;
@@ -28,7 +28,7 @@ class SimplexNoiseGenerator {
      * 
      * @param x offset x
      * @param y offset y
-     * @return float* size 17 * 17, values from -0.9506353780500628 to 0.9442659147897063
+     * @return float* size 19 * 19, values from -0.9506353780500628 to 0.9442659147897063
      */
     float *draw(float x, float y);
 
