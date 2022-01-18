@@ -134,6 +134,12 @@ void Chunk::draw(glm::mat4 mat) {
     glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_depthMap, 3);
     glActiveTexture(GL_TEXTURE0 + 3);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandHeight);
+    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_roughnessMap, 4);
+    glActiveTexture(GL_TEXTURE0 + 4);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandRoughness);
+    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_aoMap, 5);
+    glActiveTexture(GL_TEXTURE0 + 5);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandAO);
     glm::vec3 lightDir = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
     glUniform3f(resourceLoaderExternal->p_caustics_shader_uni_lightDirection, lightDir.x, lightDir.y, lightDir.z);
     glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));

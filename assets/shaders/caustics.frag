@@ -4,12 +4,18 @@ precision highp float;
 
 const vec2 resolution = vec2(1024.0);
 const float bias = 0.003;
+const float PI = 3.14159265359;
 
 uniform sampler2D colorTexture;
 uniform sampler2D normalSampler;
 uniform sampler2D caustics;
 uniform sampler2D depthMap;
+uniform sampler2D aoMap;
+uniform sampler2D roughnessMap;
+uniform vec3 lightPosition;
+uniform vec3 cameraPosition;
 uniform float waterHeight;
+uniform vec3 lightDirection;
 
 in vec3 position;
 in vec2 texturePosition;
@@ -19,6 +25,36 @@ in vec3 positionLS;
 in float lightIntensity;
 
 out vec4 fragColor;
+
+float DistributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness*roughness;
+    float a2 = a*a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH*NdotH;
+
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return a2 / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
+
+    return NdotV /  (NdotV * (1.0 - k) + k);
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float ggx2 = GeometrySchlickGGX(max(dot(N, V), 0.0), roughness);
+    float ggx1 = GeometrySchlickGGX(max(dot(N, L), 0.0), roughness);
+
+    return ggx1 * ggx2;
+}
+
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
 
 vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float heightScale) {
     // Number of iterations based on angle to view direction
@@ -60,7 +96,7 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
     // If someone is drawing from outside of space
     if(positionLS.x > 1.0 || positionLS.y > 1.0 || positionLS.x < 0.0 || positionLS.y < 0.0) {
         positionLS.z = 0.0;
-        return 1.0;
+        //return 1.0;
     }
     float computedLightIntensity = 0.0;
     float shadow = 0.0;
@@ -84,25 +120,62 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
     return computedLightIntensity + shadow;
 }
 
+vec3 PBR(vec3 normal, vec3 view, vec3 albedo, vec3 F0, float metallic, float roughness, float ao, vec3 lightDirection, vec3 lightColor, float lightDistance, vec3 ambientStrength) {
+    F0 = mix(F0, albedo, metallic);
+    // reflectance equation
+    vec3 Lo = vec3(0.0);
+    // calculate light radiance
+    vec3 H = normalize(view + lightDirection);
+    vec3 radiance = lightColor * (1.0 / (lightDistance * lightDistance));
+    // cook-torrance brdf
+    vec3 F = fresnelSchlick(max(dot(H, view), 0.0), F0);
+
+    vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
+
+    float NdotL = max(dot(normal, lightDirection), 0.0);
+
+    vec3 numerator = DistributionGGX(normal, H, roughness) * GeometrySmith(normal, view, lightDirection, roughness) * F;
+    float denominator = 4.0 * max(dot(normal, view), 0.0) * NdotL + 0.0001;
+    vec3 specular = numerator / denominator;
+    // add to outgoing radiance Lo
+    Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+
+    vec3 ambient = ambientStrength * albedo * ao;
+    vec3 color = ambient + Lo;
+
+    color = color / (color + vec3(1.0));
+    color = pow(color, vec3(1.0 / 2.2));
+
+    return color;
+}
+
 void main() {
     vec3 lightDirection = normalize(lightDirectionTS);
     vec3 viewDirection = normalize(viewDirectionTS);
-    vec2 textureCoords = parallaxMapping(vec2(texturePosition.x, 1.0 - texturePosition.y), viewDirection, depthMap, 0.1);
-    vec3 objectColor = texture(colorTexture, textureCoords).xyz;
+    vec2 textureCoords = vec2(texturePosition.x, 1.0 - texturePosition.y);//parallaxMapping(vec2(texturePosition.x, 1.0 - texturePosition.y), viewDirection, depthMap, 0.5);
     vec3 normal = normalize(vec3(texture(normalSampler, textureCoords)) * 2.0 - 1.0);
-    vec3 reflected = reflect(-lightDirection, normal);
+    vec3 objectColor = texture(colorTexture, textureCoords).xyz;
 
-    float ambient = 0.3;
-    float diffuse = 0.7 * max(0.0, dot(normal, lightDirection));
-    float specular = 0.4 * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
-
-    float lightIntensity = 1.0;
+    float computedLightIntensity = 1.0;
 
     if(position.y < waterHeight) {
-        lightIntensity = computeCaustics(lightIntensity, caustics, positionLS);
+        computedLightIntensity = computeCaustics(computedLightIntensity, caustics, positionLS);
     }
+    /*vec3 reflected = reflect(-lightDirection, normal);
 
-    objectColor = mix(objectColor, ambient * objectColor + diffuse * lightIntensity * objectColor + specular * lightIntensity * vec3(1.0), 0.99);
+    float ambient = 0.3;
+    float diffuse = 0.7 * computedLightIntensity * max(0.0, dot(normal, lightDirection));
+    float specular = 0.4 * computedLightIntensity * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
 
-    fragColor = vec4(objectColor, 1.0);
+    objectColor = mix(objectColor, (ambient + diffuse) * objectColor + specular * vec3(1.0), 0.99);
+
+    fragColor = vec4(objectColor, 1.0);*/
+
+    vec3 color = PBR(
+        normal, viewDirection, objectColor, vec3(0.0),
+        0.0, texture(roughnessMap, textureCoords).r,
+        texture(aoMap, textureCoords).r, lightDirection,
+        vec3(1.0) * computedLightIntensity, 1.0, vec3(0.1)
+    );
+    fragColor = vec4(color, 1.0);
 }
