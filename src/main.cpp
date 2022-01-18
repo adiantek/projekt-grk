@@ -11,7 +11,6 @@
 #include <Controller/Controller.hpp>
 #include <Water/Water.hpp>
 #include <Random.hpp>
-#include <SimplexNoiseGenerator.hpp>
 #include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
@@ -74,7 +73,6 @@ void drawObjectTexture(Core::RenderContext context, glm::mat4 modelMatrix, GLuin
 
 	glUseProgram(program);
 
-	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 	Core::SetActiveTexture(textureId, "colorTexture", program, 0);
 
 	glm::mat4 transformation = viewMatrix * modelMatrix;
@@ -127,7 +125,6 @@ void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMat
 void init();
 
 Random r(0);
-SimplexNoiseGenerator *noise;
 
 void do_frame()
 {
@@ -139,6 +136,7 @@ void do_frame()
 	
 	timeExternal->update();
 	controller->update();
+	robot->update();
 	camera->update();
 
 	viewMatrix = camera->getTransformationMatrix();
@@ -171,6 +169,8 @@ void do_frame()
 	w->draw(viewMatrix);
 
 	// ground->draw();
+	glUseProgram(resourceLoader.p_shader_tex);
+	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 
 	glUseProgram(resourceLoader.p_shader_4_tex);
 	glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -203,13 +203,12 @@ void do_frame()
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
 	
-	// double st = glfwGetTime();
-	// for (int i = 0; i < 1000; i++)
-	// 	noise->draw(&resourceLoader);
-	// st = glfwGetTime() - st;
-	// LOGD("time: %.3f", st);
-
+	glEnable(GL_BLEND);
+	glBlendColor(1.0f, 1.0f, 1.0f, 0.75f);
+	glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 	waterObject->draw(viewMatrix);
+	glDisable(GL_BLEND);
+
     glfwSwapBuffers(window);
 }
 
@@ -243,17 +242,14 @@ void init() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	// Other...
-	noise = new SimplexNoiseGenerator(&r, &resourceLoader);
-
 	loadModelToContext("assets/models/spaceship.obj", shipContext);
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
 	loadModelToContext("assets/models/sphere2.obj", sphereContext2);
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(25.0f, 9.0f, 400);
-	w = new world::World();
+	new water::Water(250.0f, 128.0f, 400);
+	w = new world::World(0);
 }
 
 int main(int argc, char **argv)
@@ -272,7 +268,7 @@ int main(int argc, char **argv)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        window = glfwCreateWindow(1280, 768, "GLFW test", NULL, NULL);
+        window = glfwCreateWindow(1280, 720, "Lubię trójkąty", NULL, NULL);
         if (!window)
         {
             LOGE("glfwCreateWindow() failed");
@@ -286,7 +282,7 @@ int main(int argc, char **argv)
 			glfwSwapInterval(0);
 			new Time();
 			new Controller(window);
-			new Camera(1280, 768);
+			new Camera(1280, 720);
 #ifndef EMSCRIPTEN
             if (!gladLoadGL())
             {

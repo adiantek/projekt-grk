@@ -1,6 +1,8 @@
 #pragma once
 
 #include <opengl.h>
+
+#include <glm/glm.hpp>
 #include <vertex/VertexFormats.hpp>
 
 namespace vertex {
@@ -17,6 +19,8 @@ class VertexBuffer {
     ~VertexBuffer();
     VertexFormat *getFormat();
     VertexBuffer *pos(float x, float y, float z);
+    VertexBuffer *pos(glm::vec3 vec);
+    VertexBuffer *color(float r, float g, float b);
     VertexBuffer *color(float r, float g, float b, float a);
     VertexBuffer *tex(float u, float v);
     VertexBuffer *normal(float x, float y, float z);
@@ -31,6 +35,13 @@ class VertexBuffer {
     void updateVBO(GLuint vbo);
     uint32_t getVertices();
     void configureVAO(GLuint index, GLint size, GLenum type, GLboolean normalized, int32_t pointer);
+    VertexBuffer *configurePos(GLuint index);
+    VertexBuffer *configureColor(GLuint index);
+    VertexBuffer *configureTex(GLuint index);
+    VertexBuffer *configureNormal(GLuint index);
+    VertexBuffer *configureTangent(GLuint index);
+    VertexBuffer *configureBitangent(GLuint index);
+    VertexBuffer *configureJoint(GLuint indexID, GLuint indexWeight);
 };
 
 }  // namespace vertex

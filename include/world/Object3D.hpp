@@ -13,4 +13,4 @@ class Object3D {
     virtual void draw(glm::mat4 mat);
 };
 
-}
+}  // namespace world

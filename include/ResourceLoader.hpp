@@ -37,6 +37,7 @@ public:
     GLuint tex_wallHeight = 0;
     GLuint tex_skybox = 0;
     GLuint tex_dummy = 0;
+    GLuint tex_uv = 0;
 
     // programs:
     GLuint p_simple_color_shader = 0;
@@ -44,6 +45,13 @@ public:
     GLint p_simple_color_shader_attr_vertexColor = -1;
     GLint p_simple_color_shader_attr_vertexPosition = -1;
     GLint p_simple_color_shader_uni_transformation = -1;
+    
+    GLuint p_simple_tex_shader = 0;
+    bool p_simple_tex_shader_loaded = false;
+    GLint p_simple_tex_shader_attr_vertexPosition = -1;
+    GLint p_simple_tex_shader_attr_vertexTex = -1;
+    GLint p_simple_tex_shader_uni_textureSampler = -1;
+    GLint p_simple_tex_shader_uni_transformation = -1;
 
     GLuint p_skybox_shader = 0;
     bool p_skybox_shader_loaded = false;
@@ -142,10 +150,11 @@ public:
     // simplex:
     GLuint p_simplex = 0;
     bool p_simplex_loaded = false;
-    GLint p_simplex_attr_vertexPosition = -1;
-    GLint p_simplex_uni_alpha = -1;
+    GLint p_simplex_attr_pos = -1;
+    GLint p_simplex_attr_tex = -1;
     GLint p_simplex_uni_p = -1;
     GLint p_simplex_uni_scale = -1;
+    GLint p_simplex_uni_translation = -1;
     // environment_map:
     GLuint p_environment_map = 0;
     bool p_environment_map_loaded = false;

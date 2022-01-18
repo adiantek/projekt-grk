@@ -1,11 +1,11 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/glm.hpp>
 
 class Camera {
-public:
-    Camera(int width, int height, float fov = 80.0f, float near = 0.1f, float far = 100.0f, int x = 0, int y = 0);
+   public:
+    Camera(int width, int height, float fov = 80.0f, float near = 0.1f, float far = 1000.0f, int x = 0, int y = 0);
     ~Camera();
     /* Get camera and perspective transformation matrix */
     glm::mat4 getTransformationMatrix();
@@ -43,7 +43,7 @@ public:
     /* Camera position in world */
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-protected:
+   protected:
     /* Update camera perspective matrix */
     void updatePerspective();
 

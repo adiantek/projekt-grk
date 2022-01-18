@@ -23,6 +23,7 @@ ResourceLoader::~ResourceLoader() {
 }
 
 void ResourceLoader::loadTextures() {
+    loadTexture("assets/textures/uv_grid.png", &this->tex_uv);
     loadTexture("assets/textures/grid.png", &this->tex_grid);
     loadTexture("assets/textures/grid_color.png", &this->tex_gridColor);
     loadTexture("assets/textures/earth.png", &this->tex_earth);
@@ -48,6 +49,14 @@ void ResourceLoader::loadPrograms() {
         this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");
         this->p_simple_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_color_shader, "vertexPosition");
         this->p_simple_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_color_shader, "transformation");
+    }
+
+    LOAD_PROGRAM(simple_tex_shader, 2, "simple_tex_shader.frag", "simple_tex_shader.vert") {
+        // this->dumpProgram("simple_tex_shader", this->p_simple_tex_shader);
+        this->p_simple_tex_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_tex_shader, "vertexPosition");
+        this->p_simple_tex_shader_attr_vertexTex = glGetAttribLocation(this->p_simple_tex_shader, "vertexTex");
+        this->p_simple_tex_shader_uni_textureSampler = glGetUniformLocation(this->p_simple_tex_shader, "textureSampler");
+        this->p_simple_tex_shader_uni_transformation = glGetUniformLocation(this->p_simple_tex_shader, "transformation");
     }
 
     LOAD_PROGRAM(skybox_shader, 2, "cubemap/cubemap.frag", "cubemap/cubemap.vert") {
@@ -122,7 +131,7 @@ void ResourceLoader::loadPrograms() {
         this->p_shader_tex_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_tex, "vertexTexCoord");
         this->p_shader_tex_uni_lightDir = glGetUniformLocation(this->p_shader_tex, "lightDir");
         this->p_shader_tex_uni_modelMatrix = glGetUniformLocation(this->p_shader_tex, "modelMatrix");
-        this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "transformation");
+        this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "modelViewProjectionMatrix");
         this->p_shader_tex_uni_textureSampler = glGetUniformLocation(this->p_shader_tex, "textureSampler");
     }
 
@@ -149,10 +158,11 @@ void ResourceLoader::loadPrograms() {
 
     LOAD_PROGRAM(simplex, 2, "simplex.frag", "simplex.vert") {
         // this->dumpProgram("simplex", this->p_simplex);
-        this->p_simplex_attr_vertexPosition = glGetAttribLocation(this->p_simplex, "vertexPosition");
-        this->p_simplex_uni_alpha = glGetUniformLocation(this->p_simplex, "alpha");
+        this->p_simplex_attr_pos = glGetAttribLocation(this->p_simplex, "pos");
+        this->p_simplex_attr_tex = glGetAttribLocation(this->p_simplex, "tex");
         this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
         this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
+        this->p_simplex_uni_translation = glGetUniformLocation(this->p_simplex, "translation");
     }
     LOAD_PROGRAM(environment_map, 2, "water/environment.frag", "water/environment.vert") {
         // this->dumpProgram("environment_map", this->p_environment_map);

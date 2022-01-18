@@ -1,7 +1,7 @@
-#include <ResourceLoader.hpp>
-#include <vertex/VertexBuffer.hpp>
-#include <Robot/Robot.hpp>
 #include <Camera/Camera.hpp>
+#include <ResourceLoader.hpp>
+#include <Robot/Robot.hpp>
+#include <vertex/VertexBuffer.hpp>
 #include <world/Crosshair.hpp>
 
 using namespace world;
@@ -13,18 +13,18 @@ Crosshair::Crosshair() {
 
     vbo.pos(0.0f, 0.0f, 0.0f)->color(1.0f, 0.0f, 0.0f, 1.0f)->end();
     vbo.pos(size, 0.0f, 0.0f)->color(1.0f, 0.0f, 0.0f, 1.0f)->end();
-    
+
     vbo.pos(0.0f, 0.0f, 0.0f)->color(0.0f, 1.0f, 0.0f, 1.0f)->end();
     vbo.pos(0.0f, size, 0.0f)->color(0.0f, 1.0f, 0.0f, 1.0f)->end();
-    
+
     vbo.pos(0.0f, 0.0f, 0.0f)->color(0.5f, 0.5f, 1.0f, 1.0f)->end();
     vbo.pos(0.0f, 0.0f, size)->color(0.5f, 0.5f, 1.0f, 1.0f)->end();
-    
+
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
     this->vbo = vbo.uploadVBO();
-    vbo.configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor, 4, GL_FLOAT, GL_FALSE, vbo.getFormat()->color);
-    vbo.configureVAO(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition, 3, GL_FLOAT, GL_FALSE, vbo.getFormat()->pos);
+    vbo.configureColor(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor);
+    vbo.configurePos(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition);
 }
 
 Crosshair::~Crosshair() {

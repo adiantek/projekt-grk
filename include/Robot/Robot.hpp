@@ -1,21 +1,21 @@
 #pragma once
 
 #include <stdbool.h>
-#include <glm/ext.hpp>
 
 #include <Resources/GameObject.hpp>
+#include <glm/ext.hpp>
 #include <world/Object3D.hpp>
 
 namespace entity {
 
 class Robot : world::Object3D {
-  public:
+   public:
     // SPEEDS
     inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 1.0f;
-    inline static const float MAX_SWIMMING_SPEED_INCREASED = 2.0f;
+    inline static const float MAX_SWIMMING_SPEED_INCREASED = 2.0f * 10;
 
     inline static const float DEFAULT_WALKING_MOVEMENT_SPEED = 1.0f;
-    inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f;
+    inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f * 10;
 
     inline static const float ROTATION_SPEED = 20.0f;
 
@@ -39,12 +39,12 @@ class Robot : world::Object3D {
     void toggleIncreasedSpeedMode();
     void enableIncreasedSpeedMode();
     void disableIncreasedSpeedMode();
-    
+
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 direction;
 
-  private:
+   private:
     glm::vec3 moveDirectionVector;
 
     int mode;
@@ -54,6 +54,6 @@ class Robot : world::Object3D {
     GameObject* gameObject;
 };
 
-}
+}  // namespace entity
 
-extern entity::Robot *robot;
+extern entity::Robot* robot;

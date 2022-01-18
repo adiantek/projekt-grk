@@ -1,11 +1,11 @@
 #pragma once
 
-#include <list>
-#include <functional>
-
 #include <opengl.h>
 #include <stdbool.h>
+
+#include <functional>
 #include <glm/ext.hpp>
+#include <list>
 
 class Controller {
    public:
@@ -16,7 +16,7 @@ class Controller {
     bool keys[GLFW_KEY_LAST];
     bool mouseGrabbed = false;
     bool firstMouseMove = false;
-    
+
     void init();
     void update();
 
@@ -43,7 +43,7 @@ extern Controller *controller;
 #ifdef __EMSCRIPTEN__
 EMSCRIPTEN_KEEPALIVE void mouse_grab_status(bool active);
 #endif
-   
+
 #ifdef __cplusplus
 }
 #endif
