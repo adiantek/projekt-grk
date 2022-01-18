@@ -34,5 +34,6 @@ class Chunk : Object3D {
 
     void update() override;
     void draw(glm::mat4 mat) override;
+    void drawShadow(glm::mat4 mat) override;
 };
 }  // namespace world

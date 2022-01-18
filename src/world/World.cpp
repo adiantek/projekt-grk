@@ -150,6 +150,13 @@ void World::drawChunks(glm::mat4 mat) {
     }
 }
 
+void World::drawShadowChunks(glm::mat4 mat) {
+    for (auto &it : this->chunks) {
+        Chunk *ch = it.second;
+        ch->drawShadow(mat);
+    }
+}
+
 void World::update() {
     this->chunkBorderDebugRenderer->update();
     this->crosshair->update();
@@ -172,4 +179,9 @@ void World::draw(glm::mat4 mat) {
     this->crosshair->draw(mat);  // na koncu - depth offniety
 
     glDisable(GL_CULL_FACE);
+}
+
+void World::drawShadow(glm::mat4 mat) {
+    this->drawShadowChunks(mat);
+    this->robot->drawShadow(mat);
 }
