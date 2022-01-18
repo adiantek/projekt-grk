@@ -203,13 +203,12 @@ void do_frame()
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
 	
-	// double st = glfwGetTime();
-	// for (int i = 0; i < 1000; i++)
-	// 	noise->draw(&resourceLoader);
-	// st = glfwGetTime() - st;
-	// LOGD("time: %.3f", st);
-
+	glEnable(GL_BLEND);
+	glBlendColor(1.0f, 1.0f, 1.0f, 0.75f);
+	glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 	waterObject->draw(viewMatrix);
+	glDisable(GL_BLEND);
+
     glfwSwapBuffers(window);
 }
 
@@ -249,7 +248,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(25.0f, 9.0f, 400);
+	new water::Water(250.0f, 128.0f, 400);
 	w = new world::World(0);
 }
 
