@@ -60,7 +60,5 @@ void main() {
     vec4 projectedEnvPosition = transformation * vec4(newPosition, 1.0);
     depth = 0.5 + 0.5 * projectedEnvPosition.z / projectedEnvPosition.w;
 
-    projectedEnvPosition = vec4(projectedEnvPosition.xy * 1.15, projectedEnvPosition.zw);
-
     gl_Position = projectedEnvPosition;
 }
