@@ -60,6 +60,7 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
     // If someone is drawing from outside of space
     if(positionLS.x > 1.0 || positionLS.y > 1.0 || positionLS.x < 0.0 || positionLS.y < 0.0) {
         positionLS.z = 0.0;
+        return 1.0;
     }
     float computedLightIntensity = 0.0;
     float shadow = 0.0;
