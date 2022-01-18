@@ -95,12 +95,14 @@ void Chunk::generate() {
         }
     }
 
-    glUseProgram(resourceLoaderExternal->p_shader_tex);
+    glUseProgram(resourceLoaderExternal->p_caustics_shader);
     glBindVertexArray(this->vao);
     vertices.updateVBO(this->vbo);
-    vertices.configureTex(resourceLoaderExternal->p_shader_tex_attr_vertexTexCoord);
-    vertices.configurePos(resourceLoaderExternal->p_shader_tex_attr_vertexPosition);
-    vertices.configureNormal(resourceLoaderExternal->p_shader_tex_attr_vertexNormal);
+    vertices.configureTex(resourceLoaderExternal->p_caustics_shader_attr_vertexTexCoord);
+    vertices.configurePos(resourceLoaderExternal->p_caustics_shader_attr_vertexPosition);
+    vertices.configureNormal(resourceLoaderExternal->p_caustics_shader_attr_vertexNormal);
+    vertices.configureTangent(resourceLoaderExternal->p_caustics_shader_attr_vertexTangent);
+    vertices.configureBitangent(resourceLoaderExternal->p_caustics_shader_attr_vertexBitangent);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
