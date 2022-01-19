@@ -10,7 +10,7 @@ namespace water {
     : environmentMap(size, y, textureSize * 2, maxDepth), simulation(size, textureSize) {
         this->size = size;
         this->y = y;
-        this->textureSize = textureSize * 3;
+        this->textureSize = textureSize * 4;
         this->geometrySize = textureSize;
         this->geometry.initPlane(size, size, this->geometrySize, this->geometrySize);
         // Create framebuffer

@@ -97,7 +97,7 @@ void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLu
 	glUseProgram(0);
 }
 
-void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal)
+void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal, GLuint txtHeight = 0)
 {
 	glUseProgram(resourceLoader.p_caustics_shader);
 	glm::mat4 transformation = viewMatrix * modelMatrix;
@@ -105,6 +105,7 @@ void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMat
 	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_caustics_shader, 0);
 	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_caustics_shader, 1);
 	Core::SetActiveTexture(waterObject->getCausticsMap(), "caustics", resourceLoader.p_caustics_shader, 2);
+	Core::SetActiveTexture(txtHeight, "depthMap", resourceLoader.p_caustics_shader, 3);
 	glUniformMatrix4fv(resourceLoader.p_caustics_shader_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 	glUniformMatrix4fv(resourceLoader.p_caustics_shader_uni_transformation, 1, GL_FALSE, (float*)&transformation);
 	glUniformMatrix4fv(resourceLoader.p_caustics_shader_uni_lightTransformation, 1, GL_FALSE, (float*)&transformationLight);
@@ -182,7 +183,7 @@ void do_frame()
 
 	glUseProgram(resourceLoader.p_caustics_shader);
 	glUniform3f(resourceLoader.p_caustics_shader_uni_lightPosition, lightPos.x, lightPos.x, lightPos.z);
-	glUniform3f(resourceLoader.p_caustics_shader_uni_cameraPosition, -camera->position.x, -camera->position.y, -camera->position.z);
+	glUniform3f(resourceLoader.p_caustics_shader_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -194,7 +195,7 @@ void do_frame()
 	drawObjectTexNormalCaustics(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.tex_earth, resourceLoader.tex_earthNormal);
 	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_asteroidNormal);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
-	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
+	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
