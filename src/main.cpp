@@ -19,6 +19,8 @@
 #include <Robot/Robot.hpp>
 #include <Resources/GameObject.hpp>
 #include <world/World.hpp>
+#include <Physics/Physics.hpp>
+#include <Physics/RigidBody.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -48,6 +50,8 @@ glm::vec3 lightPos = lightDir * 100000000.0f;
 bool initialized = false;
 
 ResourceLoader resourceLoader;
+
+physics::RigidBody* rigidBody;
 
 world::World *w;
 
@@ -141,6 +145,7 @@ void do_frame()
 	glfwPollEvents();
 	
 	timeExternal->update();
+	physicsObject->update(timeExternal->deltaTime);
 	controller->update();
 	robot->update();
 	camera->update();
@@ -161,6 +166,7 @@ void do_frame()
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-9, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
 	waterObject->drawObject(sphereContext2, glm::translate(lightPos));
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)));
+	waterObject->drawObject(brickWallContext, rigidBody->getModelMatrix());
 	waterObject->stopUsingFramebuffer();
 
 	waterObject->update();
@@ -196,6 +202,7 @@ void do_frame()
 	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_asteroidNormal);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
+	drawObjectTexNormalCaustics(brickWallContext, rigidBody->getModelMatrix(), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
@@ -223,6 +230,9 @@ void loadModelToContext(std::string path, Core::RenderContext& context)
 void init() {
 	if (initialized) return;
 	initialized = true;
+	new physics::Physics(9.8f);
+
+	rigidBody = new physics::RigidBody(false, physx::PxTransform(20.0f, 256.0f, -15.0f), physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), nullptr);
 
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();

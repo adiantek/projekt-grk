@@ -10,7 +10,7 @@ class Physics {
     Physics(float gravity, ErrorCallback::LogLevel logLevel = ErrorCallback::__DEBUG);
     ~Physics();
     void update(float deltaTime);
-    physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, world::Object3D* object, float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.6f);
+    physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, world::Object3D* object, float staticFriction, float dynamicFriction, float restitution);
     void deleteRigidBody(physx::PxRigidBody* rigidBody);
 
    private:
