@@ -27,6 +27,7 @@ Physics::Physics(float gravity, ErrorCallback::LogLevel logLevel)
     physicsObject = this;
     this->foundation = PxCreateFoundation(PX_PHYSICS_VERSION, this->allocator, (PxErrorCallback&)this->errorCallback);
     this->physx = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true);
+    this->cooking = PxCreateCooking(PX_PHYSICS_VERSION, *this->foundation, PxCookingParams(PxTolerancesScale()));
 
     dispatcher = PxDefaultCpuDispatcherCreate(4);
 

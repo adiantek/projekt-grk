@@ -6,6 +6,7 @@
 #include <world/Chunk.hpp>
 #include <world/World.hpp>
 #include <Water/Water.hpp>
+#include <Physics/Physics.hpp>
 
 using namespace world;
 
@@ -26,6 +27,7 @@ Chunk::~Chunk() {
     glDeleteBuffers(1, &this->vbo);
     glDeleteBuffers(1, &this->elements);
     glDeleteVertexArrays(1, &this->vao);
+    delete this->rigidBody;
 }
 
 Random *Chunk::createChunkRandom() {
@@ -46,7 +48,9 @@ void Chunk::generate() {
             this->heightMap[x * 17 + y] = noise[(x + 1) * 19 + y + 1];
         }
     }
+
     vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX_TANGENT_BITANGENT, 17 * 17);
+    float vert[17 * 17 * 3];
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
             glm::vec3 squares[2][2];
@@ -82,6 +86,10 @@ void Chunk::generate() {
             
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
+
+            vert[3 * (x * 17 + z)] = squares[0][0].x;
+            vert[3 * (x * 17 + z) + 1] = squares[0][0].y;
+            vert[3 * (x * 17 + z) + 2] = squares[0][0].z;
         }
     }
     int lineNum = 0;
@@ -97,6 +105,30 @@ void Chunk::generate() {
             lines[lineNum++] = x * 17 + z + 1;
         }
     }
+
+    physx::PxTriangleMeshDesc meshDesc;
+    meshDesc.points.count = 17 * 17;
+    meshDesc.points.stride = sizeof(physx::PxVec3);
+    meshDesc.points.data  = vert;
+
+    meshDesc.triangles.count = 3 * 16 * 16;
+    meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
+    meshDesc.triangles.data = lines;
+
+    physx::PxDefaultMemoryOutputStream writeBuffer;
+    physx::PxTriangleMeshCookingResult::Enum result;
+    bool status = physicsObject->cooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
+    if(!status)
+        LOGE("Cannot bla bla...");
+
+    physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+    //physicsObject->physx->createTriangleMesh(readBuffer);
+
+    physx::PxTriangleMeshGeometry triGeom;
+
+    triGeom.triangleMesh = physicsObject->physx->createTriangleMesh(readBuffer);
+
+    this->rigidBody = new physics::RigidBody(true, physx::PxTransform(0.0f, 0.0f, 0.0f), triGeom, (world::Object3D*)this);
 
     glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);

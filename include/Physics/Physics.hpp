@@ -12,12 +12,13 @@ class Physics {
     void update(float deltaTime);
     physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, world::Object3D* object, float staticFriction, float dynamicFriction, float restitution);
     void deleteRigidBody(physx::PxRigidBody* rigidBody);
-
+    physx::PxCooking* cooking;
+    physx::PxPhysics* physx = nullptr;
+    
    private:
     physx::PxDefaultAllocator allocator;
     ErrorCallback errorCallback;
     physx::PxFoundation* foundation = nullptr;
-    physx::PxPhysics* physx = nullptr;
     physx::PxDefaultCpuDispatcher* dispatcher = nullptr;
     physx::PxScene* scene = nullptr;
     float timeToProccess = 0.0f;

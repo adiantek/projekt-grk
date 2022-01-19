@@ -8,6 +8,7 @@
 #include <SimplexNoiseGenerator.hpp>
 #include <world/ChunkPosition.hpp>
 #include <world/Object3D.hpp>
+#include <Physics/RigidBody.hpp>
 
 namespace world {
 
@@ -17,6 +18,7 @@ class Chunk : Object3D {
    private:
     GLuint vao, vbo, elements;
     double created;
+    physics::RigidBody* rigidBody;
 
    public:
     ChunkPosition pos;
