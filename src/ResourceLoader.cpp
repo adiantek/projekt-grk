@@ -186,26 +186,26 @@ void ResourceLoader::loadPrograms() {
         this->p_caustics_uni_heightMap = glGetUniformLocation(this->p_caustics, "heightMap");
         this->p_caustics_uni_normalMap = glGetUniformLocation(this->p_caustics, "normalMap");
     }
-    LOAD_PROGRAM(caustics_shader, 2, "caustics.frag", "caustics.vert") {
-        // this->dumpProgram("caustics_shader", this->p_caustics_shader);
-        this->p_caustics_shader_attr_vertexBitangent = glGetAttribLocation(this->p_caustics_shader, "vertexBitangent");
-        this->p_caustics_shader_attr_vertexNormal = glGetAttribLocation(this->p_caustics_shader, "vertexNormal");
-        this->p_caustics_shader_attr_vertexPosition = glGetAttribLocation(this->p_caustics_shader, "vertexPosition");
-        this->p_caustics_shader_attr_vertexTangent = glGetAttribLocation(this->p_caustics_shader, "vertexTangent");
-        this->p_caustics_shader_attr_vertexTexCoord = glGetAttribLocation(this->p_caustics_shader, "vertexTexCoord");
-        this->p_caustics_shader_uni_cameraPosition = glGetUniformLocation(this->p_caustics_shader, "cameraPosition");
-        this->p_caustics_shader_uni_lightPosition = glGetUniformLocation(this->p_caustics_shader, "lightPosition");
-        this->p_caustics_shader_uni_lightTransformation = glGetUniformLocation(this->p_caustics_shader, "lightTransformation");
-        this->p_caustics_shader_uni_modeSwitch = glGetUniformLocation(this->p_caustics_shader, "modeSwitch");
-        this->p_caustics_shader_uni_modelMatrix = glGetUniformLocation(this->p_caustics_shader, "modelMatrix");
-        this->p_caustics_shader_uni_transformation = glGetUniformLocation(this->p_caustics_shader, "transformation");
-        this->p_caustics_shader_uni_waterHeight = glGetUniformLocation(this->p_caustics_shader, "waterHeight");
-        this->p_caustics_shader_uni_aoMap = glGetUniformLocation(this->p_caustics_shader, "aoMap");
-        this->p_caustics_shader_uni_caustics = glGetUniformLocation(this->p_caustics_shader, "caustics");
-        this->p_caustics_shader_uni_colorTexture = glGetUniformLocation(this->p_caustics_shader, "colorTexture");
-        this->p_caustics_shader_uni_depthMap = glGetUniformLocation(this->p_caustics_shader, "depthMap");
-        this->p_caustics_shader_uni_normalSampler = glGetUniformLocation(this->p_caustics_shader, "normalSampler");
-        this->p_caustics_shader_uni_roughnessMap = glGetUniformLocation(this->p_caustics_shader, "roughnessMap");
+    LOAD_PROGRAM(chunk, 2, "chunk.frag", "chunk.vert") {
+        // this->dumpProgram("chunk", this->p_chunk);
+        this->p_chunk_attr_vertexBitangent = glGetAttribLocation(this->p_chunk, "vertexBitangent");
+        this->p_chunk_attr_vertexNormal = glGetAttribLocation(this->p_chunk, "vertexNormal");
+        this->p_chunk_attr_vertexPosition = glGetAttribLocation(this->p_chunk, "vertexPosition");
+        this->p_chunk_attr_vertexTangent = glGetAttribLocation(this->p_chunk, "vertexTangent");
+        this->p_chunk_attr_vertexTexCoord = glGetAttribLocation(this->p_chunk, "vertexTexCoord");
+        this->p_chunk_uni_cameraPosition = glGetUniformLocation(this->p_chunk, "cameraPosition");
+        this->p_chunk_uni_lightPosition = glGetUniformLocation(this->p_chunk, "lightPosition");
+        this->p_chunk_uni_lightTransformation = glGetUniformLocation(this->p_chunk, "lightTransformation");
+        this->p_chunk_uni_modeSwitch = glGetUniformLocation(this->p_chunk, "modeSwitch");
+        this->p_chunk_uni_modelMatrix = glGetUniformLocation(this->p_chunk, "modelMatrix");
+        this->p_chunk_uni_transformation = glGetUniformLocation(this->p_chunk, "transformation");
+        this->p_chunk_uni_waterHeight = glGetUniformLocation(this->p_chunk, "waterHeight");
+        this->p_chunk_uni_aoMap = glGetUniformLocation(this->p_chunk, "aoMap");
+        this->p_chunk_uni_caustics = glGetUniformLocation(this->p_chunk, "caustics");
+        this->p_chunk_uni_colorTexture = glGetUniformLocation(this->p_chunk, "colorTexture");
+        this->p_chunk_uni_depthMap = glGetUniformLocation(this->p_chunk, "depthMap");
+        this->p_chunk_uni_normalSampler = glGetUniformLocation(this->p_chunk, "normalSampler");
+        this->p_chunk_uni_roughnessMap = glGetUniformLocation(this->p_chunk, "roughnessMap");
     }
 
 #undef LOAD_PROGRAM

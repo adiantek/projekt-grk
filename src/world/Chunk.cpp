@@ -98,14 +98,14 @@ void Chunk::generate() {
         }
     }
 
-    glUseProgram(resourceLoaderExternal->p_caustics_shader);
+    glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);
     vertices.updateVBO(this->vbo);
-    vertices.configureTex(resourceLoaderExternal->p_caustics_shader_attr_vertexTexCoord);
-    vertices.configurePos(resourceLoaderExternal->p_caustics_shader_attr_vertexPosition);
-    vertices.configureNormal(resourceLoaderExternal->p_caustics_shader_attr_vertexNormal);
-    vertices.configureTangent(resourceLoaderExternal->p_caustics_shader_attr_vertexTangent);
-    vertices.configureBitangent(resourceLoaderExternal->p_caustics_shader_attr_vertexBitangent);
+    vertices.configureTex(resourceLoaderExternal->p_chunk_attr_vertexTexCoord);
+    vertices.configurePos(resourceLoaderExternal->p_chunk_attr_vertexPosition);
+    vertices.configureNormal(resourceLoaderExternal->p_chunk_attr_vertexNormal);
+    vertices.configureTangent(resourceLoaderExternal->p_chunk_attr_vertexTangent);
+    vertices.configureBitangent(resourceLoaderExternal->p_chunk_attr_vertexBitangent);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
@@ -121,28 +121,28 @@ void Chunk::draw(glm::mat4 mat) {
         glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
         glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
     }
-    glUseProgram(resourceLoaderExternal->p_caustics_shader);
-    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_colorTexture, 0);
+    glUseProgram(resourceLoaderExternal->p_chunk);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_colorTexture, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sand);
-    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_normalSampler, 1);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_normalSampler, 1);
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandNormal);
-    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_caustics, 2);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_caustics, 2);
     glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
-    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_depthMap, 3);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_depthMap, 3);
     glActiveTexture(GL_TEXTURE0 + 3);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandHeight);
-    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_roughnessMap, 4);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_roughnessMap, 4);
     glActiveTexture(GL_TEXTURE0 + 4);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandRoughness);
-    glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_aoMap, 5);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_aoMap, 5);
     glActiveTexture(GL_TEXTURE0 + 5);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandAO);
-    glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
-    glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
-    glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
+    glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+    glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
     if (alpha >= 0.0 && alpha < 1.0) {

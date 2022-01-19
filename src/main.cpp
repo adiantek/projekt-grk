@@ -99,16 +99,16 @@ void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLu
 
 void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal, GLuint txtHeight = 0)
 {
-	glUseProgram(resourceLoader.p_caustics_shader);
+	glUseProgram(resourceLoader.p_chunk);
 	glm::mat4 transformation = viewMatrix * modelMatrix;
 	glm::mat4 transformationLight = waterObject->getLightCamera();
-	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_caustics_shader, 0);
-	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_caustics_shader, 1);
-	Core::SetActiveTexture(waterObject->getCausticsMap(), "caustics", resourceLoader.p_caustics_shader, 2);
-	Core::SetActiveTexture(txtHeight, "depthMap", resourceLoader.p_caustics_shader, 3);
-	glUniformMatrix4fv(resourceLoader.p_caustics_shader_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
-	glUniformMatrix4fv(resourceLoader.p_caustics_shader_uni_transformation, 1, GL_FALSE, (float*)&transformation);
-	glUniformMatrix4fv(resourceLoader.p_caustics_shader_uni_lightTransformation, 1, GL_FALSE, (float*)&transformationLight);
+	Core::SetActiveTexture(txt, "colorTexture", resourceLoader.p_chunk, 0);
+	Core::SetActiveTexture(txtNormal, "normalSampler", resourceLoader.p_chunk, 1);
+	Core::SetActiveTexture(waterObject->getCausticsMap(), "caustics", resourceLoader.p_chunk, 2);
+	Core::SetActiveTexture(txtHeight, "depthMap", resourceLoader.p_chunk, 3);
+	glUniformMatrix4fv(resourceLoader.p_chunk_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
+	glUniformMatrix4fv(resourceLoader.p_chunk_uni_transformation, 1, GL_FALSE, (float*)&transformation);
+	glUniformMatrix4fv(resourceLoader.p_chunk_uni_lightTransformation, 1, GL_FALSE, (float*)&transformationLight);
 	Core::DrawContext(context);
 	glUseProgram(0);
 }
@@ -181,9 +181,9 @@ void do_frame()
 	glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.06f);
 
-	glUseProgram(resourceLoader.p_caustics_shader);
-	glUniform3f(resourceLoader.p_caustics_shader_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(resourceLoader.p_caustics_shader_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
+	glUseProgram(resourceLoader.p_chunk);
+	glUniform3f(resourceLoader.p_chunk_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(resourceLoader.p_chunk_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);

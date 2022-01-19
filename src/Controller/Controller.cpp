@@ -50,13 +50,13 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
         LOGI("Pressed key: %d", key);
         controller->keys[key] = true;
         if (key == GLFW_KEY_1) {
-            glUseProgram(resourceLoaderExternal->p_caustics_shader);
-            glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_modeSwitch, 0);
+            glUseProgram(resourceLoaderExternal->p_chunk);
+            glUniform1i(resourceLoaderExternal->p_chunk_uni_modeSwitch, 0);
             glUseProgram(0);
         }
         if (key == GLFW_KEY_2) {
-            glUseProgram(resourceLoaderExternal->p_caustics_shader);
-            glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_modeSwitch, 1);
+            glUseProgram(resourceLoaderExternal->p_chunk);
+            glUniform1i(resourceLoaderExternal->p_chunk_uni_modeSwitch, 1);
             glUseProgram(0);
         }
     } else if (action == 0) {

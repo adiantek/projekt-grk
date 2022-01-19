@@ -8,8 +8,8 @@ namespace water {
     Water::Water(float y, float maxDepth, float causticsSize, unsigned int causticsTexureSize, float surfaceSize, unsigned int surfaceTexureSize)
     : caustics(causticsSize, y, causticsTexureSize, maxDepth), surface(surfaceSize, y, surfaceTexureSize) {
         waterObject = this;
-        glUseProgram(resourceLoaderExternal->p_caustics_shader);
-        glUniform1f(resourceLoaderExternal->p_caustics_shader_uni_waterHeight, y);
+        glUseProgram(resourceLoaderExternal->p_chunk);
+        glUniform1f(resourceLoaderExternal->p_chunk_uni_waterHeight, y);
         glUseProgram(0);
     }
 
