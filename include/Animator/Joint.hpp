@@ -33,8 +33,19 @@ namespace Animator {
       Joint* addChild(Joint* child);
       
       glm::mat4 getTransform();
+      /* Matrix that transforms from mesh space to bone space. */
       glm::mat4 getInverseBindTransform();
+
+      /* Matrix that transforms from bone space to mesh space in bind pose.
+
+        This matrix describes the position of the mesh
+        in the local space of this bone when the skeleton was bound.
+        Thus it can be used directly to determine a desired vertex position,
+        given the world-space transform of the bone when animated,
+        and the position of the vertex in mesh space. */
       glm::mat4 getLocalBindTransform();
+
+      glm::vec3 getOrigin();
 
       /* Returns true if the joint has parent */
       bool hasParent();
@@ -52,6 +63,8 @@ namespace Animator {
         given the world-space transform of the bone when animated,
         and the position of the vertex in mesh space. */
       glm::mat4 localBindTransform;
+
+      /* Matrix that transforms from mesh space to bone space. */
       glm::mat4 inverseBindTransform;
   };
 

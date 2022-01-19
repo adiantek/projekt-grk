@@ -89,6 +89,10 @@ namespace Animator {
         }
     }
 
+    glm::vec3 Joint::getOrigin() {
+        return glm::vec3(glm::inverse(this->localBindTransform) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    }
+
     bool Joint::hasParent() {
         return this->_hasParent;
     }

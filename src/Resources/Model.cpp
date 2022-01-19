@@ -163,7 +163,7 @@ std::vector<Animator::Joint*> Model::loadJoints(const aiScene* scene) {
         std::cout << key << ':' << bone << std::endl;
         glm::mat4 transform = glm::mat4(1.0f);
         Animator::Joint* newJoint = new Animator::Joint(index, key, transform);
-        newJoint->setLocalBindTransform(Model::to_mat4(bone->mOffsetMatrix) * glm::rotate(glm::radians(90.0f), glm::vec3(1, 0, 0)));
+        newJoint->setLocalBindTransform(Model::to_mat4(bone->mOffsetMatrix));
         ids.insert(std::pair<std::string, int>(key, index));
         _joints.push_back(newJoint);
         index++;

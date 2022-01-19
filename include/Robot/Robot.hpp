@@ -11,9 +11,22 @@ struct RobotLeg {
     Animator::Joint *upperJoint;
     Animator::Joint *lowerJoint;
 
-    glm::vec3 attachmentPoint;
-    glm::vec3 attachmentEstimation;
-    glm::vec3 relativeAttachmentDestination;
+    float upperJointLength = 0.0f;
+    float lowerJointLength = 0.0f;
+
+    /* This is the actual point attached to the leg (when move, bones are also moving) */
+    glm::vec3 attachmentPoint = glm::vec3(0.0f);
+    glm::vec3 attachmentEstimation = glm::vec3(0.0f);
+
+    glm::vec3 currentAttachmentPoint = glm::vec3(-1.0f);
+    glm::vec3 targetAttachmentPoint = glm::vec3(0.0f);
+    glm::vec3 previousAttachmentPoint = glm::vec3(0.0f);
+    float step = -1.0f;
+
+    glm::vec3 lowerJointLengthVector = glm::vec3(0.0f);
+
+    glm::vec3 upperJointOrigin = glm::vec3(0.0f);
+    glm::vec3 lowerJointOrigin = glm::vec3(0.0f);
 };
 
 class Robot {
@@ -26,6 +39,8 @@ class Robot {
     inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f;
 
     inline static const float ROTATION_SPEED = 20.0f;
+    inline static const float LEG_STEP_SPEED = 0.2f;
+    inline static const float LEG_MAX_DISTANCE_SQUARE = 0.4f;
 
     // MODES
     static const int MODE_STATIONARY = 0;
@@ -60,11 +75,19 @@ class Robot {
     void draw();
     void createLegs();
     void updateLegs();
+
+    void createBody();
+    void updateBody();
     void applyBodyTransformation(glm::mat4 transformation);
 
     GameObject* gameObject;
+
     std::vector<RobotLeg*> legs;
     Animator::Joint* body;
+    glm::vec3 bodyOrigin;
+    Animator::Joint* eyeCover;
+
+    glm::mat4 initialModelMatrix;
 };
 
 extern Robot *robot;
