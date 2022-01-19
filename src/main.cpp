@@ -182,7 +182,7 @@ void do_frame()
 	glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.06f);
 
 	glUseProgram(resourceLoader.p_caustics_shader);
-	glUniform3f(resourceLoader.p_caustics_shader_uni_lightPosition, lightPos.x, lightPos.x, lightPos.z);
+	glUniform3f(resourceLoader.p_caustics_shader_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_caustics_shader_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
 
 	glUseProgram(resourceLoader.p_shader_4_1);
