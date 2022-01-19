@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-void Model::loadModel(char* filename) {
+void Model::loadModel(const char* filename) {
     this->file = std::string(filename);
 
     Assimp::Importer importer;

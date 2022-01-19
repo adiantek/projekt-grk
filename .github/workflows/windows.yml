@@ -8,7 +8,7 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
       shell: bash
       run: |
         mkdir out
-        cp build/Release/GrafikaKomputerowa.exe out/
+        cp build/Debug/GrafikaKomputerowa.exe out/
         cp dependencies/assimp-vc142-mtd.dll out/
         cp dependencies/glfw3.dll out/
         cp -R assets out/

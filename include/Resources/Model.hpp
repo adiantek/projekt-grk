@@ -13,7 +13,7 @@
 
 class Model {
     public:
-        void loadModel(char* filename);
+        void loadModel(const char* filename);
         void processNode(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation);
         Mesh* processMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
         std::vector<Vertex> vertices(aiMesh* mesh, glm::vec3& extents, glm::vec3 &origin, aiMatrix4x4 transformation);

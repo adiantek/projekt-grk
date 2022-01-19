@@ -200,8 +200,7 @@ public:
     GLint p_caustics_shader_uni_roughnessMap = -1;
     GLint p_caustics_shader_uni_lightDirection = -1;
 
-    static void loadTextureExternal(char *name, GLuint *out);
-    static void loadModelExternal(char *name, Model *out);
+    static void loadModelExternal(const char *name, Model *out);
 
 private:
     int totalResourcesCounter = 0;
