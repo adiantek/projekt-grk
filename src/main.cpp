@@ -43,7 +43,7 @@ GLFWwindow *window;
 glm::mat4 viewMatrix;
 
 glm::vec3 lightDir = glm::normalize(glm::vec3(-92.0f, 222.0f, -256.0f));
-glm::vec3 lightPos = lightDir * 1000000.0f;
+glm::vec3 lightPos = lightDir * 100000000.0f;
 
 bool initialized = false;
 

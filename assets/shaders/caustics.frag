@@ -176,7 +176,7 @@ void main() {
         normal, viewDirection, objectColor, vec3(0.0),
         0.0, texture(roughnessMap, textureCoords).r,
         texture(aoMap, textureCoords).r, lightDirection,
-        vec3(1.0) * computedLightIntensity, 1.0, vec3(0.1)
+        vec3(1.0) * computedLightIntensity, 1.0, vec3(0.05)
     );
     fragColor = vec4(color, 1.0);
 }
