@@ -27,6 +27,8 @@
 
 #include <zlib/zlib.h>
 #include <png/png.h>
+#include "PxPhysics.h"
+#include "foundation/PxMathUtils.h"
 
 Core::RenderContext shipContext;
 Core::RenderContext sphereContext;
@@ -260,7 +262,11 @@ int main(int argc, char **argv)
 	vertex::VertexFormats_load();
 	LOGD("ZLIB version: %s", zlibVersion());
 	LOGD("libpng version: %s", png_get_libpng_ver(NULL));
-	
+	{
+		physx::PxTransform transform = PxTransformFromPlaneEquation(physx::PxPlane(1, 1, 0, 2));
+		LOGD("Physics success: %f %f %f", transform.p.x, transform.p.y, transform.p.z);
+	}
+
 	glfwSetErrorCallback(glfw_error_callback);
     if (glfwInit() != GL_TRUE)
     {
