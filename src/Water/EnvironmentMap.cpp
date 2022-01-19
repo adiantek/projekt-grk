@@ -6,12 +6,14 @@
 #include <glm/ext.hpp>
 
 namespace water {
-EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, glm::vec3 lightDirection, float maxDepth) {
+EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, float maxDepth, glm::vec3 lightDirection) {
     this->size = size;
+    this->maxDepth = maxDepth;
     this->textureSize = textureSize;
     this->y = y;
     this->setLightDirection(lightDirection);
     this->lightCameraProjectionMatrix = glm::ortho(size / -2.0f, size / 2.0f, size / 2.0f, size / -2.0f, 0.0f, maxDepth);
+    this->geometry.initPlane(size, size);
     // Create framebuffer
     glGenFramebuffers(1, &this->framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
@@ -62,6 +64,12 @@ void EnvironmentMap::useFramebuffer() {
 }
 
 void EnvironmentMap::stopUsingFramebuffer() {
+    this->update();
+    glm::mat4 modelMatrix = glm::translate(glm::vec3(camera->position.x, this->y - this->maxDepth + 1.0f, camera->position.z)) * glm::eulerAngleX(glm::radians(90.0f));
+    glm::mat4 transformation = this->lightCameraMatrix * modelMatrix;
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&transformation);
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
+    Core::DrawContext(this->geometry);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
     glUseProgram(0);
@@ -92,9 +100,6 @@ void EnvironmentMap::setLightDirection(glm::vec3 newLightDirection) {
     auto translation = newLightDirection / newLightDirection.y;
     this->lightCameraTranslation = glm::vec2(translation.x, translation.z);
     this->lightCameraRotationMatrix = glm::lookAt(-glm::vec3(translation.x, 0.0f, translation.z), -newLightDirection, glm::vec3(0.0f, 0.0f, 1.0f));
-    glUseProgram(resourceLoaderExternal->p_caustics_shader);
-    glUniform3f(resourceLoaderExternal->p_caustics_shader_uni_lightDirection, this->lightDirection.x, this->lightDirection.y, this->lightDirection.z);
-    glUseProgram(0);
 }
 
 void EnvironmentMap::addWorldObject(world::Object3D* object) {
@@ -117,27 +122,23 @@ void EnvironmentMap::clearWorldObjects() {
 }
 
 void EnvironmentMap::update() {
-    glUseProgram(resourceLoaderExternal->p_environment_map);
+    //glUseProgram(resourceLoaderExternal->p_environment_map);
 
     this->lightCameraMatrix = this->lightCameraProjectionMatrix * this->lightCameraRotationMatrix 
         * glm::translate(glm::vec3(this->lightCameraTranslation.x - camera->position.x, -this->y, this->lightCameraTranslation.y - camera->position.z));
 
-    glGetIntegerv(GL_VIEWPORT, this->prevViewport);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
-    glViewport(0, 0, this->textureSize, this->textureSize);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glGetIntegerv(GL_VIEWPORT, this->prevViewport);
+    //glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+    //glViewport(0, 0, this->textureSize, this->textureSize);
+    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (auto object3D : this->worldObjects) {
-        object3D->draw(this->lightCameraMatrix);
-        // glm::mat4 transformation = this->lightCameraMatrix * modelMatrix;
-        // glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&transformation);
-        // glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
-        // Core::DrawContext(context);
+        object3D->drawShadow(this->lightCameraMatrix);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
-    glUseProgram(0);
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
+    //glUseProgram(0);
 }
 }  // namespace water

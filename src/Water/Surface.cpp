@@ -3,11 +3,9 @@
 #include <Water/Surface.hpp>
 
 namespace water {
-Surface::Surface(float size, float y, unsigned int textureSize, unsigned int heightMap, unsigned int normalMap, glm::vec2 offset) {
+Surface::Surface(float size, float y, unsigned int textureSize, glm::vec2 offset) : simulation(size, textureSize, offset) {
     this->size = size;
     this->y = y;
-    this->heightMap = heightMap;
-    this->normalMap = normalMap;
     this->offset = offset;
     this->geometry.initPlane(size, size, textureSize, textureSize);
     this->skybox = resourceLoaderExternal->tex_skybox;
@@ -17,16 +15,20 @@ Surface::Surface(float size, float y, unsigned int textureSize, unsigned int hei
 Surface::~Surface() {}
 
 void Surface::draw(glm::mat4 viewMatrix) {
+    glEnable(GL_BLEND);
+	glBlendColor(1.0f, 1.0f, 1.0f, 0.9f);
+	glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+
     glUseProgram(resourceLoaderExternal->p_water_surface);
 
     glm::mat4 model = glm::translate(glm::vec3(this->lastCameraPosition.x + this->offset.x, this->y, this->lastCameraPosition.y + this->offset.y)) * this->rotation;
     glm::mat4 transformation = viewMatrix * model;
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->heightMap);
+    glBindTexture(GL_TEXTURE_2D, this->simulation.getHeightMap());
     glUniform1i(resourceLoaderExternal->p_water_surface_uni_heightMap, 0);
     glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, this->normalMap);
+    glBindTexture(GL_TEXTURE_2D, this->simulation.getNormalMap());
     glUniform1i(resourceLoaderExternal->p_water_surface_uni_normalMap, 1);
     glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->skybox);
@@ -38,10 +40,13 @@ void Surface::draw(glm::mat4 viewMatrix) {
 
     Core::DrawContext(this->geometry);
 
+    glDisable(GL_BLEND);
+
     glUseProgram(0);
 }
 
 void Surface::update() {
     this->lastCameraPosition = glm::vec2(camera->position.x, camera->position.z);
+    this->simulation.update();
 }
 }  // namespace water

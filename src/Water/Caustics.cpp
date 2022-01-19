@@ -6,11 +6,11 @@
 #include<glm/ext.hpp>
 
 namespace water {
-    Caustics::Caustics(float size, float y, unsigned int textureSize) 
-    : environmentMap(size, y, textureSize * 2), simulation(size, textureSize) {
+    Caustics::Caustics(float size, float y, unsigned int textureSize, float maxDepth) 
+    : environmentMap(size, y, textureSize * 2, maxDepth), simulation(size, textureSize) {
         this->size = size;
         this->y = y;
-        this->textureSize = textureSize * 3;
+        this->textureSize = textureSize * 4;
         this->geometrySize = textureSize;
         this->geometry.initPlane(size, size, this->geometrySize, this->geometrySize);
         // Create framebuffer
@@ -78,7 +78,7 @@ namespace water {
         glUniform1i(resourceLoaderExternal->p_caustics_uni_normalMap, 2);
 
 
-        glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * glm::eulerAngleX(glm::radians(-90.0f));
+        glm::mat4 model = glm::translate(glm::vec3(camera->position.x, this->y, camera->position.z)) * glm::eulerAngleX(glm::radians(-90.0f)) * glm::scale(glm::vec3(1.15f));
         glm::mat4 lightCamera = this->environmentMap.getLightCamera();
 
         glUniform1f(resourceLoaderExternal->p_caustics_uni_height, this->y);

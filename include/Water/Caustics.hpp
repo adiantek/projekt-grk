@@ -8,7 +8,7 @@
 namespace water {
 class Caustics {
    public:
-    Caustics(float size, float y, unsigned int textureSize);
+    Caustics(float size, float y, unsigned int textureSize, float maxDepth);
     ~Caustics();
     void update();
     unsigned int getCausticsMap();

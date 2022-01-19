@@ -146,4 +146,8 @@ void Robot::draw(glm::mat4 mat) {
     this->gameObject->draw();
 }
 
+void Robot::drawShadow(glm::mat4 mat) {
+    this->gameObject->drawShadow(mat);
+}
+
 Robot *robot;

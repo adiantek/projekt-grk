@@ -6,7 +6,7 @@
 
 using namespace world;
 
-#define VIEW_DISTANCE 8
+#define VIEW_DISTANCE 16
 
 World::World(int64_t seed) {
     this->seed = seed;
@@ -122,7 +122,7 @@ void World::updateChunkMap(bool firstLoad) {
 }
 
 void World::loadChunks() {
-    if (timeExternal->lastFrame - this->lastLoadChunks < 0.05) {  // 20 chunks per sec
+    if (timeExternal->lastFrame - this->lastLoadChunks < 0.01) {  // 100 chunks per sec
         return;
     }
     this->lastLoadChunks = timeExternal->lastFrame;
@@ -150,6 +150,13 @@ void World::drawChunks(glm::mat4 mat) {
     }
 }
 
+void World::drawShadowChunks(glm::mat4 mat) {
+    for (auto &it : this->chunks) {
+        Chunk *ch = it.second;
+        ch->drawShadow(mat);
+    }
+}
+
 void World::update() {
     this->chunkBorderDebugRenderer->update();
     this->crosshair->update();
@@ -172,4 +179,9 @@ void World::draw(glm::mat4 mat) {
     this->crosshair->draw(mat);  // na koncu - depth offniety
 
     glDisable(GL_CULL_FACE);
+}
+
+void World::drawShadow(glm::mat4 mat) {
+    this->drawShadowChunks(mat);
+    this->robot->drawShadow(mat);
 }

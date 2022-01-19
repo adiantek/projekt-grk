@@ -5,6 +5,7 @@
 #include <vertex/VertexBuffer.hpp>
 #include <world/Chunk.hpp>
 #include <world/World.hpp>
+#include <Water/Water.hpp>
 
 using namespace world;
 
@@ -53,13 +54,16 @@ void Chunk::generate() {
                 for (int y1 = 0; y1 < 2; y1++) {
                     float locX = (float)(x + minX + x1);
                     float locY = noise[(z + y1 + 1) * 19 + (x + x1 + 1)] * 128 + 128;
+                    if(locY > 128.0f) {
+                        locY = 128.0f + (locY - 128.0f) / 2.0f;
+                    }
                     float locZ = (float)(z + minZ + y1);
                     squares[x1][y1] = glm::vec3(locX, locY, locZ);
                 }
             }
 
-            glm::vec3 deltaPos1 = squares[1][2] - squares[1][1];
-            glm::vec3 deltaPos2 = squares[2][1] - squares[1][1];
+            glm::vec3 deltaPos1 = squares[0][1] - squares[0][0];
+            glm::vec3 deltaPos2 = squares[1][0] - squares[0][0];
 
             glm::vec2 deltaUV1 = glm::vec2(deltaPos1.x, deltaPos1.z);
             glm::vec2 deltaUV2 = glm::vec2(deltaPos2.x, deltaPos2.z);
@@ -71,7 +75,7 @@ void Chunk::generate() {
             glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
 
             vertices.tex((float)x, (float)z);
-            vertices.pos(squares[1][1]);
+            vertices.pos(squares[0][0]);
             vertices.normal(normal.x, normal.y, normal.z);
             vertices.tangent(tangent.x, tangent.y, tangent.z);
             vertices.bitangent(bitangent.x, bitangent.y, bitangent.z);
@@ -94,12 +98,14 @@ void Chunk::generate() {
         }
     }
 
-    glUseProgram(resourceLoaderExternal->p_shader_tex);
+    glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);
     vertices.updateVBO(this->vbo);
-    vertices.configureTex(resourceLoaderExternal->p_shader_tex_attr_vertexTexCoord);
-    vertices.configurePos(resourceLoaderExternal->p_shader_tex_attr_vertexPosition);
-    vertices.configureNormal(resourceLoaderExternal->p_shader_tex_attr_vertexNormal);
+    vertices.configureTex(resourceLoaderExternal->p_chunk_attr_vertexTexCoord);
+    vertices.configurePos(resourceLoaderExternal->p_chunk_attr_vertexPosition);
+    vertices.configureNormal(resourceLoaderExternal->p_chunk_attr_vertexNormal);
+    vertices.configureTangent(resourceLoaderExternal->p_chunk_attr_vertexTangent);
+    vertices.configureBitangent(resourceLoaderExternal->p_chunk_attr_vertexBitangent);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
@@ -115,17 +121,39 @@ void Chunk::draw(glm::mat4 mat) {
         glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
         glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
     }
-    glUseProgram(resourceLoaderExternal->p_shader_tex);
-    glUniform1i(resourceLoaderExternal->p_shader_tex_uni_textureSampler, 0);
+    glUseProgram(resourceLoaderExternal->p_chunk);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_colorTexture, 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_uv);
-    glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
-    glUniform3f(resourceLoaderExternal->p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
-    glUniformMatrix4fv(resourceLoaderExternal->p_shader_tex_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
-    glUniformMatrix4fv(resourceLoaderExternal->p_shader_tex_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(mat));
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sand);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_normalSampler, 1);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandNormal);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_caustics, 2);
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_depthMap, 3);
+    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandHeight);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_roughnessMap, 4);
+    glActiveTexture(GL_TEXTURE0 + 4);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandRoughness);
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_aoMap, 5);
+    glActiveTexture(GL_TEXTURE0 + 5);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandAO);
+    glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+    glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
     }
+}
+
+void Chunk::drawShadow(glm::mat4 mat) {
+    glUseProgram(resourceLoaderExternal->p_environment_map);
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glBindVertexArray(this->vao);
+    glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
 }
