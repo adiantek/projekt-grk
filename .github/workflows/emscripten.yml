@@ -22,12 +22,14 @@ jobs:
         run: |
           mkdir build
           pushd build
-          emcmake cmake ..
+          emcmake cmake .. -DSPLIT_STORAGE=1
           emmake make
           popd
+      - name: Create assets
+        run: storage/create.sh
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           branch: gh-pages
-          folder: build
+          folder: out
           single-commit: true
