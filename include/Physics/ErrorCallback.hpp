@@ -2,9 +2,8 @@
 
 #include <PxPhysicsAPI.h>
 
-using namespace physx;
-
-class ErrorCallback : PxErrorCallback {
+namespace physics {
+class ErrorCallback : physx::PxErrorCallback {
    public:
     enum LogLevel {
         __DEBUG = 0,
@@ -14,8 +13,9 @@ class ErrorCallback : PxErrorCallback {
     };
     ErrorCallback(LogLevel level);
     ~ErrorCallback();
-    void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line) override;
+    void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override;
 
    private:
     LogLevel level;
 };
+}

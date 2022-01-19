@@ -4,25 +4,24 @@
 
 #include <Physics/ErrorCallback.hpp>
 #include <world/Object3D.hpp>
-
-using namespace physx;
-
+namespace physics {
 class Physics {
    public:
     Physics(float gravity, ErrorCallback::LogLevel logLevel = ErrorCallback::__DEBUG);
     ~Physics();
     void update(float deltaTime);
-    PxRigidBody* createRigidBody(bool isStatic, PxTransform &pose, PxGeometry &geometry, world::Object3D* object, float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.6f);
-    void deleteRigidBody(PxRigidBody* rigidBody);
+    physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, world::Object3D* object, float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.6f);
+    void deleteRigidBody(physx::PxRigidBody* rigidBody);
 
    private:
-    PxDefaultAllocator allocator;
+    physx::PxDefaultAllocator allocator;
     ErrorCallback errorCallback;
-    PxFoundation* foundation = nullptr;
-    PxPhysics* physx = nullptr;
-    PxDefaultCpuDispatcher*	dispatcher = nullptr;
-    PxScene* scene = nullptr;
+    physx::PxFoundation* foundation = nullptr;
+    physx::PxPhysics* physx = nullptr;
+    physx::PxDefaultCpuDispatcher* dispatcher = nullptr;
+    physx::PxScene* scene = nullptr;
     float timeToProccess = 0.0f;
 };
+}  // namespace physics
 
-extern Physics* physics = nullptr;
+extern physics::Physics* physicsObject;
