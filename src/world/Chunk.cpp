@@ -140,8 +140,6 @@ void Chunk::draw(glm::mat4 mat) {
     glUniform1i(resourceLoaderExternal->p_caustics_shader_uni_aoMap, 5);
     glActiveTexture(GL_TEXTURE0 + 5);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_sandAO);
-    glm::vec3 lightDir = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
-    glUniform3f(resourceLoaderExternal->p_caustics_shader_uni_lightDirection, lightDir.x, lightDir.y, lightDir.z);
     glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
     glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glUniformMatrix4fv(resourceLoaderExternal->p_caustics_shader_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));

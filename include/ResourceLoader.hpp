@@ -189,6 +189,7 @@ public:
     GLint p_caustics_shader_uni_cameraPosition = -1;
     GLint p_caustics_shader_uni_lightPosition = -1;
     GLint p_caustics_shader_uni_lightTransformation = -1;
+    GLint p_caustics_shader_uni_modeSwitch = -1;
     GLint p_caustics_shader_uni_modelMatrix = -1;
     GLint p_caustics_shader_uni_transformation = -1;
     GLint p_caustics_shader_uni_waterHeight = -1;
@@ -198,7 +199,6 @@ public:
     GLint p_caustics_shader_uni_depthMap = -1;
     GLint p_caustics_shader_uni_normalSampler = -1;
     GLint p_caustics_shader_uni_roughnessMap = -1;
-    GLint p_caustics_shader_uni_lightDirection = -1;
 
     static void loadModelExternal(const char *name, Model *out);
 

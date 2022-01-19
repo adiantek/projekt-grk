@@ -15,7 +15,7 @@ uniform sampler2D roughnessMap;
 uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
 uniform float waterHeight;
-uniform vec3 lightDirection;
+uniform bool modeSwitch;
 
 in vec3 position;
 in vec2 texturePosition;
@@ -162,21 +162,23 @@ void main() {
     if(position.y < waterHeight) {
         computedLightIntensity = computeCaustics(computedLightIntensity, caustics, positionLS);
     }
-    /*vec3 reflected = reflect(-lightDirection, normal);
+    if (!modeSwitch) {
+        vec3 color = PBR(
+            normal, viewDirection, objectColor, vec3(0.0),
+            0.0, texture(roughnessMap, textureCoords).r,
+            texture(aoMap, textureCoords).r, lightDirection,
+            vec3(1.0) * computedLightIntensity, 1.0, vec3(0.05)
+        );
+        fragColor = vec4(color, 1.0);
+    } else {
+        vec3 reflected = reflect(-lightDirection, normal);
 
-    float ambient = 0.3;
-    float diffuse = 0.7 * computedLightIntensity * max(0.0, dot(normal, lightDirection));
-    float specular = 0.4 * computedLightIntensity * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
+        float ambient = 0.1;
+        float diffuse = 0.9 * computedLightIntensity * max(0.0, dot(normal, lightDirection));
+        float specular = 0.4 * computedLightIntensity * pow(max(0.0, dot(reflected, viewDirection)), 10.0);
 
-    objectColor = mix(objectColor, (ambient + diffuse) * objectColor + specular * vec3(1.0), 0.99);
+        objectColor = mix(objectColor, (ambient + diffuse) * objectColor + specular * vec3(1.0), 0.9);
 
-    fragColor = vec4(objectColor, 1.0);*/
-
-    vec3 color = PBR(
-        normal, viewDirection, objectColor, vec3(0.0),
-        0.0, texture(roughnessMap, textureCoords).r,
-        texture(aoMap, textureCoords).r, lightDirection,
-        vec3(1.0) * computedLightIntensity, 1.0, vec3(0.05)
-    );
-    fragColor = vec4(color, 1.0);
+        fragColor = vec4(objectColor, 1.0);
+    }
 }
