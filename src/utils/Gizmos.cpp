@@ -9,7 +9,7 @@
 #include <Render_Utils.h>
 #include <Animator/Joint.hpp>
 #include <Camera/Camera.hpp>
-#include <Utils/Gizmos.hpp>
+#include <utils/Gizmos.hpp>
 #include <ResourceLoader.hpp>
 #include <Resources/Resources.hpp>
 
