@@ -62,6 +62,7 @@ namespace water {
         glViewport(0, 0, this->textureSize, this->textureSize);
 
         glEnable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
         glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -90,6 +91,7 @@ namespace water {
         Core::DrawContext(this->geometry);
 
         glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
