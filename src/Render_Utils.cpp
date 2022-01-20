@@ -125,7 +125,7 @@ void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh, std::unor
         float vertexJointWeight[3];
         for (int j = 0; j < 3; j++) {
             vertexJointID[j] = jointsIds[i * 3 + j];
-            vertexJointWeight[j] = vertexJointWeight[i * 3 + j];
+            vertexJointWeight[j] = jointsWeights[i * 3 + j];
         }
 
         buffer.joint(vertexJointID, vertexJointWeight);
