@@ -62,6 +62,15 @@ void ResourceLoader::loadTextures() {
 void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
 
+    LOAD_PROGRAM(color_armature, 2, "armature/shader_color_armature.frag", "armature/shader_color_armature.vert") {
+        // this->dumpProgram("color_armature", this->p_color_armature);
+        this->p_color_armature_attr_vertexJoints = glGetAttribLocation(this->p_color_armature, "vertexJoints");
+        this->p_color_armature_attr_vertexPosition = glGetAttribLocation(this->p_color_armature, "vertexPosition");
+        this->p_color_armature_attr_vertexWeights = glGetAttribLocation(this->p_color_armature, "vertexWeights");
+        this->p_color_armature_uni_jointTransforms = glGetUniformLocation(this->p_color_armature, "jointTransforms[0]");
+        this->p_color_armature_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_color_armature, "modelViewProjectionMatrix");
+    }
+
     LOAD_PROGRAM(simple_color_shader, 2, "simple_color_shader.frag", "simple_color_shader.vert") {
         // this->dumpProgram("simple_color_shader", this->p_simple_color_shader);
         this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");

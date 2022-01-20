@@ -59,6 +59,14 @@ public:
     GLuint tex_wall_normal = 0;
 
     // programs:
+    GLuint p_color_armature = 0;
+    bool p_color_armature_loaded = false;
+    GLint p_color_armature_attr_vertexJoints = -1;
+    GLint p_color_armature_attr_vertexPosition = -1;
+    GLint p_color_armature_attr_vertexWeights = -1;
+    GLint p_color_armature_uni_jointTransforms = -1;
+    GLint p_color_armature_uni_modelViewProjectionMatrix = -1;
+
     GLuint p_simple_color_shader = 0;
     bool p_simple_color_shader_loaded = false;
     GLint p_simple_color_shader_attr_vertexColor = -1;
