@@ -15,8 +15,11 @@ class RigidBody {
     void setMass(float mass);
     void addForce(glm::vec3 force);
     void addTorque(glm::vec3 torque);
+    void applyDrag(float density);
     world::Object3D* object;
     float density = 1.0f;
+
+   private:
     physx::PxRigidBody* inner;
 };
 }  // namespace physics

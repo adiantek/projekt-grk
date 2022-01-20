@@ -63,23 +63,11 @@ void Physics::update(float deltaTime) {
                 if (!actor->userData)
                     continue;
                 physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
-                PxVec3 velocityDirection = rigidBody->inner->getLinearVelocity();
-                PxVec3 velocityAngularDirection = rigidBody->inner->getAngularVelocity();
-                float speed = velocityDirection.normalize();
-                float angularSpeed = velocityAngularDirection.normalize();
-                float force = 0.5f * speed * speed;
-                float angularForce = 0.5f * angularSpeed * angularSpeed;
                 if (((physx::PxMat44)actor->getGlobalPose()).column3.y < waterObject->getY()) {
                     rigidBody->addForce(glm::vec3(0.0f, rigidBody->getMass() / rigidBody->density * this->gravity * 0.997f, 0.0f));
-                    force *= 0.997f;
-                    angularForce *= 0.997f;
-                    rigidBody->inner->addForce(velocityDirection * -force);
-                    rigidBody->inner->addTorque(velocityAngularDirection * -angularForce);
+                    rigidBody->applyDrag(0.997f);
                 } else {
-                    force *= 0.001225f;
-                    angularForce *= 0.001225f;
-                    rigidBody->inner->addForce(velocityDirection * -force);
-                    rigidBody->inner->addForce(velocityAngularDirection * -angularForce);
+                    rigidBody->applyDrag(0.001225f);
                 }
             }
         }

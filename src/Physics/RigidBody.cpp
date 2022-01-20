@@ -35,4 +35,15 @@ void RigidBody::addForce(glm::vec3 force) {
 void RigidBody::addTorque(glm::vec3 torque) {
     this->inner->addTorque(physx::PxVec3(torque.x, torque.y, torque.z));
 }
+
+void RigidBody::applyDrag(float density) {
+    physx::PxVec3 velocityDirection = this->inner->getLinearVelocity();
+    physx::PxVec3 velocityAngularDirection = this->inner->getAngularVelocity();
+    float speed = velocityDirection.normalize();
+    float angularSpeed = velocityAngularDirection.normalize();
+    float force = -0.5f * speed * speed * density;
+    float torque = -0.5f * angularSpeed * angularSpeed * density;
+    this->inner->addForce(velocityDirection * force);
+    this->inner->addTorque(velocityAngularDirection * torque);
+}
 }  // namespace physics
