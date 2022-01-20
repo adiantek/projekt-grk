@@ -58,8 +58,8 @@ void Chunk::generate() {
                 for (int y1 = 0; y1 < 2; y1++) {
                     float locX = (float)(x + minX + x1);
                     float locY = noise[(z + y1 + 1) * 19 + (x + x1 + 1)] * 128 + 128;
-                    if (locY > 128.0f) {
-                        locY = 128.0f + (locY - 128.0f) / 2.0f;
+                    if (locY > waterObject->getY()) {
+                        locY = waterObject->getY() + (locY - waterObject->getY()) / 2.0f;
                     }
                     float locZ = (float)(z + minZ + y1);
                     squares[x1][y1] = glm::vec3(locX, locY, locZ);

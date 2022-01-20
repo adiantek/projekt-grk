@@ -235,14 +235,14 @@ void init() {
 	initialized = true;
 	new physics::Physics(9.8f);
 
-	physx::PxTransform initPose = physx::PxTransform(24.0f, 200.0f, -90.0f);
+	physx::PxTransform initPose = physx::PxTransform(24.0f, 400.0f, -95.0f);
 	world::Object3D* objectDummy = new world::Object3D();
 	rigidBody = new physics::RigidBody(false, initPose, physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), objectDummy, 0.5f, 0.5f, 0.001f);
 	rigidBody->setMass(1.0f);
 	rigidBody->density = 0.8f;
 
 
-	initPose = physx::PxTransform(27.0f, 200.0f, -90.0f);
+	initPose = physx::PxTransform(27.0f, 400.0f, -95.0f);
 	rigidBodyHeavy = new physics::RigidBody(false, initPose, physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), objectDummy, 0.5f, 0.5f, 0.001f);
 	rigidBodyHeavy->setMass(3.0f);
 	rigidBodyHeavy->density = 0.8f * 3.0f;
@@ -264,7 +264,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(128.0f, 256.0f, 40.0f, 400, 256.0f, 1000);
+	new water::Water(192.0f, 256.0f, 40.0f, 400, 256.0f, 1000);
 	w = new world::World(0);
 	waterObject->addWorldObject((world::Object3D*) w);
 }

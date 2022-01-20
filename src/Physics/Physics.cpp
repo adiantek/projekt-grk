@@ -4,6 +4,7 @@
 #include <Physics/SimulationEventCallback.hpp>
 #include <Physics/RigidBody.hpp>
 #include <glm/glm.hpp>
+#include <Water/Water.hpp>
 #include <vector>
 
 #define PX_RELEASE(x) \
@@ -68,7 +69,7 @@ void Physics::update(float deltaTime) {
                 float angularSpeed = velocityAngularDirection.normalize();
                 float force = 0.5f * speed * speed;
                 float angularForce = 0.5f * angularSpeed * angularSpeed;
-                if (((physx::PxMat44)actor->getGlobalPose()).column3.y < 128.0f) { // TODO: water level
+                if (((physx::PxMat44)actor->getGlobalPose()).column3.y < waterObject->getY()) {
                     rigidBody->addForce(glm::vec3(0.0f, rigidBody->getMass() / rigidBody->density * this->gravity * 0.997f, 0.0f));
                     force *= 0.997f;
                     angularForce *= 0.997f;
