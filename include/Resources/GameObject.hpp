@@ -6,10 +6,12 @@
 #include <Resources/Material.hpp>
 #include <Resources/Model.hpp>
 #include <Animator/Joint.hpp>
+#include <world/Object3D.hpp>
 
-class GameObject {
+class GameObject : world::Object3D {
    public:
     GameObject(std::string name);
+    virtual ~GameObject();
 
     GameObject* setPosition(glm::vec3 position);
     GameObject* setRotation(glm::vec3 rotation);
@@ -21,9 +23,9 @@ class GameObject {
     std::string getName();
 
     void init();
-    void update();
-    void draw();
-    void drawShadow(glm::mat4 viewMatrix);
+    void update() override;
+    void draw(glm::mat4 mat) override;
+    void drawShadow(glm::mat4 mat) override;
 
     glm::mat4 getModelMatrix();
 

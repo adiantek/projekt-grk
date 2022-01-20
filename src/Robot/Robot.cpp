@@ -143,7 +143,7 @@ void Robot::update() {
 }
 
 void Robot::draw(glm::mat4 mat) {
-    this->gameObject->draw();
+    this->gameObject->draw(mat);
 }
 
 void Robot::drawShadow(glm::mat4 mat) {

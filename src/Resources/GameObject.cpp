@@ -16,6 +16,10 @@ GameObject::GameObject(std::string name) {
     this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
+GameObject::~GameObject() {
+    // TODO?
+}
+
 GameObject* GameObject::setPosition(glm::vec3 position) {
     this->position = position;
     return this;
@@ -55,8 +59,11 @@ glm::mat4 GameObject::getModelMatrix() {
         * glm::scale(this->scale);
 }
 
-void GameObject::draw() {
-    glm::mat4 viewMatrix = camera->getTransformationMatrix();
+void GameObject::update() {
+}
+
+void GameObject::draw(glm::mat4 mat) {
+    glm::mat4 viewMatrix = mat;
     glm::mat4 modelMatrix = this->getModelMatrix();
     std::vector<Mesh *> meshes = this->model->meshes;
 
