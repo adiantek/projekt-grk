@@ -7,7 +7,6 @@
 #include <Robot/Robot.hpp>
 #include <Resources/Resources.hpp>
 #include <Time/Time.hpp>
-#include <Gizmos/Gizmos.hpp>
 #include <Resources/GlobalEvents.hpp>
 
 Robot::Robot() {
@@ -40,84 +39,6 @@ Robot::Robot() {
 
     this->createBody();
     this->createLegs();
-
-    // GlobalEvents::on(GlobalEvents::ON_GIZMOS_RENDER, [this]() {
-    //     // Debug Robot location
-    //     Gizmos::cube("ROBOT_LOCATION", this->position);
-
-    //     // Debug Body location
-    //     Gizmos::cube(
-    //         "ROBOT_BODY_LOCATION",
-    //         this->gameObject->getModelMatrix() * glm::vec4(this->bodyOrigin, 1.0f),
-    //         glm::vec3(0.02f, 0.02f, 0.02f),
-    //         glm::vec3(1.0f, 1.0f, 1.0f)
-    //     );
-
-    //     // Debug legs
-    //     for (RobotLeg* leg : this->legs) {
-    //         Gizmos::cube(
-    //             "LEG_UPPER_POSITION_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->upperJointOrigin, 1.0f),
-    //             glm::vec3(0.02f, 0.02f, 0.02f),
-    //             glm::vec3(0.0f, 0.0f, 1.0f)
-    //         );
-
-    //         Gizmos::cube(
-    //             "LEG_LOWER_POSITION_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->lowerJointOrigin, 1.0f),
-    //             glm::vec3(0.02f, 0.02f, 0.02f),
-    //             glm::vec3(1.0f, 1.0f, 0.0f)
-    //         );
-
-    //         Gizmos::line(
-    //             "LEG_BODY_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->upperJointOrigin, 1.0f),
-    //             this->gameObject->getModelMatrix() * glm::vec4(this->bodyOrigin, 1.0f),
-    //             glm::vec3(0.0f, 0.0f, 1.0f)
-    //         );
-
-    //         Gizmos::line(
-    //             "LEG_LOWER_JOINT_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->upperJointOrigin, 1.0f),
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->lowerJointOrigin, 1.0f),
-    //             glm::vec3(0.0f, 0.0f, 1.0f)
-    //         );
-
-    //         Gizmos::cube(
-    //             "LEG_ATT_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
-    //             glm::vec3(0.02f, 0.02f, 0.02f), glm::vec3(1.0f, 1.0f, 1.0f)
-    //         );
-
-    //         Gizmos::cube(
-    //             "LEG_EST_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentEstimation, 1.0f),
-    //             glm::vec3(0.02f, 0.02f, 0.02f),
-    //             glm::vec3(0.0f, 1.0f, 0.0f)
-    //         );
-
-    //         Gizmos::cube(
-    //             "LEG_CURR_ATT_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->currentAttachmentPoint, 1.0f),
-    //             glm::vec3(0.02f, 0.02f, 0.02f),
-    //             glm::vec3(0.5f, 0.5f, 0.0f)
-    //         );
-
-    //         Gizmos::line(
-    //             "LEG_DIST_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentEstimation, 1.0f),
-    //             glm::vec3(1.0f, 0.0f, 0.0f)
-    //         );
-
-    //         Gizmos::line(
-    //             "LEG_LOWER_DIST_" + leg->id,
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->lowerJointOrigin, 1.0f),
-    //             this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
-    //             glm::vec3(1.0f, 0.0f, 0.0f)
-    //         );
-    //     }
-    // });
 }
 
 void Robot::enableIncreasedSpeedMode() {

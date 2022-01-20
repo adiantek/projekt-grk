@@ -11,7 +11,6 @@
 #include <Resources/Mesh.hpp>
 #include <Resources/Model.hpp>
 #include <Animator/Joint.hpp>
-#include <Gizmos/Gizmos.hpp>
 
 void Model::loadModel(char* filename) {
     printf("Processing model: %s\n", filename);
@@ -213,10 +212,6 @@ std::vector<Animator::Joint*> Model::loadJoints(const aiScene* scene) {
 
     // TODO: This is propably not used
     rootJoint->calculateInverseBindTransform(glm::mat4());
-
-    if (bones.size() > 0) {
-        Gizmos::printJointsTree(rootJoint);
-    }
 
     this->bonesIds = ids;
 

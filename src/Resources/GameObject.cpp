@@ -9,7 +9,6 @@
 #include <Camera/Camera.hpp>
 #include <ResourceLoader.hpp>
 #include <Resources/GlobalEvents.hpp>
-#include <Gizmos/Gizmos.hpp>
 
 GameObject::GameObject(std::string name) {
     this->name = name;

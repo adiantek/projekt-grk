@@ -8,7 +8,6 @@ class GlobalEvents {
     public:
         inline static int ON_INIT = 0;
         inline static int ON_UPDATE = 1;
-        inline static int ON_GIZMOS_RENDER = 2;
 
         static void emit(int event);
         static void on(int event, std::function<void()> callback);

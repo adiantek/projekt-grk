@@ -3,6 +3,7 @@
 #include <map>
 #include <algorithm>
 
+#include <Logger.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -124,7 +125,7 @@ void Core::RenderContext::initFromAssimpMesh(aiMesh* mesh) {
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize));
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)(vertexDataBufferSize + vertexNormalBufferSize + vertexTexBufferSize + vertexTangentBufferSize));
 
-    printf("TEST TEST");
+    LOGD("TEST TEST");
 }
 
 void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh, std::map<std::string, int> bonesIds) {
@@ -157,11 +158,11 @@ void Core::RenderContext::initFromAssimpMeshWithArmature(aiMesh* mesh, std::map<
             indices.push_back(face.mIndices[j]);
     }
 
-    printf("%d\n", mesh->mNumVertices);
+    LOGD("%d", mesh->mNumVertices);
     int* jointsBuffer = new int[mesh->mNumVertices];
     float* jointsIds = new float[mesh->mNumVertices * 3];
     float* jointsWeights = new float[mesh->mNumVertices * 3];
-    printf("%d\n", mesh->mNumVertices);
+    LOGD("%d", mesh->mNumVertices);
 
     for (unsigned int i = 0; i < mesh->mNumVertices * 3; i++) { jointsWeights[i] = 0.0f; }
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) { jointsBuffer[i] = 0; }

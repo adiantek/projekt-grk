@@ -19,7 +19,6 @@
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
 #include <Time/Time.hpp>
-#include <Gizmos/Gizmos.hpp>
 #include <Resources/GameObject.hpp>
 #include <Resources/GlobalEvents.hpp>
 
@@ -171,9 +170,8 @@ void do_frame()
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
-	// Clear depth buffer and draw gizmos overlay
+	// Clear depth buffer
 	glClear(GL_DEPTH_BUFFER_BIT);
-	GlobalEvents::emit(GlobalEvents::ON_GIZMOS_RENDER);
 	
 	// double st = glfwGetTime();
 	// for (int i = 0; i < 1000; i++)
@@ -204,9 +202,6 @@ void init() {
 
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();
-
-	// Initialize Gizmos (wireframe cubes, lines, etc... - For testing purposes)
-	Gizmos::init();
 
 	// Basic 
 	ground
