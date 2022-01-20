@@ -14,6 +14,7 @@ class RigidBody {
     void setMass(float mass);
     void addForce(glm::vec3 force);
     void addTorque(glm::vec3 torque);
+    world::Object3D* object;
 
    private:
     physx::PxRigidBody* inner;

@@ -3,7 +3,8 @@
 
 namespace physics {
 RigidBody::RigidBody(bool isStatic, physx::PxTransform &pose, physx::PxGeometry &geometry, world::Object3D *object, float staticFriction, float dynamicFriction, float restitution) {
-    this->inner = physicsObject->createRigidBody(isStatic, pose, geometry, object, staticFriction, dynamicFriction, restitution);
+    this->object = object;
+    this->inner = physicsObject->createRigidBody(isStatic, pose, geometry, this, staticFriction, dynamicFriction, restitution);
 }
 
 RigidBody::~RigidBody() {

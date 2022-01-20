@@ -232,7 +232,7 @@ void init() {
 	initialized = true;
 	new physics::Physics(9.8f);
 
-	rigidBody = new physics::RigidBody(false, physx::PxTransform(20.0f, 200.0f, -15.0f), physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), nullptr);
+	rigidBody = new physics::RigidBody(false, physx::PxTransform(20.0f, 200.0f, -15.0f), physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), new world::Object3D());
 
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();

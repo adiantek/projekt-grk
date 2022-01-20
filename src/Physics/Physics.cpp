@@ -58,11 +58,12 @@ void Physics::update(float deltaTime) {
     }
 }
 
-PxRigidBody* Physics::createRigidBody(bool isStatic, PxTransform& pose, PxGeometry& geometry, world::Object3D* object, float staticFriction, float dynamicFriction, float restitution) {
+PxRigidBody* Physics::createRigidBody(bool isStatic, PxTransform& pose, PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution) {
     PxMaterial* material = this->physx->createMaterial(staticFriction, dynamicFriction, restitution);
     PxRigidBody* rigidBody = isStatic ? (PxRigidBody*)this->physx->createRigidStatic(pose) : (PxRigidBody*)this->physx->createRigidDynamic(pose);
     PxShape* shape = this->physx->createShape(geometry, *material);
     rigidBody->attachShape(*shape);
+    rigidBody->userData = object;
     PX_RELEASE(shape);
     PX_RELEASE(material);
     this->scene->addActor(*rigidBody);
@@ -74,13 +75,13 @@ void Physics::deleteRigidBody(PxRigidBody* rigidBody) {
     PX_RELEASE(rigidBody);
 }
 
-physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float *vertices, int verticesNumber, int *indices, int indicesNumber) {
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float *vertices, int verticesNumber, int *indices, int trianglesNumber) {
     physx::PxTriangleMeshDesc meshDesc;
     meshDesc.points.count = verticesNumber;
     meshDesc.points.stride = sizeof(physx::PxVec3);
     meshDesc.points.data  = vertices;
 
-    meshDesc.triangles.count = indicesNumber / 2;
+    meshDesc.triangles.count = trianglesNumber;
     meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
     meshDesc.triangles.data = indices;
 
