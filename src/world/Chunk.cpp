@@ -108,7 +108,7 @@ void Chunk::generate() {
     this->rigidBody = new physics::RigidBody(
         true, physx::PxTransform(0.0f, 0.0f, 0.0f),
         physicsObject->createTriangleGeometry(vert, 17 * 17 * 3, lines, 2 * 16 * 16),
-        (world::Object3D *)this);
+        (world::Object3D *)this, 0.5f, 0.5f, 0.0001f);
 
     glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);

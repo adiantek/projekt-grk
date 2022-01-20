@@ -2,6 +2,7 @@
 
 #include <Physics/Physics.hpp>
 #include <Physics/SimulationEventCallback.hpp>
+#include <Physics/RigidBody.hpp>
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -25,6 +26,7 @@ namespace physics {
 Physics::Physics(float gravity, ErrorCallback::LogLevel logLevel)
     : errorCallback(logLevel) {
     physicsObject = this;
+    this->gravity = gravity;
     this->foundation = PxCreateFoundation(PX_PHYSICS_VERSION, this->allocator, (PxErrorCallback&)this->errorCallback);
     this->physx = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true);
     this->cooking = PxCreateCooking(PX_PHYSICS_VERSION, *this->foundation, PxCookingParams(PxTolerancesScale()));
@@ -52,6 +54,35 @@ Physics::~Physics() {
 void Physics::update(float deltaTime) {
     this->timeToProccess += deltaTime;
     while (this->timeToProccess > 0.0f) {
+        physx::PxU32 nbActors = this->scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+        if (nbActors > 0) {
+            std::vector<PxRigidActor*> actors(nbActors);
+            this->scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, (PxActor**)&actors[0], nbActors);
+            for (auto actor : actors) {
+                if (!actor->userData)
+                    continue;
+                physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
+                PxVec3 velocityDirection = rigidBody->inner->getLinearVelocity();
+                PxVec3 velocityAngularDirection = rigidBody->inner->getAngularVelocity();
+                float speed = velocityDirection.normalize();
+                float angularSpeed = velocityAngularDirection.normalize();
+                float force = 0.5f * speed * speed;
+                float angularForce = 0.5f * angularSpeed * angularSpeed;
+                if (((physx::PxMat44)actor->getGlobalPose()).column3.y < 128.0f) { // TODO: water level
+                    rigidBody->addForce(glm::vec3(0.0f, rigidBody->getMass() / rigidBody->density * this->gravity * 0.997f, 0.0f));
+                    force *= 0.997f;
+                    angularForce *= 0.997f;
+                    rigidBody->inner->addForce(velocityDirection * -force);
+                    rigidBody->inner->addTorque(velocityAngularDirection * -angularForce);
+                } else {
+                    force *= 0.001225f;
+                    angularForce *= 0.001225f;
+                    rigidBody->inner->addForce(velocityDirection * -force);
+                    rigidBody->inner->addForce(velocityAngularDirection * -angularForce);
+                }
+            }
+        }
+
         this->scene->simulate(stepTime);
         this->scene->fetchResults(true);
         this->timeToProccess -= stepTime;

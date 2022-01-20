@@ -18,6 +18,7 @@ class Physics {
    private:
     physx::PxDefaultAllocator allocator;
     ErrorCallback errorCallback;
+    float gravity;
     physx::PxFoundation* foundation = nullptr;
     physx::PxPhysics* physx = nullptr;
     physx::PxCooking* cooking = nullptr;

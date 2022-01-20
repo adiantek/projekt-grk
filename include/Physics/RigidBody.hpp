@@ -11,12 +11,12 @@ class RigidBody {
     RigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, world::Object3D* object, float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.6f);
     ~RigidBody();
     glm::mat4 getModelMatrix();
+    float getMass();
     void setMass(float mass);
     void addForce(glm::vec3 force);
     void addTorque(glm::vec3 torque);
     world::Object3D* object;
-
-   private:
+    float density = 1.0f;
     physx::PxRigidBody* inner;
 };
 }  // namespace physics

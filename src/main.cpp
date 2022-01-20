@@ -52,6 +52,7 @@ bool initialized = false;
 ResourceLoader resourceLoader;
 
 physics::RigidBody* rigidBody;
+physics::RigidBody* rigidBodyHeavy;
 
 world::World *w;
 
@@ -167,6 +168,7 @@ void do_frame()
 	waterObject->drawObject(sphereContext2, glm::translate(lightPos));
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)));
 	waterObject->drawObject(brickWallContext, rigidBody->getModelMatrix());
+	waterObject->drawObject(brickWallContext, rigidBodyHeavy->getModelMatrix());
 	waterObject->stopUsingFramebuffer();
 
 	waterObject->update();
@@ -203,6 +205,7 @@ void do_frame()
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
 	drawObjectTexNormalCaustics(brickWallContext, rigidBody->getModelMatrix(), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
+	drawObjectTexNormalCaustics(brickWallContext, rigidBodyHeavy->getModelMatrix(), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
@@ -232,7 +235,17 @@ void init() {
 	initialized = true;
 	new physics::Physics(9.8f);
 
-	rigidBody = new physics::RigidBody(false, physx::PxTransform(20.0f, 200.0f, -15.0f), physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), new world::Object3D());
+	physx::PxTransform initPose = physx::PxTransform(24.0f, 200.0f, -90.0f);
+	world::Object3D* objectDummy = new world::Object3D();
+	rigidBody = new physics::RigidBody(false, initPose, physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), objectDummy, 0.5f, 0.5f, 0.001f);
+	rigidBody->setMass(1.0f);
+	rigidBody->density = 0.8f;
+
+
+	initPose = physx::PxTransform(27.0f, 200.0f, -90.0f);
+	rigidBodyHeavy = new physics::RigidBody(false, initPose, physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), objectDummy, 0.5f, 0.5f, 0.001f);
+	rigidBodyHeavy->setMass(3.0f);
+	rigidBodyHeavy->density = 0.8f * 3.0f;
 
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();

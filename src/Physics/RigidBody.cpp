@@ -20,6 +20,10 @@ glm::mat4 RigidBody::getModelMatrix() {
         transform.column3.x, transform.column3.y, transform.column3.z, transform.column3.w);
 }
 
+float RigidBody::getMass() {
+    return this->inner->getMass();
+}
+
 void RigidBody::setMass(float mass) {
     this->inner->setMass(mass);
 }
