@@ -136,6 +136,15 @@ void World::loadChunks() {
     }
 }
 
+Chunk *World::getChunkAt(ChunkPosition pos) {
+    auto c = this->chunks.find(pos.id);
+    if (c == this->chunks.end()) {
+        return 0;
+    }
+    std::pair<const uint64_t, Chunk *> pair = *c;
+    return pair.second;
+}
+
 void World::updateChunks() {
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
