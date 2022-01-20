@@ -15,6 +15,7 @@
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
 #include <vertex/VertexFormats.hpp>
+#include <Utils/Gizmos.hpp>
 
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
@@ -33,9 +34,6 @@ Core::RenderContext sphereContext;
 Core::RenderContext sphereContext2;
 Core::RenderContext brickWallContext;
 Core::RenderContext planeContext;
-
-// Temporary ground plane
-GameObject *ground = new GameObject("ground");
 
 // Window
 GLFWwindow *window;
@@ -170,7 +168,6 @@ void do_frame()
 	w->update();
 	w->draw(viewMatrix);
 
-	// ground->draw();
 	glUseProgram(resourceLoader.p_shader_tex);
 	glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 
@@ -202,8 +199,9 @@ void do_frame()
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
-	
 	waterObject->draw(viewMatrix);
+
+	gizmos::Gizmos::draw();
 
 	if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
 		lastTitleUpdate = timeExternal->lastFrame;
@@ -234,13 +232,6 @@ void init() {
 
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();
-
-	// Basic 
-	ground
-		->setModel(Resources::MODELS.PLANE)
-		->setMaterial(Resources::MATERIALS.DEFAULT)
-		->setPosition(glm::vec3(0, 0.0f, 0))
-		->setScale(glm::vec3(10, 10, 10));
 
 	glEnable(GL_DEPTH_TEST);
 
