@@ -1,12 +1,12 @@
 #include <Logger.h>
 
+#include <Physics/Physics.hpp>
 #include <ResourceLoader.hpp>
 #include <Time/Time.hpp>
+#include <Water/Water.hpp>
 #include <vertex/VertexBuffer.hpp>
 #include <world/Chunk.hpp>
 #include <world/World.hpp>
-#include <Water/Water.hpp>
-#include <Physics/Physics.hpp>
 
 using namespace world;
 
@@ -58,7 +58,7 @@ void Chunk::generate() {
                 for (int y1 = 0; y1 < 2; y1++) {
                     float locX = (float)(x + minX + x1);
                     float locY = noise[(z + y1 + 1) * 19 + (x + x1 + 1)] * 128 + 128;
-                    if(locY > 128.0f) {
+                    if (locY > 128.0f) {
                         locY = 128.0f + (locY - 128.0f) / 2.0f;
                     }
                     float locZ = (float)(z + minZ + y1);
@@ -83,7 +83,7 @@ void Chunk::generate() {
             vertices.normal(normal.x, normal.y, normal.z);
             vertices.tangent(tangent.x, tangent.y, tangent.z);
             vertices.bitangent(bitangent.x, bitangent.y, bitangent.z);
-            
+
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
 
@@ -105,30 +105,10 @@ void Chunk::generate() {
             lines[lineNum++] = x * 17 + z + 1;
         }
     }
-
-    physx::PxTriangleMeshDesc meshDesc;
-    meshDesc.points.count = 17 * 17;
-    meshDesc.points.stride = sizeof(physx::PxVec3);
-    meshDesc.points.data  = vert;
-
-    meshDesc.triangles.count = 3 * 16 * 16;
-    meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
-    meshDesc.triangles.data = lines;
-
-    physx::PxDefaultMemoryOutputStream writeBuffer;
-    physx::PxTriangleMeshCookingResult::Enum result;
-    bool status = physicsObject->cooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
-    if(!status)
-        LOGE("Cannot bla bla...");
-
-    physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-    //physicsObject->physx->createTriangleMesh(readBuffer);
-
-    physx::PxTriangleMeshGeometry triGeom;
-
-    triGeom.triangleMesh = physicsObject->physx->createTriangleMesh(readBuffer);
-
-    this->rigidBody = new physics::RigidBody(true, physx::PxTransform(0.0f, 0.0f, 0.0f), triGeom, (world::Object3D*)this);
+    this->rigidBody = new physics::RigidBody(
+        true, physx::PxTransform(0.0f, 0.0f, 0.0f),
+        physicsObject->createTriangleGeometry(vert, 17 * 17 * 3, lines, 2 * 3 * 16 * 16),
+        (world::Object3D *)this);
 
     glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);

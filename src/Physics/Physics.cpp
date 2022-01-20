@@ -73,6 +73,22 @@ void Physics::deleteRigidBody(PxRigidBody* rigidBody) {
     this->scene->removeActor(*rigidBody);
     PX_RELEASE(rigidBody);
 }
+
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float *vertices, int verticesNumber, int *indices, int indicesNumber) {
+    physx::PxTriangleMeshDesc meshDesc;
+    meshDesc.points.count = verticesNumber;
+    meshDesc.points.stride = sizeof(physx::PxVec3);
+    meshDesc.points.data  = vertices;
+
+    meshDesc.triangles.count = indicesNumber / 2;
+    meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
+    meshDesc.triangles.data = indices;
+
+    physx::PxTriangleMeshGeometry triGeom;
+    triGeom.triangleMesh = this->cooking->createTriangleMesh(meshDesc, this->physx->getPhysicsInsertionCallback());
+    
+    return triGeom;
+}
 }  // namespace physics
 
 physics::Physics* physicsObject;
