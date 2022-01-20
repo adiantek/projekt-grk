@@ -5,7 +5,7 @@
 #include <Time/Time.hpp>
 #include <utils/glmu.hpp>
 #include <Logger.h>
-#include <Utils/Gizmos.hpp>
+#include <utils/Gizmos.hpp>
 
 using namespace gizmos;
 using namespace entity;
