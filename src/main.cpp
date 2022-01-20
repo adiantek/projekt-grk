@@ -6,6 +6,7 @@
 #include <cmath>
 #include <vector>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include <ResourceLoader.hpp>
 #include <Controller/Controller.hpp>
@@ -38,6 +39,7 @@ GameObject *ground = new GameObject("ground");
 
 // Window
 GLFWwindow *window;
+double lastTitleUpdate = 0.0;
 
 // Other stuff...
 glm::mat4 viewMatrix;
@@ -203,6 +205,12 @@ void do_frame()
 	
 	waterObject->draw(viewMatrix);
 
+	if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
+		lastTitleUpdate = timeExternal->lastFrame;
+		char title[100];
+		sprintf(title, "FPS: %u", timeExternal->fps);
+		glfwSetWindowTitle(window, title);
+	}
     glfwSwapBuffers(window);
 }
 

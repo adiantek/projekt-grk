@@ -15,8 +15,12 @@ void Time::update() {
     double currentFrame = glfwGetTime();
 
     this->deltaTime = (float)(currentFrame - lastFrame);
-    this->fps = (int)floor(1.0f / this->deltaTime);
     this->lastFrame = currentFrame;
+    this->lastFrames.push_back(currentFrame);
+    while (currentFrame - this->lastFrames.front() >= 1.0) {
+        this->lastFrames.pop_front();
+    }
+    this->fps = this->lastFrames.size();
 }
 
 Time *timeExternal;
