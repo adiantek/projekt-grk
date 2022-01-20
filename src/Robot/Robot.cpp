@@ -5,7 +5,9 @@
 #include <Time/Time.hpp>
 #include <utils/glmu.hpp>
 #include <Logger.h>
+#include <Utils/Gizmos.hpp>
 
+using namespace gizmos;
 using namespace entity;
 
 Robot::Robot() {
@@ -37,19 +39,15 @@ Robot::Robot() {
     this->initialModelMatrix = this->gameObject->getModelMatrix();
     this->createBody();
     this->createLegs();
+
+    // Gizmos::onDraw([this]() {
+    //     Gizmos::cube("ROBOT_POS", this->position);
+    // });
 }
 
 Robot::~Robot() {
     // TODO oczyscic robota
 }
-
-// void Robot::toggleIncreasedSpeedMode() {
-//     if (this->movementSpeed == Robot::MAX_SPEED_INCREASED) {
-//         this->movementSpeed = Robot::DEFAULT_MOVEMENT_SPEED;
-//     } else {
-//         this->movementSpeed = Robot::MAX_SPEED_INCREASED;
-//     }
-// }
 
 void Robot::enableIncreasedSpeedMode() {
     if( this->mode == Robot::MODE_WALKING) {
