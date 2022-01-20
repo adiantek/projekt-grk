@@ -22,6 +22,7 @@ void Gizmos::draw() {
     for (auto callback : Gizmos::onDrawEvents) {
         callback();
     }
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Gizmos::onDraw(std::function<void()> callback) {
