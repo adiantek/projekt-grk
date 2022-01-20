@@ -62,6 +62,10 @@ void Physics::update(float deltaTime) {
             for (auto actor : actors) {
                 if (!actor->userData)
                     continue;
+                if (false/*TODO: Actor is not in loaded chunk*/) {
+                    ((physx::PxRigidDynamic*)actor)->putToSleep();
+                    continue;
+                }
                 physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
                 if (((physx::PxMat44)actor->getGlobalPose()).column3.y < waterObject->getY()) {
                     rigidBody->addForce(glm::vec3(0.0f, rigidBody->getMass() / rigidBody->density * this->gravity * 0.997f, 0.0f));
