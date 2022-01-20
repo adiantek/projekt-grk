@@ -16,12 +16,6 @@ namespace water {
         // Create framebuffer
         glGenFramebuffers(1, &this->framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
-        // Create depthbuffer
-        glGenRenderbuffers(1, &this->depthbuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, this->depthbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, this->textureSize, this->textureSize);
-        // Bind depthbuffer to framebuffer
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depthbuffer);
         // Create texture
         glGenTextures(1, &this->texture);
         glBindTexture(GL_TEXTURE_2D, this->texture);
@@ -46,7 +40,6 @@ namespace water {
 
     Caustics::~Caustics() {
         glDeleteTextures(1, &this->texture);
-        glDeleteRenderbuffers(1, &this->depthbuffer);
         glDeleteFramebuffers(1, &this->framebuffer);
     }
 
@@ -62,7 +55,6 @@ namespace water {
         glViewport(0, 0, this->textureSize, this->textureSize);
 
         glEnable(GL_BLEND);
-        glDisable(GL_DEPTH_TEST);
         glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -91,7 +83,6 @@ namespace water {
         Core::DrawContext(this->geometry);
 
         glDisable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
