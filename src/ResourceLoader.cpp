@@ -461,12 +461,15 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
             new_image[i] = old_image[i] / 65535.0f;
         }
         if (color_type == PNG_COLOR_TYPE_GRAY) { // 0
+            LOGD("16-bit RED");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, w, h, 0, GL_RED, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { // 4
+            LOGD("16-bit RED GREEN");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, w, h, 0, GL_RG, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) { // 6
+            LOGD("16-bit RGBA");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else {

@@ -187,9 +187,8 @@ VertexBuffer *VertexBuffer::configureBitangent(GLuint index) {
 }
 
 VertexBuffer *VertexBuffer::configureJoint(GLuint indexID, GLuint indexWeight) {
-    // TODO @Marcin
-    // this->configureVAO(indexID, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointID);
-    // this->configureVAO(indexWeight, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointWeight);
+    this->configureVAO(indexID, 3, GL_UNSIGNED_INT, GL_FALSE, this->getFormat()->jointID);
+    this->configureVAO(indexWeight, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointWeight);
     return this;
 }
 

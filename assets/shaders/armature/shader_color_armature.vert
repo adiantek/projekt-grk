@@ -5,8 +5,8 @@ layout(location = 1) in vec3 vertexNormal;
 layout(location = 2) in vec2 vertexTexCoord;
 layout(location = 3) in vec3 vertexTangent;
 layout(location = 4) in vec3 vertexBitangent;
-layout(location = 5) in int vertexJoints[3];
-layout(location = 6) in float vertexWeights[3];
+layout(location = 5) in ivec3 vertexJoints;
+layout(location = 6) in vec3 vertexWeights;
 
 out vec3 interpNormal;
 out vec3 color;
