@@ -438,6 +438,9 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     if (png_get_valid(png, info, PNG_INFO_tRNS)) {
         png_set_tRNS_to_alpha(png);
     }
+    if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_PALETTE) {
+        png_set_add_alpha(png, 0xFF, PNG_FILLER_AFTER);
+    }
     png_read_update_info(png, info);
     color_type = png_get_color_type(png, info);
     bit_depth = png_get_bit_depth(png, info);
@@ -460,9 +463,6 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
         if (color_type == PNG_COLOR_TYPE_GRAY) { // 0
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, w, h, 0, GL_RED, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_RGB) { // 2
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, new_image);
-            // unsupported for GL_RGB16F & GL_RGB: glGenerateMipmap(GL_TEXTURE_2D);
         } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { // 4
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, w, h, 0, GL_RG, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -477,9 +477,6 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     } else if (bit_depth == 8) {
         if (color_type == PNG_COLOR_TYPE_GRAY) { // 0
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, image);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_RGB) { // 2
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { // 4
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8, w, h, 0, GL_RG, GL_UNSIGNED_BYTE, image);
