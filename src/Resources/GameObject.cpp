@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 #include <iostream>
 #include <glm/ext.hpp>
 
@@ -65,7 +66,7 @@ void GameObject::update() {
 void GameObject::draw(glm::mat4 mat) {
     glm::mat4 viewMatrix = mat;
     glm::mat4 modelMatrix = this->getModelMatrix();
-    std::vector<Mesh *> meshes = this->model->meshes;
+    std::vector<Mesh *> meshes = this->model->getMeshes();
 
     glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, -0.9f, -1.0f));
     glm::mat4 modelViewProjectionMatrix = viewMatrix * modelMatrix;
@@ -75,7 +76,7 @@ void GameObject::draw(glm::mat4 mat) {
         Mesh* mesh = meshes[i];
         Material* material = this->materials[i];
 
-        Core::RenderContext* context = this->model->meshes[i]->getRenderContext();
+        Core::RenderContext* context = mesh->getRenderContext();
 
         if (material == nullptr) {
             material = Resources::MATERIALS.DEFAULT;
@@ -92,6 +93,9 @@ void GameObject::draw(glm::mat4 mat) {
         glUniformMatrix4fv(glGetUniformLocation(*material->program, "modelMatrix"), 1, GL_FALSE, (float*)&(modelMatrix));
         glUniformMatrix4fv(glGetUniformLocation(*material->program, "modelViewProjectionMatrix"), 1, GL_FALSE, (float*)&(modelViewProjectionMatrix));
 
+        if (this->model->hasJoints()) {
+            glUniformMatrix4fv(glGetUniformLocation(*material->program, "jointTransforms"), 20, GL_FALSE, glm::value_ptr(this->getJointTransforms()[0]));
+        }
         Core::DrawContext(*context);
     }
 }
@@ -99,7 +103,7 @@ void GameObject::draw(glm::mat4 mat) {
 void GameObject::drawShadow(glm::mat4 mat) {
     glm::mat4 viewMatrix = mat;
     glm::mat4 modelMatrix = this->getModelMatrix();
-    std::vector<Mesh *> meshes = this->model->meshes;
+    std::vector<Mesh *> meshes = this->model->getMeshes();
 
     glm::mat4 modelViewProjectionMatrix = viewMatrix * modelMatrix;
 
@@ -107,7 +111,7 @@ void GameObject::drawShadow(glm::mat4 mat) {
     for (int i = 0; i < meshes.size(); i++) {
         Mesh* mesh = meshes[i];
 
-        Core::RenderContext* context = this->model->meshes[i]->getRenderContext();
+        Core::RenderContext* context = mesh->getRenderContext();
 
         glUseProgram(resourceLoaderExternal->p_environment_map);
 
@@ -118,3 +122,27 @@ void GameObject::drawShadow(glm::mat4 mat) {
         Core::DrawContext(*context);
     }
 }
+
+Model* GameObject::getModel() {
+    return this->model;
+}
+
+std::vector<glm::mat4> GameObject::getJointTransforms() {
+    std::vector<glm::mat4> jointsArray = {};
+    std::vector<Animator::Joint*> joints = this->model->getJoints();
+
+    if (joints.size() > 0) {
+        for (int i = 0; i < std::min((int)joints.size(), 20); i++) {
+            jointsArray.push_back(joints[i]->getTransform());
+        }
+        for (int i = (int)joints.size(); i < 20; i++) {
+            jointsArray.push_back(glm::mat4(1.0f));
+        }
+    }
+
+    return jointsArray;
+}
+
+glm::vec3 GameObject::getScale() {
+    return this->scale;
+} 

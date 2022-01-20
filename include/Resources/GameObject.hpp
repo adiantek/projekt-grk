@@ -19,7 +19,7 @@ class GameObject : world::Object3D {
     GameObject* setMaterials(std::vector<Material*> materials);
     GameObject* setMaterial(Material* material);
     GameObject* setModel(Model* model);
-
+    glm::vec3 getScale();
     std::string getName();
 
     void init();
@@ -28,6 +28,9 @@ class GameObject : world::Object3D {
     void drawShadow(glm::mat4 mat) override;
 
     glm::mat4 getModelMatrix();
+    std::vector<glm::mat4> getJointTransforms();
+    Model* getModel();
+    void addJointsToArray(Animator::Joint* headJoint, std::vector<glm::mat4>* jointMatrices);
 
    private:
     std::string name;
@@ -36,5 +39,4 @@ class GameObject : world::Object3D {
     glm::vec3 scale;
     Model* model;
     std::vector<Material*> materials;
-    Animator::Joint* rootJoint;
 };
