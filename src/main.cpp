@@ -194,11 +194,11 @@ void do_frame()
 	glUseProgram(resourceLoader.p_shader_4_sun);
 	glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
 	
-	drawObjectTexNormalCaustics(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.tex_earth, resourceLoader.tex_earthNormal);
-	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_asteroidNormal);
-	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
-	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal, resourceLoader.tex_wallHeight);
-	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wallNormal);
+	drawObjectTexNormalCaustics(sphereContext, eu * glm::scale(glm::vec3(0.7f)), resourceLoader.tex_earth, resourceLoader.tex_earth2_normals);
+	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_moon_normals);
+	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
+	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
+	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
