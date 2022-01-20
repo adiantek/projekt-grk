@@ -147,8 +147,8 @@ void Robot::update() {
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);
 
-    this->updateBody();
-    this->updateLegs();
+    // this->updateBody();
+    // this->updateLegs();
 }
 
 void Robot::draw(glm::mat4 mat) {
@@ -325,6 +325,5 @@ void Robot::applyBodyTransformation(glm::mat4 transformation) {
         leg->upperJointOrigin = transformation * glm::vec4(leg->upperJoint->getOrigin(), 1.0f);
     }
 }
-
 
 Robot *robot;

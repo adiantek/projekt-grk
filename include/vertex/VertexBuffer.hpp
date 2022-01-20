@@ -35,6 +35,7 @@ class VertexBuffer {
     void updateVBO(GLuint vbo);
     uint32_t getVertices();
     void configureVAO(GLuint index, GLint size, GLenum type, GLboolean normalized, int32_t pointer);
+    void configureIVAO(GLuint index, GLint size, GLenum type, int32_t pointer);
     VertexBuffer *configurePos(GLuint index);
     VertexBuffer *configureColor(GLuint index);
     VertexBuffer *configureTex(GLuint index);
