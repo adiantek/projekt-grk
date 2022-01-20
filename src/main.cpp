@@ -15,7 +15,7 @@
 #include <Camera/Camera.hpp>
 #include <Time/Time.hpp>
 #include <vertex/VertexFormats.hpp>
-#include <Utils/Gizmos.hpp>
+#include <utils/Gizmos.hpp>
 
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
