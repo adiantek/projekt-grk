@@ -439,8 +439,9 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
         png_set_tRNS_to_alpha(png);
     }
     if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_PALETTE) {
-        png_set_add_alpha(png, 0xFF, PNG_FILLER_AFTER);
+        png_set_add_alpha(png, (1 << bit_depth) - 1, PNG_FILLER_AFTER);
     }
+    png_set_swap(png);
     png_read_update_info(png, info);
     color_type = png_get_color_type(png, info);
     bit_depth = png_get_bit_depth(png, info);
