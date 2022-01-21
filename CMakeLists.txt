@@ -19,67 +19,60 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_DEBUG_POSTFIX _d)
 
 if (NOT EMSCRIPTEN)
     if(WIN32)
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3dll.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/zlibstatic.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libpng16_static.lib")
-
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysXCharacterKinematic_static_64.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysXCommon_static_64.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysXCooking_static_64.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysXExtensions_static_64.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysXFoundation_static_64.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysXPvdSDK_static_64.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysXVehicle_static_64.lib")
-        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_debug/PhysX_static_64.lib")
-
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysXCharacterKinematic_static_64.lib")
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysXCommon_static_64.lib")
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysXCooking_static_64.lib")
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysXExtensions_static_64.lib")
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysXFoundation_static_64.lib")
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysXPvdSDK_static_64.lib")
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysXVehicle_static_64.lib")
-        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_win_release/PhysX_static_64.lib")
-
-        add_custom_command(
-            TARGET ${PROJECT_NAME}  POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
-                    ${CMAKE_CURRENT_BINARY_DIR}/Release/assimp-vc142-mtd.dll)
-        add_custom_command(
-            TARGET ${PROJECT_NAME}  POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/assimp-vc142-mtd.dll"
-                    ${CMAKE_CURRENT_BINARY_DIR}/Debug/assimp-vc142-mtd.dll)
-        add_custom_command(
-            TARGET ${PROJECT_NAME}  POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3.dll"
-                    ${CMAKE_CURRENT_BINARY_DIR}/Release/glfw3.dll)
-        add_custom_command(
-            TARGET ${PROJECT_NAME}  POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-                    "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glfw3.dll"
-                    ${CMAKE_CURRENT_BINARY_DIR}/Debug/glfw3.dll)
+        set(CompilerFlags
+            CMAKE_CXX_FLAGS
+            CMAKE_CXX_FLAGS_DEBUG
+            CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_C_FLAGS
+            CMAKE_C_FLAGS_DEBUG
+            CMAKE_C_FLAGS_RELEASE
+            )
+        foreach(CompilerFlag ${CompilerFlags})
+            string(REPLACE "/MTd" "/MD" ${CompilerFlag} "${${CompilerFlag}}")
+            string(REPLACE "/MT" "/MD" ${CompilerFlag} "${${CompilerFlag}}")
+            string(REPLACE "/MDd" "/MD" ${CompilerFlag} "${${CompilerFlag}}")
+            string(REPLACE "/MD" "/MD" ${CompilerFlag} "${${CompilerFlag}}")
+        endforeach()
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/zlibstatic.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/libpng16_static.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/assimp-vc142-mt.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/glfw3.lib")
+        # target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_arm64ec_static/msvcprt.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysXCharacterKinematic_static_64.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysXCommon_static_64.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysXCooking_static_64.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysXExtensions_static_64.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysXFoundation_static_64.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysXPvdSDK_static_64.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysXVehicle_static_64.lib")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/win_amd64_static/PhysX_static_64.lib")
     else()
-        target_link_libraries(${PROJECT_NAME} glfw)
-        target_link_libraries(${PROJECT_NAME} assimp)
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libzlibstatic.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libpng16.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libassimp.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libz.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysXCharacterKinematic_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysXCommon_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysXCooking_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysXExtensions_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysXFoundation_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysXPvdSDK_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysX_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/linux_amd64_static/libPhysX_static_64.a")
+        target_link_libraries(${PROJECT_NAME} "glfw")
     endif()
-endif()
-
-if (EMSCRIPTEN)
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libassimp.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libzlibstatic.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libpng16.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysXCharacterKinematic_static.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysXCommon_static.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysXCooking_static.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysXExtensions_static.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysXFoundation.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysXPvdSDK_static.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysXVehicle_static.a")
-    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/physx_em/PhysX_static.a")
+else()
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/libzlibstatic.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/libpng16.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/libassimp.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysXCharacterKinematic_static.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysXCommon_static.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysXCooking_static.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysXExtensions_static.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysXFoundation.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysXPvdSDK_static.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysXVehicle_static.a")
+    target_link_libraries(${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/em/PhysX_static.a")
     target_compile_definitions(${PROJECT_NAME} PUBLIC -DEMSCRIPTEN=1)
     if (SPLIT_STORAGE)
         set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_MEMORY_GROWTH=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s EXPORTED_RUNTIME_METHODS=ccall -s FORCE_FILESYSTEM=1")

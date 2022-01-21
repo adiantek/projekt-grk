@@ -20,7 +20,7 @@ typedef struct JointRaw {
     int parent; // -1 if null
     char name[JOINT_MAX_LENGTH];
     float transform[4 * 4];
-} Packed JointRaw;
+} JointRaw Packed;
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif
