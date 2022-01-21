@@ -218,13 +218,13 @@ void Chunk::draw(glm::mat4 mat) {
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
 
-    if (this->minFishYCalculated) {
-        glUseProgram(resourceLoaderExternal->p_simple_color_shader);
-        glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
-        glBindVertexArray(this->vaoLines);
-        glLineWidth(1.0F);
-        glDrawArrays(GL_LINES, 0, 12);
-    }
+    // if (this->minFishYCalculated) {
+    //     glUseProgram(resourceLoaderExternal->p_simple_color_shader);
+    //     glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    //     glBindVertexArray(this->vaoLines);
+    //     glLineWidth(1.0F);
+    //     glDrawArrays(GL_LINES, 0, 12);
+    // }
 
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
