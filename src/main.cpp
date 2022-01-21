@@ -233,7 +233,8 @@ void loadModelToContext(std::string path, Core::RenderContext& context)
 void init() {
 	if (initialized) return;
 	initialized = true;
-	new physics::Physics(9.8f);
+	w = new world::World(0);
+	new physics::Physics(9.8f, w);
 
 	physx::PxTransform initPose = physx::PxTransform(24.0f, 400.0f, -95.0f);
 	world::Object3D* objectDummy = new world::Object3D();
@@ -265,7 +266,6 @@ void init() {
 	planeContext.initPlane(2.0f, 2.0f);
 
 	new water::Water(192.0f, 256.0f, 40.0f, 400, 256.0f, 1000);
-	w = new world::World(0);
 	waterObject->addWorldObject((world::Object3D*) w);
 }
 

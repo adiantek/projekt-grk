@@ -24,10 +24,11 @@ static PxFilterFlags simulationFilterShader(PxFilterObjectAttributes attributes0
 }
 
 namespace physics {
-Physics::Physics(float gravity, ErrorCallback::LogLevel logLevel)
+Physics::Physics(float gravity, world::World* world, ErrorCallback::LogLevel logLevel)
     : errorCallback(logLevel) {
     physicsObject = this;
     this->gravity = gravity;
+    this->world = world;
     this->foundation = PxCreateFoundation(PX_PHYSICS_VERSION, this->allocator, (PxErrorCallback&)this->errorCallback);
     this->physx = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true);
     this->cooking = PxCreateCooking(PX_PHYSICS_VERSION, *this->foundation, PxCookingParams(PxTolerancesScale()));
@@ -62,7 +63,8 @@ void Physics::update(float deltaTime) {
             for (auto actor : actors) {
                 if (!actor->userData)
                     continue;
-                if (false/*TODO: Actor is not in loaded chunk*/) {
+                physx::PxVec4 position = ((physx::PxMat44)actor->getGlobalPose()).column3;
+                if (!this->world->chunksLoaded(glm::vec3(position.x, position.y, position.z))) {
                     ((physx::PxRigidDynamic*)actor)->putToSleep();
                     continue;
                 }

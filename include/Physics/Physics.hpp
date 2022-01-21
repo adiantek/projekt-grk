@@ -4,11 +4,12 @@
 
 #include <Physics/ErrorCallback.hpp>
 #include <world/Object3D.hpp>
+#include <world/World.hpp>
 #include <vector>
 namespace physics {
 class Physics {
    public:
-    Physics(float gravity, ErrorCallback::LogLevel logLevel = ErrorCallback::__DEBUG);
+    Physics(float gravity, world::World* world, ErrorCallback::LogLevel logLevel = ErrorCallback::__DEBUG);
     ~Physics();
     void update(float deltaTime);
     physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution);
@@ -19,6 +20,7 @@ class Physics {
     physx::PxDefaultAllocator allocator;
     ErrorCallback errorCallback;
     float gravity;
+    world::World* world;
     physx::PxFoundation* foundation = nullptr;
     physx::PxPhysics* physx = nullptr;
     physx::PxCooking* cooking = nullptr;
