@@ -71,7 +71,7 @@ void Gizmos::printJointsTree(Animator::Joint* joint) {
 }
 
 void Gizmos::printJointsTree(Animator::Joint* joint, std::string prefix) {
-    LOGD("%s (%d) %s", prefix.c_str(), joint->index, joint->getName());
+    LOGD("%s (%d) %s", prefix.c_str(), joint->index, joint->getName().c_str());
 
     for (Animator::Joint* child : joint->children) {
         Gizmos::printJointsTree(child, prefix + "  ");
