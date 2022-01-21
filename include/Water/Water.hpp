@@ -19,11 +19,13 @@ class Water : world::Object3D {
     void addWorldObject(world::Object3D* object);
     void removeWorldObject(world::Object3D* object);
     void clearWorldObjects();
+    float getY();
 
    private:
     Caustics caustics;
     Surface surface;
     double lastUpdateTime = -1.0;
+    float y;
 };
 }  // namespace water
 

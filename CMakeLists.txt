@@ -16,6 +16,7 @@ include_directories("include" "libraries" "physx_include")
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.c)
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_DEBUG_POSTFIX _d)
+add_definitions(/DPX_PHYSX_STATIC_LIB)
 
 if (NOT EMSCRIPTEN)
     if(WIN32)

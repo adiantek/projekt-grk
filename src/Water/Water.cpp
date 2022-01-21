@@ -2,12 +2,13 @@
 #include<Time/Time.hpp>
 #include<ResourceLoader.hpp>
 
-#define DELTATIME 0.025
+#define DELTATIME 0.032
 
 namespace water {
     Water::Water(float y, float maxDepth, float causticsSize, unsigned int causticsTexureSize, float surfaceSize, unsigned int surfaceTexureSize)
     : caustics(causticsSize, y, causticsTexureSize, maxDepth), surface(surfaceSize, y, surfaceTexureSize) {
         waterObject = this;
+        this->y = y;
         glUseProgram(resourceLoaderExternal->p_chunk);
         glUniform1f(resourceLoaderExternal->p_chunk_uni_waterHeight, y);
         glUseProgram(0);
@@ -23,7 +24,7 @@ namespace water {
         if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME) {
             this->caustics.update();
             this->surface.update();
-            this->lastUpdateTime = timeExternal->lastFrame;
+            this->lastUpdateTime = (float)glfwGetTime();
         }
     }
     
@@ -60,6 +61,10 @@ namespace water {
 
     void Water::clearWorldObjects() {
         this->caustics.clearWorldObjects();
+    }
+
+    float Water::getY() {
+        return this->y;
     }
 }
 

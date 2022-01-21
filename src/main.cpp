@@ -21,6 +21,8 @@
 #include <Robot/Robot.hpp>
 #include <Resources/GameObject.hpp>
 #include <world/World.hpp>
+#include <Physics/Physics.hpp>
+#include <Physics/RigidBody.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -48,6 +50,9 @@ glm::vec3 lightPos = lightDir * 100000000.0f;
 bool initialized = false;
 
 ResourceLoader resourceLoader;
+
+physics::RigidBody* rigidBody;
+physics::RigidBody* rigidBodyHeavy;
 
 world::World *w;
 
@@ -141,6 +146,7 @@ void do_frame()
 	glfwPollEvents();
 	
 	timeExternal->update();
+	physicsObject->update(timeExternal->deltaTime);
 	controller->update();
 	robot->update();
 	camera->update();
@@ -161,6 +167,8 @@ void do_frame()
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-9, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
 	waterObject->drawObject(sphereContext2, glm::translate(lightPos));
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)));
+	waterObject->drawObject(brickWallContext, rigidBody->getModelMatrix());
+	waterObject->drawObject(brickWallContext, rigidBodyHeavy->getModelMatrix());
 	waterObject->stopUsingFramebuffer();
 
 	waterObject->update();
@@ -195,6 +203,8 @@ void do_frame()
 	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_moon_normals);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
+	drawObjectTexNormalCaustics(brickWallContext, rigidBody->getModelMatrix(), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
+	drawObjectTexNormalCaustics(brickWallContext, rigidBodyHeavy->getModelMatrix(), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
@@ -233,6 +243,24 @@ void init() {
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();
 
+	w = new world::World(0);
+	
+	new physics::Physics(9.8f, w);
+
+	physx::PxTransform initPose = physx::PxTransform(24.0f, 400.0f, -95.0f);
+	physx::PxBoxGeometry geometry = physx::PxBoxGeometry(1.0f, 1.0f, 1.0f);
+	world::Object3D* objectDummy = new world::Object3D();
+	rigidBody = new physics::RigidBody(false, initPose, geometry, objectDummy, 0.5f, 0.5f, 0.001f);
+	rigidBody->setMass(1.0f);
+	rigidBody->density = 0.8f;
+
+
+	initPose = physx::PxTransform(27.0f, 400.0f, -95.0f);
+	geometry = physx::PxBoxGeometry(1.0f, 1.0f, 1.0f);
+	rigidBodyHeavy = new physics::RigidBody(false, initPose, geometry, objectDummy, 0.5f, 0.5f, 0.001f);
+	rigidBodyHeavy->setMass(3.0f);
+	rigidBodyHeavy->density = 0.8f * 3.0f;
+
 	glEnable(GL_DEPTH_TEST);
 
 	loadModelToContext("assets/models/sphere.obj", sphereContext);
@@ -240,8 +268,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(128.0f, 256.0f, 40.0f, 400, 256.0f, 1000);
-	w = new world::World(0);
+	new water::Water(192.0f, 256.0f, 50.0f, 512, 256.0f, 1000);
 	waterObject->addWorldObject((world::Object3D*) w);
 }
 

@@ -32,7 +32,6 @@ class Caustics {
     unsigned int geometrySize;
     Core::RenderContext geometry;
     unsigned int framebuffer;
-    unsigned int depthbuffer;
     unsigned int texture;
 };
 }  // namespace water

@@ -136,6 +136,15 @@ void World::loadChunks() {
     }
 }
 
+Chunk *World::getChunkAt(ChunkPosition pos) {
+    auto c = this->chunks.find(pos.id);
+    if (c == this->chunks.end()) {
+        return 0;
+    }
+    std::pair<const uint64_t, Chunk *> pair = *c;
+    return pair.second;
+}
+
 void World::updateChunks() {
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
@@ -184,4 +193,15 @@ void World::draw(glm::mat4 mat) {
 void World::drawShadow(glm::mat4 mat) {
     this->drawShadowChunks(mat);
     this->robot->drawShadow(mat);
+}
+
+bool World::chunksLoaded(glm::vec3 pos) {
+    for (int i = -1; i < 2; ++i) {
+        for (int j = -1; j < 2; ++j) {
+            if(!this->getChunkAt(ChunkPosition(pos + glm::vec3(i * 16.0f, 0.0f, j * 16.0f)))) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
