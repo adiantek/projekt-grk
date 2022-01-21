@@ -1,6 +1,7 @@
 #include <glm/ext.hpp>
 #include <vector>
 #include <stdbool.h>
+#include <stdexcept>
 
 #include <Animator/Joint.hpp>
 
@@ -19,6 +20,9 @@ namespace Animator {
         this->setParent(parent);
         this->children = children;
         this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
     }
 
     Joint::Joint(int index, std::string name, glm::mat4 transform, std::vector<Joint*> children) {
@@ -27,6 +31,9 @@ namespace Animator {
         this->setParent(parent);
         this->children = children;
         this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
     }
 
     Joint::Joint(int index, std::string name, glm::mat4 transform, Joint* parent) {
@@ -35,6 +42,9 @@ namespace Animator {
         this->setParent(parent);
         this->children = {};
         this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
     }
 
     Joint::Joint(int index, std::string name, glm::mat4 transform) {
@@ -43,6 +53,9 @@ namespace Animator {
         this->children = {};
         this->parent = NULL;
         this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
     }
 
     Joint::~Joint() {}
@@ -99,6 +112,10 @@ namespace Animator {
 
     bool Joint::hasChildren() {
         return this->children.size() > 0;
+    }
+
+    std::string Joint::getName() {
+        return this->name;
     }
 
 }

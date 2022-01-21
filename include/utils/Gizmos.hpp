@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace gizmos {
+namespace utils {
 
 class Gizmos {
    public:
@@ -31,6 +31,8 @@ class Gizmos {
 
     static void printJointsTree(Animator::Joint* joint);
     static void printJointsTree(Animator::Joint* joint, std::string prefix);
+
+    static void dumpJoints(std::vector<Animator::Joint *> joints);
 
    private:
     static inline std::vector<std::function<void()>> onDrawEvents = {};

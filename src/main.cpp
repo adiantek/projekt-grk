@@ -201,7 +201,7 @@ void do_frame()
 
 	waterObject->draw(viewMatrix);
 
-	gizmos::Gizmos::draw();
+	utils::Gizmos::draw();
 
 	if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
 		lastTitleUpdate = timeExternal->lastFrame;

@@ -4,14 +4,13 @@
 #include <vector>
 #include <stdbool.h>
 
+#define JOINT_MAX_LENGTH 64
+
 namespace Animator {
-  
   class Joint {
     public:
       /* Index of the joint (same as index in the mesh joints array) */
       int index;
-      /* Name of the joint */
-      std::string name;
       /* Parent joint */
       Joint* parent;
       /* Children joints */
@@ -50,7 +49,11 @@ namespace Animator {
       bool hasParent();
       /* Returns true if the joint has children */
       bool hasChildren();
+      /* Name of the joint */
+      std::string getName();
     private:
+      /* Name of the joint */
+      std::string name;
       bool _hasParent = false;
       /* Tranformation of the joint relative to it's parent */
       glm::mat4 transform;

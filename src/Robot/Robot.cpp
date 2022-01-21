@@ -7,7 +7,7 @@
 #include <Logger.h>
 #include <utils/Gizmos.hpp>
 
-using namespace gizmos;
+using namespace utils;
 using namespace entity;
 
 Robot::Robot() {

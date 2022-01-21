@@ -2,6 +2,7 @@
 #include <assimp/postprocess.h>
 
 #include <Animator/Joint.hpp>
+#include <Animator/JointIO.hpp>
 #include <Resources/Mesh.hpp>
 #include <Resources/Model.hpp>
 #include <assimp/Importer.hpp>
@@ -9,8 +10,9 @@
 #include <glm/ext.hpp>
 #include <iostream>
 #include <map>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
+#include <utils/Gizmos.hpp>
 #include <vector>
 
 void Model::loadModel(const char* filename) {
@@ -26,6 +28,11 @@ void Model::loadModel(const char* filename) {
         LOGE("ERROR::ASSIMP Could not load model: %s", importer.GetErrorString());
     } else {
         this->joints = this->loadJoints(scene);
+        utils::Gizmos::dumpJoints(this->joints);
+        size_t len;
+        char* data = Animator::JointIO::serialize(this->joints, &len);
+        this->joints = Animator::JointIO::deserialize(data, len);
+        utils::Gizmos::dumpJoints(this->joints);
         this->processNode(scene->mRootNode, scene, aiMatrix4x4());
     }
 }
@@ -160,7 +167,7 @@ std::vector<Animator::Joint*> Model::loadJoints(const aiScene* scene) {
     int index = 0;
 
     for (auto const& [key, bone] : bones) {
-        std::cout << key << ':' << bone << std::endl;
+        LOGD("%s:%p", key.c_str(), bone);
         glm::mat4 transform = glm::mat4(1.0f);
         Animator::Joint* newJoint = new Animator::Joint(index, key, transform);
         newJoint->setLocalBindTransform(Model::to_mat4(bone->mOffsetMatrix));
@@ -174,7 +181,7 @@ std::vector<Animator::Joint*> Model::loadJoints(const aiScene* scene) {
 
     // Populate parents and children
     for (auto const& [key, bone] : bones) {
-        std::cout << key << ':' << bone << std::endl;
+        LOGD("%s:%p", key.c_str(), bone);
 
         for (unsigned int i = 0; i < bone->mNode->mNumChildren; i++) {
             aiNode* child = bone->mNode->mChildren[i];
@@ -208,7 +215,7 @@ std::vector<Animator::Joint*> Model::loadJoints(const aiScene* scene) {
     // Rebuild indexes
     for (int i = 0; i < _joints.size(); i++) {
         _joints[i]->index = i;
-        ids[_joints[i]->name] = i;
+        ids[_joints[i]->getName()] = i;
     }
 
     // TODO: This is propably not used
@@ -234,7 +241,7 @@ Animator::Joint* Model::getRootJoint() {
 Animator::Joint* Model::getJoint(std::string name) {
     LOGD("Getting joint %s", name.c_str());
     Animator::Joint* joint = this->joints[this->bonesIds[name]];
-    LOGD("Found: %d, %s", joint->index, joint->name.c_str());
+    LOGD("Found: %d, %s", joint->index, joint->getName().c_str());
     return joint;
 }
 

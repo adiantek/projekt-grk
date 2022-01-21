@@ -1,21 +1,22 @@
-#include <opengl.h>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <functional>
-#include <glm/ext.hpp>
-
+#include <Logger.h>
 #include <Render_Utils.h>
+#include <opengl.h>
+
 #include <Animator/Joint.hpp>
 #include <Camera/Camera.hpp>
-#include <utils/Gizmos.hpp>
 #include <ResourceLoader.hpp>
 #include <Resources/Resources.hpp>
+#include <functional>
+#include <glm/ext.hpp>
+#include <iostream>
+#include <map>
+#include <string>
 #include <utils/Cube.hpp>
+#include <utils/Gizmos.hpp>
 #include <utils/Line.hpp>
+#include <vector>
 
-using namespace gizmos;
+using namespace utils;
 
 void Gizmos::init() {}
 
@@ -70,9 +71,20 @@ void Gizmos::printJointsTree(Animator::Joint* joint) {
 }
 
 void Gizmos::printJointsTree(Animator::Joint* joint, std::string prefix) {
-    std::cout << prefix << "(" << joint->index << ") " << joint->name << std::endl;
+    LOGD("%s (%d) %s", prefix.c_str(), joint->index, joint->getName());
 
     for (Animator::Joint* child : joint->children) {
         Gizmos::printJointsTree(child, prefix + "  ");
+    }
+}
+
+void Gizmos::dumpJoints(std::vector<Animator::Joint *> joints) {
+    LOGD("Dumping joints:");
+    for (Animator::Joint *joint : joints) {
+        const float *v = glm::value_ptr(joint->getTransform());
+        LOGD("%d: %s (parent: %s, matrix: %.2f %.2f %.2f %.2f ...)",
+            joint->index, joint->getName().c_str(), joint->hasParent() ? joint->parent->getName().c_str() : 0,
+            v[0], v[1], v[2], v[3]
+        );
     }
 }
