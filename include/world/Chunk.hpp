@@ -17,14 +17,18 @@ class World;
 class Chunk : Object3D {
    private:
     GLuint vao, vbo, elements;
+    GLuint vaoLines, vboLines;
     double created;
     physics::RigidBody* rigidBody;
+    bool minFishYCalculated = false;
 
    public:
     ChunkPosition pos;
     int64_t seed;
     World *world;
     float heightMap[17 * 17];
+    float maxY;
+    float allowFishAbove = 256;
     Chunk(World *world, ChunkPosition pos);
     virtual ~Chunk();
 
