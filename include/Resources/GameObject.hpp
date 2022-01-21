@@ -6,10 +6,12 @@
 #include <Resources/Material.hpp>
 #include <Resources/Model.hpp>
 #include <Animator/Joint.hpp>
+#include <world/Object3D.hpp>
 
-class GameObject {
+class GameObject : world::Object3D {
    public:
     GameObject(std::string name);
+    virtual ~GameObject();
 
     GameObject* setPosition(glm::vec3 position);
     GameObject* setRotation(glm::vec3 rotation);
@@ -17,15 +19,18 @@ class GameObject {
     GameObject* setMaterials(std::vector<Material*> materials);
     GameObject* setMaterial(Material* material);
     GameObject* setModel(Model* model);
-
+    glm::vec3 getScale();
     std::string getName();
 
     void init();
-    void update();
-    void draw();
-    void drawShadow(glm::mat4 viewMatrix);
+    void update() override;
+    void draw(glm::mat4 mat) override;
+    void drawShadow(glm::mat4 mat) override;
 
     glm::mat4 getModelMatrix();
+    std::vector<glm::mat4> getJointTransforms();
+    Model* getModel();
+    void addJointsToArray(Animator::Joint* headJoint, std::vector<glm::mat4>* jointMatrices);
 
    private:
     std::string name;
@@ -34,5 +39,4 @@ class GameObject {
     glm::vec3 scale;
     Model* model;
     std::vector<Material*> materials;
-    Animator::Joint* rootJoint;
 };

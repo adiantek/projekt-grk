@@ -156,6 +156,12 @@ void VertexBuffer::configureVAO(GLuint index, GLint size, GLenum type, GLboolean
     glVertexAttribPointer(index, size, type, normalized, this->format->getGPUSize(), p);
 }
 
+void VertexBuffer::configureIVAO(GLuint index, GLint size, GLenum type, int32_t pointer) {
+    const void *p = (const void *)((const uint8_t *)0 + pointer);
+    glEnableVertexAttribArray(index);
+    glVertexAttribIPointer(index, size, type, this->format->getGPUSize(), p);
+}
+
 VertexBuffer *VertexBuffer::configurePos(GLuint index) {
     this->configureVAO(index, 3, GL_FLOAT, GL_FALSE, this->getFormat()->pos);
     return this;
@@ -187,9 +193,8 @@ VertexBuffer *VertexBuffer::configureBitangent(GLuint index) {
 }
 
 VertexBuffer *VertexBuffer::configureJoint(GLuint indexID, GLuint indexWeight) {
-    // TODO @Marcin
-    // this->configureVAO(indexID, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointID);
-    // this->configureVAO(indexWeight, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointWeight);
+    this->configureIVAO(indexID, 3, GL_UNSIGNED_INT, this->getFormat()->jointID);
+    this->configureVAO(indexWeight, 3, GL_FLOAT, GL_FALSE, this->getFormat()->jointWeight);
     return this;
 }
 

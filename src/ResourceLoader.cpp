@@ -62,14 +62,30 @@ void ResourceLoader::loadTextures() {
 void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
 
-    LOAD_PROGRAM(simple_color_shader, 2, "simple_color_shader.frag", "simple_color_shader.vert") {
+    LOAD_PROGRAM(color_armature, 2, "armature/shader_color_armature.frag", "armature/shader_color_armature.vert") {
+        // this->dumpProgram("color_armature", this->p_color_armature);
+        this->p_color_armature_attr_vertexJoints = glGetAttribLocation(this->p_color_armature, "vertexJoints");
+        this->p_color_armature_attr_vertexPosition = glGetAttribLocation(this->p_color_armature, "vertexPosition");
+        this->p_color_armature_attr_vertexWeights = glGetAttribLocation(this->p_color_armature, "vertexWeights");
+        this->p_color_armature_uni_jointTransforms = glGetUniformLocation(this->p_color_armature, "jointTransforms[0]");
+        this->p_color_armature_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_color_armature, "modelViewProjectionMatrix");
+    }
+
+    LOAD_PROGRAM(simple_color_shader, 2, "debug/simple_color_shader.frag", "debug/simple_color_shader.vert") {
         // this->dumpProgram("simple_color_shader", this->p_simple_color_shader);
         this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");
         this->p_simple_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_color_shader, "vertexPosition");
         this->p_simple_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_color_shader, "transformation");
     }
 
-    LOAD_PROGRAM(simple_tex_shader, 2, "simple_tex_shader.frag", "simple_tex_shader.vert") {
+    LOAD_PROGRAM(simple_uni_color_shader, 2, "debug/simple_uni_color_shader.frag", "debug/simple_uni_color_shader.vert") {
+        // this->dumpProgram("simple_uni_color_shader", this->p_simple_uni_color_shader);
+        this->p_simple_uni_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_uni_color_shader, "vertexPosition");
+        this->p_simple_uni_color_shader_uni_color = glGetUniformLocation(this->p_simple_uni_color_shader, "color");
+        this->p_simple_uni_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_uni_color_shader, "transformation");
+    }
+
+    LOAD_PROGRAM(simple_tex_shader, 2, "debug/simple_tex_shader.frag", "debug/simple_tex_shader.vert") {
         // this->dumpProgram("simple_tex_shader", this->p_simple_tex_shader);
         this->p_simple_tex_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_tex_shader, "vertexPosition");
         this->p_simple_tex_shader_attr_vertexTex = glGetAttribLocation(this->p_simple_tex_shader, "vertexTex");
@@ -429,6 +445,10 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     if (png_get_valid(png, info, PNG_INFO_tRNS)) {
         png_set_tRNS_to_alpha(png);
     }
+    if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_PALETTE) {
+        png_set_add_alpha(png, (1 << bit_depth) - 1, PNG_FILLER_AFTER);
+    }
+    png_set_swap(png);
     png_read_update_info(png, info);
     color_type = png_get_color_type(png, info);
     bit_depth = png_get_bit_depth(png, info);
@@ -449,15 +469,15 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
             new_image[i] = old_image[i] / 65535.0f;
         }
         if (color_type == PNG_COLOR_TYPE_GRAY) { // 0
+            LOGD("16-bit RED");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, w, h, 0, GL_RED, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_RGB) { // 2
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, new_image);
-            // unsupported for GL_RGB16F & GL_RGB: glGenerateMipmap(GL_TEXTURE_2D);
         } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { // 4
+            LOGD("16-bit RED GREEN");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, w, h, 0, GL_RG, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) { // 6
+            LOGD("16-bit RGBA");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else {
@@ -468,9 +488,6 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     } else if (bit_depth == 8) {
         if (color_type == PNG_COLOR_TYPE_GRAY) { // 0
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, image);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_RGB) { // 2
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { // 4
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8, w, h, 0, GL_RG, GL_UNSIGNED_BYTE, image);

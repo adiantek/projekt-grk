@@ -1,36 +1,92 @@
-#include <Animator/Joint.hpp>
 #include <glm/ext.hpp>
-#include <list>
+#include <vector>
+#include <stdbool.h>
+#include <stdexcept>
+
+#include <Animator/Joint.hpp>
 
 namespace Animator {
 
-    Joint::Joint(int index, std::string name, glm::mat4 localBindTransform, Joint* parent, std::list<Joint> children) {
-        this->index = index;
-        this->name = name;
-        this->parent = parent;
-        this->children = children;
-        this->localBindTransform = localBindTransform;
+    Joint::Joint() {
+        this->index = -1;
+        this->name = "";
+        this->parent = NULL;
+        this->children = std::vector<Joint*>();
     }
 
-    Joint::Joint(int index, std::string name, glm::mat4 localBindTransform) {
+    Joint::Joint(int index, std::string name, glm::mat4 transform, Joint* parent, std::vector<Joint*> children) {
+        this->index = index;
+        this->name = name;
+        this->setParent(parent);
+        this->children = children;
+        this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
+    }
+
+    Joint::Joint(int index, std::string name, glm::mat4 transform, std::vector<Joint*> children) {
+        this->index = index;
+        this->name = name;
+        this->setParent(parent);
+        this->children = children;
+        this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
+    }
+
+    Joint::Joint(int index, std::string name, glm::mat4 transform, Joint* parent) {
+        this->index = index;
+        this->name = name;
+        this->setParent(parent);
+        this->children = {};
+        this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
+    }
+
+    Joint::Joint(int index, std::string name, glm::mat4 transform) {
         this->index = index;
         this->name = name;
         this->children = {};
-        this->localBindTransform = localBindTransform;
+        this->parent = NULL;
+        this->transform = transform;
+        if (name.length() >= JOINT_MAX_LENGTH) {
+            throw std::invalid_argument("name too long");
+        }
     }
 
     Joint::~Joint() {}
 
-    void Joint::addChild(Joint child) {
+    Joint* Joint::setParent(Joint* parent) {
+        this->parent = parent;
+        this->_hasParent = true;
+        return this;
+    }
+
+    Joint* Joint::addChild(Joint* child) {
         this->children.push_back(child);
+        return this;
     }
 
     glm::mat4 Joint::getTransform() {
         return this->transform;
     }
 
-    void Joint::setTransform(glm::mat4 transform) {
+    glm::mat4 Joint::getLocalBindTransform() {
+        return this->localBindTransform;
+    }
+
+    Joint* Joint::setTransform(glm::mat4 transform) {
         this->transform = transform;
+        return this;
+    }
+
+    Joint* Joint::setLocalBindTransform(glm::mat4 localBindTransform) {
+        this->localBindTransform = localBindTransform;
+        return this;
     }
 
     glm::mat4 Joint::getInverseBindTransform() {
@@ -41,9 +97,25 @@ namespace Animator {
         glm::mat4 bindTransform = parentBindTransform * this->localBindTransform;
         this->inverseBindTransform = glm::inverse(bindTransform);
 
-        for (Joint child : this->children) {
-            child.calculateInverseBindTransform(bindTransform);
+        for (Joint* child : this->children) {
+            child->calculateInverseBindTransform(bindTransform);
         }
+    }
+
+    glm::vec3 Joint::getOrigin() {
+        return glm::vec3(glm::inverse(this->localBindTransform) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    }
+
+    bool Joint::hasParent() {
+        return this->_hasParent;
+    }
+
+    bool Joint::hasChildren() {
+        return this->children.size() > 0;
+    }
+
+    std::string Joint::getName() {
+        return this->name;
     }
 
 }

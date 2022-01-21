@@ -68,39 +68,39 @@ void Resources::initMaterials() {
 
     // Robot materials
     Resources::MATERIALS.ROBOT_BODY
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(0.107f, 0.084f, 0.064f));
 
     // TODO: Make a chrome shader for this
     Resources::MATERIALS.ROBOT_CHROME
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
     // TODO: Check for this material. I think robot has no usage for this
     Resources::MATERIALS.ROBOT_GLOW
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
     Resources::MATERIALS.ROBOT_LENS
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(0.207f, 0.184f, 0.164f));
 
     // TODO: Make a metal shader for this
     Resources::MATERIALS.ROBOT_METAL
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(0.380f, 0.345f, 0.321f));
 
     // TODO: Make a metal shader for this
     Resources::MATERIALS.ROBOT_METAL_2
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(0.360f, 0.325f, 0.301f));
 
     Resources::MATERIALS.ROBOT_WIRE
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(0.0f, 0.0f, 0.0f));
 
     Resources::MATERIALS.ROBOT_METAL_PAINTED
-        ->setProgram(&resourceLoaderExternal->p_shader_color)
+        ->setProgram(&resourceLoaderExternal->p_color_armature)
         ->setParam("objectColor", glm::vec3(0.870f, 0.113f, 0.007f));
 }
 
@@ -118,7 +118,7 @@ void Resources::initModels() {
 
 
     // Robot
-    ResourceLoader::loadModelExternal("assets/models/robot.dae", Resources::MODELS.ROBOT);
+    ResourceLoader::loadModelExternal("assets/models/robot_with_armature.dae", Resources::MODELS.ROBOT);
 
 }
 
