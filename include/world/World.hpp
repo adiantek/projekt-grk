@@ -48,6 +48,7 @@ class World : Object3D {
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
     Chunk *getChunkAt(ChunkPosition pos);
+    bool chunksLoaded(glm::vec3 pos);
 };
 
 }  // namespace world
