@@ -167,8 +167,8 @@ void Robot::updateBody() {
     this->bodyOrigin = glm::inverse(this->body->getLocalBindTransform()) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
     // Random body transformation
-    glm::mat4 bodyPositionTransform = glm::translate(utils::s_random_offset(0.3f, (float)timeExternal->lastFrame * 5.0f));
-    glm::vec3 bodyRotation = utils::s_random_offset(10.0f, (float)((timeExternal->lastFrame + 1000.0f) * 5.0f));
+    glm::mat4 bodyPositionTransform = glm::translate(utils::glmu::s_random_offset(0.3f, (float)timeExternal->lastFrame * 5.0f));
+    glm::vec3 bodyRotation = utils::glmu::s_random_offset(10.0f, (float)((timeExternal->lastFrame + 1000.0f) * 5.0f));
 
     this->applyBodyTransformation(
         glm::translate(this->bodyOrigin)
@@ -256,7 +256,7 @@ void Robot::updateLegs() {
         // Calculate circle midpoint between attachment point and upper leg joint origin
         glm::vec2 attachmentPositionFlat = glm::vec2(leg->attachmentPoint.x, leg->attachmentPoint.z);
         glm::vec2 upperJointOriginFlat = glm::vec2(leg->upperJointOrigin.x, leg->upperJointOrigin.z);
-        glm::vec2 midPointFlat = utils::circles_midpoint(attachmentPositionFlat, upperJointOriginFlat, leg->lowerJointLength, leg->upperJointLength);
+        glm::vec2 midPointFlat = utils::glmu::circles_midpoint(attachmentPositionFlat, upperJointOriginFlat, leg->lowerJointLength, leg->upperJointLength);
         // LOGD("Midpoint: %f", leg->attachmentPoint.y);
         glm::vec3 midPoint = glm::vec3(midPointFlat.x, (leg->attachmentPoint.y + leg->upperJointOrigin.y) / 2, midPointFlat.y);
         leg->lowerJointOrigin = midPoint;
@@ -301,7 +301,7 @@ void Robot::updateLegs() {
         if (leg->step >= 0.0f) {
             // LOGD("leg->step: %f", leg->step);
             leg->step += timeExternal->deltaTime * Robot::LEG_STEP_SPEED;
-            leg->currentAttachmentPoint = utils::curve(leg->previousAttachmentPoint, leg->targetAttachmentPoint, leg->step);
+            leg->currentAttachmentPoint = utils::glmu::curve(leg->previousAttachmentPoint, leg->targetAttachmentPoint, leg->step);
         }
 
         if (leg->step >= 1.0f) {
