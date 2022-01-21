@@ -1,6 +1,7 @@
 # Build folder
 build/
 build2/
+dependencies/win_amd64_static/assimp-vc142-mt.lib
 
 # Visual studio auto generated content
 .vs/

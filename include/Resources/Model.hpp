@@ -1,27 +1,41 @@
 #pragma once
 
-#include <opengl.h>
-#include <vector>
-#include <glm/ext.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/mesh.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <opengl.h>
+#include <stdbool.h>
 
+#include <Animator/Joint.hpp>
 #include <Resources/Mesh.hpp>
 #include <Resources/Vertex.hpp>
+#include <assimp/Importer.hpp>
+#include <glm/ext.hpp>
+#include <map>
+#include <string>
+#include <vector>
 
 class Model {
-    public:
-        void loadModel(const char* filename);
-        void processNode(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation);
-        Mesh* processMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
-        std::vector<Vertex> vertices(aiMesh* mesh, glm::vec3& extents, glm::vec3 &origin, aiMatrix4x4 transformation);
-        std::vector<Mesh*> getMeshes();
-        std::vector<Mesh*> meshes;
-        std::string directory;
-        std::string file;
-    private:
-        
-        
+   public:
+    void loadModel(const char* filename);
+    bool hasJoints();
+
+    std::vector<Mesh*> getMeshes();
+    std::vector<Animator::Joint*> getJoints();
+    Animator::Joint* getRootJoint();
+    Animator::Joint* getJoint(std::string name);
+
+    std::string file;
+
+    // TODO: Move this to other place (helpers functions)
+    static glm::mat4 to_mat4(const aiMatrix4x4& aAssimpMat);
+
+   private:
+    void processNode(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation);
+    Mesh* loadMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
+    std::vector<Animator::Joint*> loadJoints(const aiScene* scene);
+
+    std::vector<Mesh*> meshes;
+    std::vector<Animator::Joint*> joints;
+    std::unordered_map<std::string, int> bonesIds;
 };

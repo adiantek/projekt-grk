@@ -2,7 +2,7 @@
 #include<Time/Time.hpp>
 #include<ResourceLoader.hpp>
 
-#define DELTATIME 0.025
+#define DELTATIME 0.032
 
 namespace water {
     Water::Water(float y, float maxDepth, float causticsSize, unsigned int causticsTexureSize, float surfaceSize, unsigned int surfaceTexureSize)
@@ -24,7 +24,7 @@ namespace water {
         if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME) {
             this->caustics.update();
             this->surface.update();
-            this->lastUpdateTime = timeExternal->lastFrame;
+            this->lastUpdateTime = (float)glfwGetTime();
         }
     }
     

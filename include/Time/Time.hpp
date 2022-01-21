@@ -2,6 +2,7 @@
 
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
+#include <deque>
 
 class Time {
    public:
@@ -15,6 +16,7 @@ class Time {
     int fps = 0;
 
    private:
+    std::deque<double> lastFrames;
     int frameCount = 0;
 };
 
