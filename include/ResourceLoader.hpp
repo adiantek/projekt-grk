@@ -72,6 +72,12 @@ public:
     GLint p_simple_color_shader_attr_vertexColor = -1;
     GLint p_simple_color_shader_attr_vertexPosition = -1;
     GLint p_simple_color_shader_uni_transformation = -1;
+
+    GLuint p_simple_uni_color_shader = 0;
+    bool p_simple_uni_color_shader_loaded = false;
+    GLint p_simple_uni_color_shader_attr_vertexPosition = -1;
+    GLint p_simple_uni_color_shader_uni_color = -1;
+    GLint p_simple_uni_color_shader_uni_transformation = -1;
     
     GLuint p_simple_tex_shader = 0;
     bool p_simple_tex_shader_loaded = false;

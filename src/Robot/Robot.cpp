@@ -40,9 +40,9 @@ Robot::Robot() {
     this->createBody();
     this->createLegs();
 
-    // Gizmos::onDraw([this]() {
-    //     Gizmos::cube("ROBOT_POS", this->position);
-    // });
+    Gizmos::onDraw([this]() {
+        Gizmos::cube(this->position);
+    });
 }
 
 Robot::~Robot() {

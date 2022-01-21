@@ -71,14 +71,21 @@ void ResourceLoader::loadPrograms() {
         this->p_color_armature_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_color_armature, "modelViewProjectionMatrix");
     }
 
-    LOAD_PROGRAM(simple_color_shader, 2, "simple_color_shader.frag", "simple_color_shader.vert") {
+    LOAD_PROGRAM(simple_color_shader, 2, "debug/simple_color_shader.frag", "debug/simple_color_shader.vert") {
         // this->dumpProgram("simple_color_shader", this->p_simple_color_shader);
         this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");
         this->p_simple_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_color_shader, "vertexPosition");
         this->p_simple_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_color_shader, "transformation");
     }
 
-    LOAD_PROGRAM(simple_tex_shader, 2, "simple_tex_shader.frag", "simple_tex_shader.vert") {
+    LOAD_PROGRAM(simple_uni_color_shader, 2, "debug/simple_uni_color_shader.frag", "debug/simple_uni_color_shader.vert") {
+        // this->dumpProgram("simple_uni_color_shader", this->p_simple_uni_color_shader);
+        this->p_simple_uni_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_uni_color_shader, "vertexPosition");
+        this->p_simple_uni_color_shader_uni_color = glGetUniformLocation(this->p_simple_uni_color_shader, "color");
+        this->p_simple_uni_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_uni_color_shader, "transformation");
+    }
+
+    LOAD_PROGRAM(simple_tex_shader, 2, "debug/simple_tex_shader.frag", "debug/simple_tex_shader.vert") {
         // this->dumpProgram("simple_tex_shader", this->p_simple_tex_shader);
         this->p_simple_tex_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_tex_shader, "vertexPosition");
         this->p_simple_tex_shader_attr_vertexTex = glGetAttribLocation(this->p_simple_tex_shader, "vertexTex");
