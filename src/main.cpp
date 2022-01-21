@@ -237,14 +237,16 @@ void init() {
 	new physics::Physics(9.8f, w);
 
 	physx::PxTransform initPose = physx::PxTransform(24.0f, 400.0f, -95.0f);
+	physx::PxBoxGeometry geometry = physx::PxBoxGeometry(1.0f, 1.0f, 1.0f);
 	world::Object3D* objectDummy = new world::Object3D();
-	rigidBody = new physics::RigidBody(false, initPose, physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), objectDummy, 0.5f, 0.5f, 0.001f);
+	rigidBody = new physics::RigidBody(false, initPose, geometry, objectDummy, 0.5f, 0.5f, 0.001f);
 	rigidBody->setMass(1.0f);
 	rigidBody->density = 0.8f;
 
 
 	initPose = physx::PxTransform(27.0f, 400.0f, -95.0f);
-	rigidBodyHeavy = new physics::RigidBody(false, initPose, physx::PxBoxGeometry(1.0f, 1.0f, 1.0f), objectDummy, 0.5f, 0.5f, 0.001f);
+	geometry = physx::PxBoxGeometry(1.0f, 1.0f, 1.0f);
+	rigidBodyHeavy = new physics::RigidBody(false, initPose, geometry, objectDummy, 0.5f, 0.5f, 0.001f);
 	rigidBodyHeavy->setMass(3.0f);
 	rigidBodyHeavy->density = 0.8f * 3.0f;
 
