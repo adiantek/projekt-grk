@@ -46,4 +46,24 @@ void RigidBody::applyDrag(float density) {
     this->inner->addForce(velocityDirection * force);
     this->inner->addTorque(velocityAngularDirection * torque);
 }
+
+void RigidBody::putToSleep() {
+    if (!this->sleep) {
+        this->prevState = State {
+            this->inner->getLinearVelocity(),
+            this->inner->getAngularVelocity()
+        };
+        this->inner->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
+        this->sleep = true;
+    }
+}
+
+void RigidBody::wakeUp() {
+    if (this->sleep) {
+        this->inner->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
+        this->inner->setLinearVelocity(this->prevState.velocity);
+        this->inner->setAngularVelocity(this->prevState.angularVelocity);
+        this->sleep = false;
+    }
+}
 }  // namespace physics

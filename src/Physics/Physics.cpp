@@ -63,12 +63,13 @@ void Physics::update(float deltaTime) {
             for (auto actor : actors) {
                 if (!actor->userData)
                     continue;
-                physx::PxVec4 position = ((physx::PxMat44)actor->getGlobalPose()).column3;
-                if (!this->world->chunksLoaded(glm::vec3(position.x, position.y, position.z))) {
-                    ((physx::PxRigidDynamic*)actor)->putToSleep();
-                    continue;
-                }
                 physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
+                if (!this->world->chunksLoaded(glm::vec3(rigidBody->getModelMatrix()[3]))) {
+                    rigidBody->putToSleep();
+                    continue;
+                } else {
+                    rigidBody->wakeUp();
+                }
                 if (((physx::PxMat44)actor->getGlobalPose()).column3.y < waterObject->getY()) {
                     rigidBody->addForce(glm::vec3(0.0f, rigidBody->getMass() / rigidBody->density * this->gravity * 0.997f, 0.0f));
                     rigidBody->applyDrag(0.997f);

@@ -5,6 +5,11 @@
 #include <glm/glm.hpp>
 #include <world/Object3D.hpp>
 
+struct State {
+    physx::PxVec3 velocity;
+    physx::PxVec3 angularVelocity;
+};
+
 namespace physics {
 class RigidBody {
    public:
@@ -16,10 +21,14 @@ class RigidBody {
     void addForce(glm::vec3 force);
     void addTorque(glm::vec3 torque);
     void applyDrag(float density);
+    void putToSleep();
+    void wakeUp();
     world::Object3D* object;
     float density = 1.0f;
 
    private:
     physx::PxRigidBody* inner;
+    bool sleep = false;
+    State prevState;
 };
 }  // namespace physics
