@@ -122,7 +122,7 @@ void World::updateChunkMap(bool firstLoad) {
 }
 
 void World::loadChunks() {
-    if (timeExternal->lastFrame - this->lastLoadChunks < 0.01) {  // 100 chunks per sec
+    if (timeExternal->lastFrame - this->lastLoadChunks < 0.02) {  // 50 chunks per sec
         return;
     }
     this->lastLoadChunks = timeExternal->lastFrame;
