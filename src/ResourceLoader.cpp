@@ -486,7 +486,7 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     png_read_image(png, row_pointers);
 
     if (bit_depth == 16) {
-        png_uint_32 colors = row * h * 8 / bit_depth;
+        png_uint_32 colors = (png_uint_32)(row * h * 8 / (png_uint_32)bit_depth);
         png_uint_16 *old_image = (png_uint_16 *)image;
         float *new_image = new float[colors];
         for (png_uint_32 i = 0; i < colors; i++) {
