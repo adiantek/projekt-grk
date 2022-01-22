@@ -86,7 +86,6 @@ namespace water {
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
-        glUseProgram(0);
     }
 
     unsigned int Caustics::getCausticsMap() {

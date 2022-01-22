@@ -72,7 +72,6 @@ void EnvironmentMap::stopUsingFramebuffer() {
     Core::DrawContext(this->geometry);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
-    glUseProgram(0);
 }
 
 void EnvironmentMap::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
@@ -139,6 +138,5 @@ void EnvironmentMap::update() {
 
     //glBindFramebuffer(GL_FRAMEBUFFER, 0);
     //glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
-    //glUseProgram(0);
 }
 }  // namespace water
