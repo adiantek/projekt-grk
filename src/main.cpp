@@ -23,6 +23,7 @@
 #include <world/World.hpp>
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
+#include <Boids.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -53,6 +54,8 @@ ResourceLoader resourceLoader;
 
 physics::RigidBody* rigidBody;
 physics::RigidBody* rigidBodyHeavy;
+
+Boids* boids;
 
 world::World *w;
 
@@ -150,6 +153,7 @@ void do_frame()
 	controller->update();
 	robot->update();
 	camera->update();
+	boids->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -208,6 +212,8 @@ void do_frame()
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
+
+	boids->draw(viewMatrix);
 
 	waterObject->draw(viewMatrix);
 
@@ -268,8 +274,11 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(192.0f, 256.0f, 50.0f, 512, 256.0f, 1000);
+	new water::Water(192.0f, 256.0f, 80.0f, 512, 256.0f, 1000);
 	waterObject->addWorldObject((world::Object3D*) w);
+
+	boids = new Boids(20, sphereContext, glm::vec3(0.0f, 180.0f, 0.0f), w);
+	waterObject->addWorldObject((world::Object3D*) boids);
 }
 
 int main(int argc, char **argv)
