@@ -102,7 +102,6 @@ void drawObjectTexNormal(Core::RenderContext context, glm::mat4 modelMatrix, GLu
 	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_uni_transformation, 1, GL_FALSE, (float*)&transformation);
 	Core::DrawContext(context);
-	glUseProgram(0);
 }
 
 void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal, GLuint txtHeight = 0)
@@ -118,7 +117,6 @@ void drawObjectTexNormalCaustics(Core::RenderContext context, glm::mat4 modelMat
 	glUniformMatrix4fv(resourceLoader.p_chunk_uni_transformation, 1, GL_FALSE, (float*)&transformation);
 	glUniformMatrix4fv(resourceLoader.p_chunk_uni_lightTransformation, 1, GL_FALSE, (float*)&transformationLight);
 	Core::DrawContext(context);
-	glUseProgram(0);
 }
 
 void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMatrix, GLuint txt, GLuint txtNormal, GLuint txtHeight)
@@ -132,7 +130,6 @@ void drawObjectTexNormalParallax(Core::RenderContext context, glm::mat4 modelMat
 	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_with_parallax_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
 	glUniformMatrix4fv(resourceLoader.p_shader_4_tex_with_parallax_uni_transformation, 1, GL_FALSE, (float*)&transformation);
 	Core::DrawContext(context);
-	glUseProgram(0);
 	glDisable(GL_CULL_FACE);
 }
 
@@ -274,7 +271,7 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(192.0f, 256.0f, 80.0f, 512, 256.0f, 1000);
+	new water::Water(192.0f, 300.0f, 80.0f, 512, 256.0f, 1000);
 	waterObject->addWorldObject((world::Object3D*) w);
 
 	boids = new Boids(20, sphereContext, glm::vec3(0.0f, 180.0f, 0.0f), w);

@@ -3,9 +3,11 @@
 #include <PxPhysicsAPI.h>
 
 #include <Physics/ErrorCallback.hpp>
+#include <vector>
+#include <vertex/VertexBuffer.hpp>
 #include <world/Object3D.hpp>
 #include <world/World.hpp>
-#include <vector>
+
 namespace physics {
 class Physics {
    public:
@@ -14,7 +16,8 @@ class Physics {
     void update(float deltaTime);
     physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution);
     void deleteRigidBody(physx::PxRigidBody* rigidBody);
-    physx::PxTriangleMeshGeometry createTriangleGeometry(float *vertices, int verticesNumber, int *indices, int trianglesNumber);
+    physx::PxTriangleMeshGeometry createTriangleGeometry(float* vertices, int verticesNumber, int* indices, int trianglesNumber);
+    physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, int trianglesNumber);
 
    private:
     physx::PxDefaultAllocator allocator;

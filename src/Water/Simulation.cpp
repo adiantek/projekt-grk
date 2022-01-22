@@ -66,8 +66,6 @@ void Simulation::update() {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
-
-    glUseProgram(0);
 }
 
 void Simulation::generateRandomWaves(long long seed) {
@@ -108,8 +106,6 @@ void Simulation::generateRandomWaves(long long seed) {
         format[9] = 'f';
         glUniform1f(glGetUniformLocation(resourceLoaderExternal->p_water_simulation, format.data()), f);
     }
-
-    glUseProgram(0);
 }
 
 unsigned int Simulation::getHeightMap() {

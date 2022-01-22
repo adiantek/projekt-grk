@@ -20,7 +20,7 @@ void Time::update() {
     while (currentFrame - this->lastFrames.front() >= 1.0) {
         this->lastFrames.pop_front();
     }
-    this->fps = this->lastFrames.size();
+    this->fps = (int) this->lastFrames.size();
 }
 
 Time *timeExternal;
