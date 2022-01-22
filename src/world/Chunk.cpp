@@ -61,7 +61,6 @@ void Chunk::generate() {
     }
 
     vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX_TANGENT_BITANGENT, 17 * 17);
-    float vert[17 * 17 * 3];
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
             glm::vec3 squares[2][2];
@@ -97,28 +96,25 @@ void Chunk::generate() {
 
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
-
-            vert[3 * (x * 17 + z)] = squares[0][0].x;
-            vert[3 * (x * 17 + z) + 1] = squares[0][0].y;
-            vert[3 * (x * 17 + z) + 2] = squares[0][0].z;
         }
     }
-    int lineNum = 0;
-    int32_t lines[2 * 3 * 16 * 16];
+    int n = 0;
+    int32_t indices[2 * 3 * 16 * 16];
     for (int x = 0; x < 16; x++) {
         for (int z = 0; z < 16; z++) {
-            lines[lineNum++] = x * 17 + z;
-            lines[lineNum++] = x * 17 + z + 1;
-            lines[lineNum++] = x * 17 + z + 17;
+            indices[n++] = x * 17 + z;
+            indices[n++] = x * 17 + z + 1;
+            indices[n++] = x * 17 + z + 17;
 
-            lines[lineNum++] = x * 17 + z + 17 + 1;
-            lines[lineNum++] = x * 17 + z + 17;
-            lines[lineNum++] = x * 17 + z + 1;
+            indices[n++] = x * 17 + z + 17 + 1;
+            indices[n++] = x * 17 + z + 17;
+            indices[n++] = x * 17 + z + 1;
         }
     }
     physx::PxTransform transform = physx::PxTransform(0.0f, 0.0f, 0.0f);
-    physx::PxTriangleMeshGeometry geometry = physicsObject->createTriangleGeometry(vert, 17 * 17 * 3, lines, 2 * 16 * 16);
+    physx::PxTriangleMeshGeometry geometry = physicsObject->createTriangleGeometry(&vertices, indices, 2 * 16 * 16);
     this->rigidBody = new physics::RigidBody(true, transform, geometry, (world::Object3D *)this, 0.5f, 0.5f, 0.0001f);
+    geometry.triangleMesh->release();
 
     glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);
@@ -130,7 +126,7 @@ void Chunk::generate() {
     vertices.configureBitangent(resourceLoaderExternal->p_chunk_attr_vertexBitangent);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
 void Chunk::update() {

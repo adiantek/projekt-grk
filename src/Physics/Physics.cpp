@@ -1,10 +1,10 @@
 #include <Logger.h>
 
 #include <Physics/Physics.hpp>
-#include <Physics/SimulationEventCallback.hpp>
 #include <Physics/RigidBody.hpp>
-#include <glm/glm.hpp>
+#include <Physics/SimulationEventCallback.hpp>
 #include <Water/Water.hpp>
+#include <glm/glm.hpp>
 #include <vector>
 
 #define PX_RELEASE(x) \
@@ -12,6 +12,8 @@
         x->release(); \
         x = NULL;     \
     }
+
+using namespace physics;
 
 const float stepTime = 1.0f / 60.f;
 
@@ -23,7 +25,6 @@ static PxFilterFlags simulationFilterShader(PxFilterObjectAttributes attributes0
     return physx::PxFilterFlag::eDEFAULT;
 }
 
-namespace physics {
 Physics::Physics(float gravity, world::World* world, ErrorCallback::LogLevel logLevel)
     : errorCallback(logLevel) {
     physicsObject = this;
@@ -106,11 +107,11 @@ void Physics::deleteRigidBody(PxRigidBody* rigidBody) {
     PX_RELEASE(rigidBody);
 }
 
-physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float *vertices, int verticesNumber, int *indices, int trianglesNumber) {
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float* vertices, int verticesNumber, int* indices, int trianglesNumber) {
     physx::PxTriangleMeshDesc meshDesc;
     meshDesc.points.count = verticesNumber;
     meshDesc.points.stride = sizeof(physx::PxVec3);
-    meshDesc.points.data  = vertices;
+    meshDesc.points.data = vertices;
 
     meshDesc.triangles.count = trianglesNumber;
     meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
@@ -118,11 +119,24 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float *vertices, i
 
     physx::PxTriangleMeshGeometry triGeom;
     triGeom.triangleMesh = this->cooking->createTriangleMesh(meshDesc, this->physx->getPhysicsInsertionCallback());
-    
+
     return triGeom;
 }
-}  // namespace physics
+
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuffer *vb, int* indices, int trianglesNumber) {
+    physx::PxTriangleMeshDesc meshDesc;
+    meshDesc.points.count = vb->getVertices();
+    meshDesc.points.stride = vb->getFormat()->getGPUSize();
+    meshDesc.points.data = vb->buff + vb->getFormat()->pos;
+
+    meshDesc.triangles.count = trianglesNumber;
+    meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
+    meshDesc.triangles.data = indices;
+
+    physx::PxTriangleMeshGeometry triGeom;
+    triGeom.triangleMesh = this->cooking->createTriangleMesh(meshDesc, this->physx->getPhysicsInsertionCallback());
+
+    return triGeom;
+}
 
 physics::Physics* physicsObject;
-
-#undef PX_RELEASE
