@@ -33,7 +33,11 @@ Physics::Physics(float gravity, world::World* world, ErrorCallback::LogLevel log
     this->physx = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true);
     this->cooking = PxCreateCooking(PX_PHYSICS_VERSION, *this->foundation, PxCookingParams(PxTolerancesScale()));
 
+#ifdef EMSCRIPTEN
+    dispatcher = PxDefaultCpuDispatcherCreate(0);
+#else
     dispatcher = PxDefaultCpuDispatcherCreate(4);
+#endif
 
     PxSceneDesc sceneDesc(this->physx->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -gravity, 0.0f);
