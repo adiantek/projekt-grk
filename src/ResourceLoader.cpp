@@ -61,184 +61,192 @@ void ResourceLoader::loadTextures() {
 
 void ResourceLoader::loadPrograms() {
 #define LOAD_PROGRAM(name, count, ...) if (loadProgram(#name, &this->p_##name, &this->p_##name##_loaded, count, __VA_ARGS__))
+#define ATTRIBUTE(shaderName, attrName) this->p_##shaderName##_attr_##attrName = glGetAttribLocation(this->p_##shaderName, #attrName);
+#define UNIFORM(shaderName, attrName) this->p_##shaderName##_uni_##attrName = glGetUniformLocation(this->p_##shaderName, #attrName);
+#define DUMP(shaderName) this->dumpProgram(#shaderName, this->p_##shaderName);
 
     LOAD_PROGRAM(color_armature, 2, "armature/shader_color_armature.frag", "armature/shader_color_armature.vert") {
-        // this->dumpProgram("color_armature", this->p_color_armature);
-        this->p_color_armature_attr_vertexJoints = glGetAttribLocation(this->p_color_armature, "vertexJoints");
-        this->p_color_armature_attr_vertexPosition = glGetAttribLocation(this->p_color_armature, "vertexPosition");
-        this->p_color_armature_attr_vertexWeights = glGetAttribLocation(this->p_color_armature, "vertexWeights");
-        this->p_color_armature_uni_jointTransforms = glGetUniformLocation(this->p_color_armature, "jointTransforms[0]");
-        this->p_color_armature_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_color_armature, "modelViewProjectionMatrix");
+        // DUMP(color_armature);
+        ATTRIBUTE(color_armature, vertexJoints);
+        ATTRIBUTE(color_armature, vertexPosition);
+        ATTRIBUTE(color_armature, vertexWeights);
+        UNIFORM(color_armature, jointTransforms);
+        UNIFORM(color_armature, modelViewProjectionMatrix);
     }
 
     LOAD_PROGRAM(simple_color_shader, 2, "debug/simple_color_shader.frag", "debug/simple_color_shader.vert") {
-        // this->dumpProgram("simple_color_shader", this->p_simple_color_shader);
-        this->p_simple_color_shader_attr_vertexColor = glGetAttribLocation(this->p_simple_color_shader, "vertexColor");
-        this->p_simple_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_color_shader, "vertexPosition");
-        this->p_simple_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_color_shader, "transformation");
+        // DUMP(simple_color_shader);
+        ATTRIBUTE(simple_color_shader, vertexColor);
+        ATTRIBUTE(simple_color_shader, vertexPosition);
+        UNIFORM(simple_color_shader, transformation);
     }
 
     LOAD_PROGRAM(simple_uni_color_shader, 2, "debug/simple_uni_color_shader.frag", "debug/simple_uni_color_shader.vert") {
-        // this->dumpProgram("simple_uni_color_shader", this->p_simple_uni_color_shader);
-        this->p_simple_uni_color_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_uni_color_shader, "vertexPosition");
-        this->p_simple_uni_color_shader_uni_color = glGetUniformLocation(this->p_simple_uni_color_shader, "color");
-        this->p_simple_uni_color_shader_uni_transformation = glGetUniformLocation(this->p_simple_uni_color_shader, "transformation");
+        // DUMP(simple_uni_color_shader);
+        ATTRIBUTE(simple_uni_color_shader, vertexPosition);
+        UNIFORM(simple_uni_color_shader, color);
+        UNIFORM(simple_uni_color_shader, transformation);
     }
 
     LOAD_PROGRAM(simple_tex_shader, 2, "debug/simple_tex_shader.frag", "debug/simple_tex_shader.vert") {
-        // this->dumpProgram("simple_tex_shader", this->p_simple_tex_shader);
-        this->p_simple_tex_shader_attr_vertexPosition = glGetAttribLocation(this->p_simple_tex_shader, "vertexPosition");
-        this->p_simple_tex_shader_attr_vertexTex = glGetAttribLocation(this->p_simple_tex_shader, "vertexTex");
-        this->p_simple_tex_shader_uni_textureSampler = glGetUniformLocation(this->p_simple_tex_shader, "textureSampler");
-        this->p_simple_tex_shader_uni_transformation = glGetUniformLocation(this->p_simple_tex_shader, "transformation");
+        // DUMP(simple_tex_shader);
+        ATTRIBUTE(simple_tex_shader, vertexPosition);
+        ATTRIBUTE(simple_tex_shader, vertexTex);
+        UNIFORM(simple_tex_shader, textureSampler);
+        UNIFORM(simple_tex_shader, transformation);
     }
 
     LOAD_PROGRAM(skybox_shader, 2, "cubemap/cubemap.frag", "cubemap/cubemap.vert") {
-        // this->dumpProgram("skybox_shader", this->p_skybox_shader);
-        this->p_skybox_shader_attr_aPos = glGetAttribLocation(this->p_skybox_shader, "aPos");
-        this->p_skybox_shader_uni_projection = glGetUniformLocation(this->p_skybox_shader, "projection");
-        this->p_skybox_shader_uni_skybox = glGetUniformLocation(this->p_skybox_shader, "skybox");
+        // DUMP(skybox_shader);
+        ATTRIBUTE(skybox_shader, aPos);
+        UNIFORM(skybox_shader, projection);
+        UNIFORM(skybox_shader, skybox);
     }
 
     LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
-        // this->dumpProgram("shader_4_1", this->p_shader_4_1);
-        this->p_shader_4_1_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_1, "vertexNormal");
-        this->p_shader_4_1_attr_vertexPosition = glGetAttribLocation(this->p_shader_4_1, "vertexPosition");
-        this->p_shader_4_1_uni_cameraPos = glGetUniformLocation(this->p_shader_4_1, "cameraPos");
-        this->p_shader_4_1_uni_lightPos = glGetUniformLocation(this->p_shader_4_1, "lightPos");
-        this->p_shader_4_1_uni_modelMatrix = glGetUniformLocation(this->p_shader_4_1, "modelMatrix");
-        this->p_shader_4_1_uni_objectColor = glGetUniformLocation(this->p_shader_4_1, "objectColor");
-        this->p_shader_4_1_uni_transformation = glGetUniformLocation(this->p_shader_4_1, "transformation");
+        // DUMP(shader_4_1);
+        ATTRIBUTE(shader_4_1, vertexNormal);
+        ATTRIBUTE(shader_4_1, vertexPosition);
+        UNIFORM(shader_4_1, cameraPos);
+        UNIFORM(shader_4_1, lightPos);
+        UNIFORM(shader_4_1, modelMatrix);
+        UNIFORM(shader_4_1, objectColor);
+        UNIFORM(shader_4_1, transformation);
     }
     LOAD_PROGRAM(shader_4_sun, 2, "shader_4_sun.frag", "shader_4_sun.vert") {
-        // this->dumpProgram("shader_4_sun", this->p_shader_4_sun);
-        this->p_shader_4_sun_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_sun, "vertexNormal");
-        this->p_shader_4_sun_attr_vertexPosition = glGetAttribLocation(this->p_shader_4_sun, "vertexPosition");
-        this->p_shader_4_sun_uni_cameraPos = glGetUniformLocation(this->p_shader_4_sun, "cameraPos");
-        this->p_shader_4_sun_uni_modelMatrix = glGetUniformLocation(this->p_shader_4_sun, "modelMatrix");
-        this->p_shader_4_sun_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_4_sun, "modelViewProjectionMatrix");
-        this->p_shader_4_sun_uni_objectColor = glGetUniformLocation(this->p_shader_4_sun, "objectColor");
+        // DUMP(shader_4_sun);
+        ATTRIBUTE(shader_4_sun, vertexNormal);
+        ATTRIBUTE(shader_4_sun, vertexPosition);
+        UNIFORM(shader_4_sun, cameraPos);
+        UNIFORM(shader_4_sun, modelMatrix);
+        UNIFORM(shader_4_sun, modelViewProjectionMatrix);
+        UNIFORM(shader_4_sun, objectColor);
     }
     LOAD_PROGRAM(shader_4_tex, 2, "shader_4_tex.frag", "shader_4_tex.vert") {
-        // this->dumpProgram("shader_4_tex", this->p_shader_4_tex);
-        this->p_shader_4_tex_attr_vertexBitangent = glGetAttribLocation(this->p_shader_4_tex, "vertexBitangent");
-        this->p_shader_4_tex_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_tex, "vertexNormal");
-        this->p_shader_4_tex_attr_vertexPosition = glGetAttribLocation(this->p_shader_4_tex, "vertexPosition");
-        this->p_shader_4_tex_attr_vertexTangent = glGetAttribLocation(this->p_shader_4_tex, "vertexTangent");
-        this->p_shader_4_tex_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_4_tex, "vertexTexCoord");
-        this->p_shader_4_tex_uni_cameraPos = glGetUniformLocation(this->p_shader_4_tex, "cameraPos");
-        this->p_shader_4_tex_uni_colorTexture = glGetUniformLocation(this->p_shader_4_tex, "colorTexture");
-        this->p_shader_4_tex_uni_lightPos = glGetUniformLocation(this->p_shader_4_tex, "lightPos");
-        this->p_shader_4_tex_uni_modelMatrix = glGetUniformLocation(this->p_shader_4_tex, "modelMatrix");
-        this->p_shader_4_tex_uni_normalSampler = glGetUniformLocation(this->p_shader_4_tex, "normalSampler");
-        this->p_shader_4_tex_uni_transformation = glGetUniformLocation(this->p_shader_4_tex, "transformation");
+        // DUMP(shader_4_tex);
+        ATTRIBUTE(shader_4_tex, vertexBitangent);
+        ATTRIBUTE(shader_4_tex, vertexNormal);
+        ATTRIBUTE(shader_4_tex, vertexPosition);
+        ATTRIBUTE(shader_4_tex, vertexTangent);
+        ATTRIBUTE(shader_4_tex, vertexTexCoord);
+        UNIFORM(shader_4_tex, cameraPos);
+        UNIFORM(shader_4_tex, colorTexture);
+        UNIFORM(shader_4_tex, lightPos);
+        UNIFORM(shader_4_tex, modelMatrix);
+        UNIFORM(shader_4_tex, normalSampler);
+        UNIFORM(shader_4_tex, transformation);
     }
     LOAD_PROGRAM(shader_4_tex_with_parallax, 2, "shader_4_tex_with_parallax.frag", "shader_4_tex.vert") {
-        // this->dumpProgram("shader_4_tex_with_parallax", this->p_shader_4_tex_with_parallax);
-        this->p_shader_4_tex_with_parallax_attr_vertexBitangent = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexBitangent");
-        this->p_shader_4_tex_with_parallax_attr_vertexNormal = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexNormal");
-        this->p_shader_4_tex_with_parallax_attr_vertexPosition = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexPosition");
-        this->p_shader_4_tex_with_parallax_attr_vertexTangent = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexTangent");
-        this->p_shader_4_tex_with_parallax_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_4_tex_with_parallax, "vertexTexCoord");
-        this->p_shader_4_tex_with_parallax_uni_cameraPos = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "cameraPos");
-        this->p_shader_4_tex_with_parallax_uni_colorTexture = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "colorTexture");
-        this->p_shader_4_tex_with_parallax_uni_depthSampler = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "depthSampler");
-        this->p_shader_4_tex_with_parallax_uni_heightScale = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "heightScale");
-        this->p_shader_4_tex_with_parallax_uni_lightPos = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "lightPos");
-        this->p_shader_4_tex_with_parallax_uni_modelMatrix = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "modelMatrix");
-        this->p_shader_4_tex_with_parallax_uni_normalSampler = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "normalSampler");
-        this->p_shader_4_tex_with_parallax_uni_transformation = glGetUniformLocation(this->p_shader_4_tex_with_parallax, "transformation");
+        // DUMP(shader_4_tex_with_parallax);
+        ATTRIBUTE(shader_4_tex_with_parallax, vertexBitangent);
+        ATTRIBUTE(shader_4_tex_with_parallax, vertexNormal);
+        ATTRIBUTE(shader_4_tex_with_parallax, vertexPosition);
+        ATTRIBUTE(shader_4_tex_with_parallax, vertexTangent);
+        ATTRIBUTE(shader_4_tex_with_parallax, vertexTexCoord);
+        UNIFORM(shader_4_tex_with_parallax, cameraPos);
+        UNIFORM(shader_4_tex_with_parallax, colorTexture);
+        UNIFORM(shader_4_tex_with_parallax, depthSampler);
+        UNIFORM(shader_4_tex_with_parallax, heightScale);
+        UNIFORM(shader_4_tex_with_parallax, lightPos);
+        UNIFORM(shader_4_tex_with_parallax, modelMatrix);
+        UNIFORM(shader_4_tex_with_parallax, normalSampler);
+        UNIFORM(shader_4_tex_with_parallax, transformation);
     }
+
     LOAD_PROGRAM(shader_color, 2, "shader_color.frag", "shader_color.vert") {
-        // this->dumpProgram("shader_color", this->p_shader_color);
-        this->p_shader_color_attr_vertexNormal = glGetAttribLocation(this->p_shader_color, "vertexNormal");
-        this->p_shader_color_attr_vertexPosition = glGetAttribLocation(this->p_shader_color, "vertexPosition");
-        this->p_shader_color_uni_lightDir = glGetUniformLocation(this->p_shader_color, "lightDir");
-        this->p_shader_color_uni_modelMatrix = glGetUniformLocation(this->p_shader_color, "modelMatrix");
-        this->p_shader_color_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_color, "modelViewProjectionMatrix");
-        this->p_shader_color_uni_objectColor = glGetUniformLocation(this->p_shader_color, "objectColor");
+        // DUMP(shader_color);
+        ATTRIBUTE(shader_color, vertexNormal);
+        ATTRIBUTE(shader_color, vertexPosition);
+        UNIFORM(shader_color, lightDir);
+        UNIFORM(shader_color, modelMatrix);
+        UNIFORM(shader_color, modelViewProjectionMatrix);
+        UNIFORM(shader_color, objectColor);
     }
+
     LOAD_PROGRAM(shader_tex, 2, "shader_tex.frag", "shader_tex.vert") {
-        // this->dumpProgram("shader_tex", this->p_shader_tex);
-        this->p_shader_tex_attr_vertexNormal = glGetAttribLocation(this->p_shader_tex, "vertexNormal");
-        this->p_shader_tex_attr_vertexPosition = glGetAttribLocation(this->p_shader_tex, "vertexPosition");
-        this->p_shader_tex_attr_vertexTexCoord = glGetAttribLocation(this->p_shader_tex, "vertexTexCoord");
-        this->p_shader_tex_uni_lightDir = glGetUniformLocation(this->p_shader_tex, "lightDir");
-        this->p_shader_tex_uni_modelMatrix = glGetUniformLocation(this->p_shader_tex, "modelMatrix");
-        this->p_shader_tex_uni_modelViewProjectionMatrix = glGetUniformLocation(this->p_shader_tex, "modelViewProjectionMatrix");
-        this->p_shader_tex_uni_textureSampler = glGetUniformLocation(this->p_shader_tex, "textureSampler");
+        // DUMP(shader_tex);
+        ATTRIBUTE(shader_tex, vertexNormal);
+        ATTRIBUTE(shader_tex, vertexPosition);
+        ATTRIBUTE(shader_tex, vertexTexCoord);
+        UNIFORM(shader_tex, lightDir);
+        UNIFORM(shader_tex, modelMatrix);
+        UNIFORM(shader_tex, modelViewProjectionMatrix);
+        UNIFORM(shader_tex, textureSampler);
     }
 
     // WATER SURFACE
     LOAD_PROGRAM(water_simulation, 2, "water/simulation.frag", "water/simulation.vert") {
-        // this->dumpProgram("water_simulation", this->p_water_simulation);
-        this->p_water_simulation_attr_vertexPosition = glGetAttribLocation(this->p_water_simulation, "vertexPosition");
-        this->p_water_simulation_uni_scale = glGetUniformLocation(this->p_water_simulation, "scale");
-        this->p_water_simulation_uni_time = glGetUniformLocation(this->p_water_simulation, "time");
-        this->p_water_simulation_uni_transition = glGetUniformLocation(this->p_water_simulation, "transition");
-        this->p_water_simulation_uni_waveCount = glGetUniformLocation(this->p_water_simulation, "waveCount");
+        // DUMP(water_simulation);
+        ATTRIBUTE(water_simulation, vertexPosition);
+        UNIFORM(water_simulation, scale);
+        UNIFORM(water_simulation, time);
+        UNIFORM(water_simulation, transition);
+        UNIFORM(water_simulation, waveCount);
+        UNIFORM(water_simulation, waves);
     }
     LOAD_PROGRAM(water_surface, 2, "water/surface.frag", "water/surface.vert") {
-        // this->dumpProgram("water_surface", this->p_water_surface);
-        this->p_water_surface_attr_position = glGetAttribLocation(this->p_water_surface, "position");
-        this->p_water_surface_attr_texturePosition = glGetAttribLocation(this->p_water_surface, "texturePosition");
-        this->p_water_surface_uni_cameraPosition = glGetUniformLocation(this->p_water_surface, "cameraPosition");
-        this->p_water_surface_uni_heightMap = glGetUniformLocation(this->p_water_surface, "heightMap");
-        this->p_water_surface_uni_model = glGetUniformLocation(this->p_water_surface, "model");
-        this->p_water_surface_uni_normalMap = glGetUniformLocation(this->p_water_surface, "normalMap");
-        this->p_water_surface_uni_skybox = glGetUniformLocation(this->p_water_surface, "skybox");
-        this->p_water_surface_uni_transformation = glGetUniformLocation(this->p_water_surface, "transformation");
+        // DUMP(water_surface);
+        ATTRIBUTE(water_surface, position);
+        ATTRIBUTE(water_surface, texturePosition);
+        UNIFORM(water_surface, cameraPosition);
+        UNIFORM(water_surface, heightMap);
+        UNIFORM(water_surface, model);
+        UNIFORM(water_surface, normalMap);
+        UNIFORM(water_surface, skybox);
+        UNIFORM(water_surface, transformation);
     }
 
     LOAD_PROGRAM(simplex, 2, "simplex.frag", "simplex.vert") {
-        // this->dumpProgram("simplex", this->p_simplex);
-        this->p_simplex_attr_pos = glGetAttribLocation(this->p_simplex, "pos");
-        this->p_simplex_attr_tex = glGetAttribLocation(this->p_simplex, "tex");
-        this->p_simplex_uni_p = glGetUniformLocation(this->p_simplex, "p");
-        this->p_simplex_uni_scale = glGetUniformLocation(this->p_simplex, "scale");
-        this->p_simplex_uni_translation = glGetUniformLocation(this->p_simplex, "translation");
+        // DUMP(simplex);
+        ATTRIBUTE(simplex, pos);
+        ATTRIBUTE(simplex, tex);
+        UNIFORM(simplex, p);
+        UNIFORM(simplex, scale);
+        UNIFORM(simplex, translation);
     }
     LOAD_PROGRAM(environment_map, 2, "water/environment.frag", "water/environment.vert") {
-        // this->dumpProgram("environment_map", this->p_environment_map);
-        this->p_environment_map_attr_vertexPosition = glGetAttribLocation(this->p_environment_map, "vertexPosition");
-        this->p_environment_map_uni_modelMatrix = glGetUniformLocation(this->p_environment_map, "modelMatrix");
-        this->p_environment_map_uni_transformation = glGetUniformLocation(this->p_environment_map, "transformation");
+        // DUMP(environment_map);
+        ATTRIBUTE(environment_map, vertexPosition);
+        UNIFORM(environment_map, modelMatrix);
+        UNIFORM(environment_map, transformation);
     }
     LOAD_PROGRAM(caustics, 2, "water/caustics.frag", "water/caustics.vert") {
-        // this->dumpProgram("caustics", this->p_caustics);
-        this->p_caustics_attr_texturePosition = glGetAttribLocation(this->p_caustics, "texturePosition");
-        this->p_caustics_attr_vertexPosition = glGetAttribLocation(this->p_caustics, "vertexPosition");
-        this->p_caustics_uni_height = glGetUniformLocation(this->p_caustics, "height");
-        this->p_caustics_uni_lightDirection = glGetUniformLocation(this->p_caustics, "lightDirection");
-        this->p_caustics_uni_modelMatrix = glGetUniformLocation(this->p_caustics, "modelMatrix");
-        this->p_caustics_uni_transformation = glGetUniformLocation(this->p_caustics, "transformation");
-        this->p_caustics_uni_environmentMap = glGetUniformLocation(this->p_caustics, "environmentMap");
-        this->p_caustics_uni_heightMap = glGetUniformLocation(this->p_caustics, "heightMap");
-        this->p_caustics_uni_normalMap = glGetUniformLocation(this->p_caustics, "normalMap");
+        // DUMP(caustics);
+        ATTRIBUTE(caustics, texturePosition);
+        ATTRIBUTE(caustics, vertexPosition);
+        UNIFORM(caustics, environmentMap);
+        UNIFORM(caustics, height);
+        UNIFORM(caustics, heightMap);
+        UNIFORM(caustics, lightDirection);
+        UNIFORM(caustics, modelMatrix);
+        UNIFORM(caustics, normalMap);
+        UNIFORM(caustics, transformation);
     }
     LOAD_PROGRAM(chunk, 2, "chunk.frag", "chunk.vert") {
-        // this->dumpProgram("chunk", this->p_chunk);
-        this->p_chunk_attr_vertexBitangent = glGetAttribLocation(this->p_chunk, "vertexBitangent");
-        this->p_chunk_attr_vertexNormal = glGetAttribLocation(this->p_chunk, "vertexNormal");
-        this->p_chunk_attr_vertexPosition = glGetAttribLocation(this->p_chunk, "vertexPosition");
-        this->p_chunk_attr_vertexTangent = glGetAttribLocation(this->p_chunk, "vertexTangent");
-        this->p_chunk_attr_vertexTexCoord = glGetAttribLocation(this->p_chunk, "vertexTexCoord");
-        this->p_chunk_uni_cameraPosition = glGetUniformLocation(this->p_chunk, "cameraPosition");
-        this->p_chunk_uni_lightPosition = glGetUniformLocation(this->p_chunk, "lightPosition");
-        this->p_chunk_uni_lightTransformation = glGetUniformLocation(this->p_chunk, "lightTransformation");
-        this->p_chunk_uni_modeSwitch = glGetUniformLocation(this->p_chunk, "modeSwitch");
-        this->p_chunk_uni_modelMatrix = glGetUniformLocation(this->p_chunk, "modelMatrix");
-        this->p_chunk_uni_transformation = glGetUniformLocation(this->p_chunk, "transformation");
-        this->p_chunk_uni_waterHeight = glGetUniformLocation(this->p_chunk, "waterHeight");
-        this->p_chunk_uni_aoMap = glGetUniformLocation(this->p_chunk, "aoMap");
-        this->p_chunk_uni_caustics = glGetUniformLocation(this->p_chunk, "caustics");
-        this->p_chunk_uni_colorTexture = glGetUniformLocation(this->p_chunk, "colorTexture");
-        this->p_chunk_uni_depthMap = glGetUniformLocation(this->p_chunk, "depthMap");
-        this->p_chunk_uni_normalSampler = glGetUniformLocation(this->p_chunk, "normalSampler");
-        this->p_chunk_uni_roughnessMap = glGetUniformLocation(this->p_chunk, "roughnessMap");
+        // DUMP(chunk);
+        ATTRIBUTE(chunk, vertexBitangent);
+        ATTRIBUTE(chunk, vertexNormal);
+        ATTRIBUTE(chunk, vertexPosition);
+        ATTRIBUTE(chunk, vertexTangent);
+        ATTRIBUTE(chunk, vertexTexCoord);
+        UNIFORM(chunk, aoMap);
+        UNIFORM(chunk, cameraPosition);
+        UNIFORM(chunk, caustics);
+        UNIFORM(chunk, colorTexture);
+        UNIFORM(chunk, depthMap);
+        UNIFORM(chunk, lightPosition);
+        UNIFORM(chunk, lightTransformation);
+        UNIFORM(chunk, modeSwitch);
+        UNIFORM(chunk, modelMatrix);
+        UNIFORM(chunk, normalSampler);
+        UNIFORM(chunk, roughnessMap);
+        UNIFORM(chunk, transformation);
+        UNIFORM(chunk, waterHeight);
     }
 
 #undef LOAD_PROGRAM
+#undef ATTRIBUTE
+#undef UNIFORM
 }
 
 bool ResourceLoader::loadResources() {
@@ -468,15 +476,15 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
         for (png_uint_32 i = 0; i < colors; i++) {
             new_image[i] = old_image[i] / 65535.0f;
         }
-        if (color_type == PNG_COLOR_TYPE_GRAY) { // 0
+        if (color_type == PNG_COLOR_TYPE_GRAY) {  // 0
             LOGD("16-bit RED");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, w, h, 0, GL_RED, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { // 4
+        } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {  // 4
             LOGD("16-bit RED GREEN");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, w, h, 0, GL_RG, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) { // 6
+        } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) {  // 6
             LOGD("16-bit RGBA");
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, new_image);
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -486,13 +494,13 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
 
         delete[] new_image;
     } else if (bit_depth == 8) {
-        if (color_type == PNG_COLOR_TYPE_GRAY) { // 0
+        if (color_type == PNG_COLOR_TYPE_GRAY) {  // 0
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) { // 4
+        } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {  // 4
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8, w, h, 0, GL_RG, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
-        } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) { // 6
+        } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) {  // 6
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
         } else {
@@ -763,8 +771,7 @@ void ResourceLoader::dumpProgram(const char *name, GLuint program) {
     glname = (GLchar *)malloc(bufSize);
     for (i = 0; i < count; i++) {
         glGetActiveAttrib(program, (GLuint)i, bufSize, &length, &size, &type, glname);
-        printf("        this->p_%s_attr_%s = glGetAttribLocation(this->p_%s, \"%s\");\n",
-               name, glname, name, glname);
+        printf("        ATTRIBUTE(%s, %s);\n", name, glname);
     }
     free(glname);
     glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &bufSize);
@@ -772,8 +779,7 @@ void ResourceLoader::dumpProgram(const char *name, GLuint program) {
     glname = (GLchar *)malloc(bufSize);
     for (i = 0; i < count; i++) {
         glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, glname);
-        printf("        this->p_%s_uni_%s = glGetUniformLocation(this->p_%s, \"%s\");\n",
-               name, glname, name, glname);
+        printf("        UNIFORM(%s, %s);\n", name, glname);
     }
     free(glname);
 

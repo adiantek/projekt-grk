@@ -169,6 +169,7 @@ public:
     GLint p_water_simulation_uni_time = -1;
     GLint p_water_simulation_uni_transition = -1;
     GLint p_water_simulation_uni_waveCount = -1;
+    GLint p_water_simulation_uni_waves = -1;
 
     GLuint p_water_surface = 0;
     bool p_water_surface_loaded = false;
