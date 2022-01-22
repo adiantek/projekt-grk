@@ -41,7 +41,71 @@ Robot::Robot() {
     this->createLegs();
 
     Gizmos::onDraw([this]() {
+        // Debug Robot location
         Gizmos::cube(this->position);
+
+        // Debug Body location
+        Gizmos::cube(
+            this->gameObject->getModelMatrix() * glm::vec4(this->bodyOrigin, 1.0f),
+            glm::vec3(0.02f, 0.02f, 0.02f),
+            glm::vec3(1.0f, 1.0f, 1.0f)
+        );
+
+        // Debug legs
+        for (RobotLeg* leg : this->legs) {
+            Gizmos::cube(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->upperJointOrigin, 1.0f),
+                glm::vec3(0.02f, 0.02f, 0.02f),
+                glm::vec3(0.0f, 0.0f, 1.0f)
+            );
+
+            Gizmos::cube(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->lowerJointOrigin, 1.0f),
+                glm::vec3(0.02f, 0.02f, 0.02f),
+                glm::vec3(1.0f, 1.0f, 0.0f)
+            );
+
+            Gizmos::line(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->upperJointOrigin, 1.0f),
+                this->gameObject->getModelMatrix() * glm::vec4(this->bodyOrigin, 1.0f),
+                glm::vec3(0.0f, 0.0f, 1.0f)
+            );
+
+            Gizmos::line(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->upperJointOrigin, 1.0f),
+                this->gameObject->getModelMatrix() * glm::vec4(leg->lowerJointOrigin, 1.0f),
+                glm::vec3(0.0f, 0.0f, 1.0f)
+            );
+
+            Gizmos::cube(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
+                glm::vec3(0.02f, 0.02f, 0.02f), glm::vec3(1.0f, 1.0f, 1.0f)
+            );
+
+            Gizmos::cube(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentEstimation, 1.0f),
+                glm::vec3(0.02f, 0.02f, 0.02f),
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+
+            Gizmos::cube(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->currentAttachmentPoint, 1.0f),
+                glm::vec3(0.02f, 0.02f, 0.02f),
+                glm::vec3(0.5f, 0.5f, 0.0f)
+            );
+
+            Gizmos::line(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
+                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentEstimation, 1.0f),
+                glm::vec3(1.0f, 0.0f, 0.0f)
+            );
+
+            Gizmos::line(
+                this->gameObject->getModelMatrix() * glm::vec4(leg->lowerJointOrigin, 1.0f),
+                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
+                glm::vec3(1.0f, 0.0f, 0.0f)
+            );
+        }
     });
 }
 
@@ -145,8 +209,8 @@ void Robot::update() {
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);
 
-    // this->updateBody();
-    // this->updateLegs();
+    this->updateBody();
+    this->updateLegs();
 }
 
 void Robot::draw(glm::mat4 mat) {
