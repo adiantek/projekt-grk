@@ -7,10 +7,10 @@
 
 namespace water {
     Caustics::Caustics(float size, float y, unsigned int textureSize, float maxDepth) 
-    : environmentMap(size, y, textureSize * 2, maxDepth), simulation(size, textureSize) {
+    : environmentMap(size, y, 2048, maxDepth), simulation(size, textureSize) {
         this->size = size;
         this->y = y;
-        this->textureSize = textureSize * 4;
+        this->textureSize = 2048;
         this->geometrySize = textureSize;
         this->geometry.initPlane(size, size, this->geometrySize, this->geometrySize);
         // Create framebuffer
