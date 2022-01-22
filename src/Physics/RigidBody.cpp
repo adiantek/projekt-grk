@@ -24,12 +24,21 @@ float RigidBody::getMass() {
     return this->inner->getMass();
 }
 
+glm::vec3 RigidBody::getLinearVelocity() {
+    physx::PxVec3 velocity = this->inner->getLinearVelocity();
+    return glm::vec3(velocity.x, velocity.y, velocity.z);
+}
+
 void RigidBody::setMass(float mass) {
     this->inner->setMass(mass);
 }
 
-void RigidBody::addForce(glm::vec3 force) {
-    this->inner->addForce(physx::PxVec3(force.x, force.y, force.z));
+void RigidBody::setLinearVelocity(glm::vec3 velocity) {
+    this->inner->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
+}
+
+void RigidBody::addForce(glm::vec3 force, physx::PxForceMode::Enum mode) {
+    this->inner->addForce(physx::PxVec3(force.x, force.y, force.z), mode);
 }
 
 void RigidBody::addTorque(glm::vec3 torque) {
@@ -37,14 +46,16 @@ void RigidBody::addTorque(glm::vec3 torque) {
 }
 
 void RigidBody::applyDrag(float density) {
-    physx::PxVec3 velocityDirection = this->inner->getLinearVelocity();
-    physx::PxVec3 velocityAngularDirection = this->inner->getAngularVelocity();
-    float speed = velocityDirection.normalize();
-    float angularSpeed = velocityAngularDirection.normalize();
-    float force = -0.5f * speed * speed * density;
-    float torque = -0.5f * angularSpeed * angularSpeed * density;
-    this->inner->addForce(velocityDirection * force);
-    this->inner->addTorque(velocityAngularDirection * torque);
+    if (this->drag) {
+        physx::PxVec3 velocityDirection = this->inner->getLinearVelocity();
+        physx::PxVec3 velocityAngularDirection = this->inner->getAngularVelocity();
+        float speed = velocityDirection.normalize();
+        float angularSpeed = velocityAngularDirection.normalize();
+        float force = -0.5f * speed * speed * density;
+        float torque = -0.5f * angularSpeed * angularSpeed * density;
+        this->inner->addForce(velocityDirection * force);
+        this->inner->addTorque(velocityAngularDirection * torque);
+    }
 }
 
 void RigidBody::putToSleep() {
