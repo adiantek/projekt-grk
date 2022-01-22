@@ -249,6 +249,21 @@ void ResourceLoader::loadPrograms() {
 #undef UNIFORM
 }
 
+void ResourceLoader::loadModels() {
+    loadModel("assets/models/primitives/AnimatedStick.dae", &this->m_primitives_AnimatedStick);
+    loadModel("assets/models/primitives/complex_cube.dae", &this->m_primitives_complex_cube);
+    loadModel("assets/models/primitives/cube.dae", &this->m_primitives_cube);
+    loadModel("assets/models/primitives/cylinder.obj", &this->m_primitives_cylinder);
+    loadModel("assets/models/primitives/plane.dae", &this->m_primitives_plane);
+    loadModel("assets/models/primitives/sphere.obj", &this->m_primitives_sphere);
+    loadModel("assets/models/robot.dae", &this->m_robot);
+    loadModel("assets/models/robot_with_armature.dae", &this->m_robot_with_armature);
+    loadModel("assets/models/spaceship.obj", &this->m_spaceship);
+    loadModel("assets/models/sphere.obj", &this->m_sphere);
+    loadModel("assets/models/sphere2.obj", &this->m_sphere2);
+    loadModel("assets/models/sphere_different_texcoords.obj", &this->m_sphere_different_texcoords);
+}
+
 bool ResourceLoader::loadResources() {
     if (this->all_loaded) {
         return true;
@@ -265,6 +280,7 @@ bool ResourceLoader::loadResources() {
 
     this->loadTextures();
     this->loadPrograms();
+    this->loadModels();
 
     this->totalResources = this->totalResourcesCounter;
 
@@ -307,7 +323,7 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out) {
     if (!canLoadNextResource()) {
         return;
     }
-    LOGI("[ %3.0f%% ] Loading txt: %s", this->loadedResources * 100.0 / this->totalResources, "CubeMap");
+    LOGI("[ %3.0f%% ] Loading tex: %s", this->loadedResources * 100.0 / this->totalResources, "CubeMap");
     const char *names[] = {"assets/textures/skybox/left.png", "assets/textures/skybox/right.png", "assets/textures/skybox/top.png", "assets/textures/skybox/bottom.png", "assets/textures/skybox/front.png", "assets/textures/skybox/back.png"};
     GLuint id;
     glGenTextures(1, &id);
@@ -405,7 +421,7 @@ void ResourceLoader::loadTexture(const char *name, GLuint *out) {
     if (!canLoadNextResource()) {
         return;
     }
-    LOGI("[ %3.0f%% ] Loading txt: %s", this->loadedResources * 100.0 / this->totalResources, name);
+    LOGI("[ %3.0f%% ] Loading tex: %s", this->loadedResources * 100.0 / this->totalResources, name);
     GLuint id;
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
@@ -581,6 +597,20 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
         return true;
     }
     return false;
+}
+
+void ResourceLoader::loadModel(const char *name, Model **out) {
+    this->totalResourcesCounter++;
+    if (*out) {
+        this->loadedResources++;
+        return;
+    }
+    if (!canLoadNextResource()) {
+        return;
+    }
+    LOGI("[ %3.0f%% ] Loading model: %s", this->loadedResources * 100.0 / this->totalResources, name);
+    *out = new Model();
+    (*out)->loadModel(name);
 }
 
 char *ResourceLoader::readFile(const char *file, size_t *size) {
@@ -784,22 +814,6 @@ void ResourceLoader::dumpProgram(const char *name, GLuint program) {
     free(glname);
 
     printf("    }\n");
-}
-
-void ResourceLoader::loadModelExternal(const char *name, Model *out) {
-    this->totalResourcesCounter++;
-    if (*out) {
-        this->loadedResources++;
-        return;
-    }
-    if (!canLoadNextResource()) {
-        return;
-    }
-    
-    Model *model = new Model();
-    model->loadModel(name);
-
-    *out = *model;
 }
 
 ResourceLoader *resourceLoaderExternal;

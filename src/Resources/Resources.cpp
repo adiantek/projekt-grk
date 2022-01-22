@@ -9,7 +9,6 @@
 void Resources::init() {
     Resources::initMaterials();
     Resources::initShaders();
-    Resources::initModels();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -107,20 +106,20 @@ void Resources::initMaterials() {
 ///////////////////////////////////////////////////////////////////////////
 //------------------------------ MODELS ---------------------------------//
 ///////////////////////////////////////////////////////////////////////////
-void Resources::initModels() {
+// void Resources::initModels() {
 
-    LOGE("Loading models...");
+//     LOGE("Loading models...");
 
-    // Primitives
-    ResourceLoader::loadModelExternal("assets/models/primitives/plane.dae", Resources::MODELS.PLANE);
-    ResourceLoader::loadModelExternal("assets/models/primitives/cube.dae", Resources::MODELS.CUBE);
-    ResourceLoader::loadModelExternal("assets/models/primitives/complex_cube.dae", Resources::MODELS.COMPLEX_CUBE);
+//     // Primitives
+//     ResourceLoader::loadModelExternal("assets/models/primitives/plane.dae", Resources::MODELS.PLANE);
+//     ResourceLoader::loadModelExternal("assets/models/primitives/cube.dae", Resources::MODELS.CUBE);
+//     ResourceLoader::loadModelExternal("assets/models/primitives/complex_cube.dae", Resources::MODELS.COMPLEX_CUBE);
 
 
-    // Robot
-    ResourceLoader::loadModelExternal("assets/models/robot_with_armature.dae", Resources::MODELS.ROBOT);
+//     // Robot
+//     ResourceLoader::loadModelExternal("assets/models/robot_with_armature.dae", Resources::MODELS.ROBOT);
 
-}
+// }
 
 ///////////////////////////////////////////////////////////////////////////
 //----------------------------- SHADERS ---------------------------------//

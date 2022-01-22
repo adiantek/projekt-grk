@@ -59,19 +59,18 @@ public:
     GLuint tex_wall_normal = 0;
 
     // models:
-    Model *m_primitives_AnimatedStick.dae = 0;
-    Model *m_primitives_complex_cube.dae = 0;
-    Model *m_primitives_cube.dae = 0;
-    Model *m_primitives_cube.obj = 0;
-    Model *m_primitives_cylinder.obj = 0;
-    Model *m_primitives_plane.dae = 0;
-    Model *m_primitives_sphere.obj = 0;
-    Model *m_robot.dae = 0;
-    Model *m_robot_with_armature.dae = 0;
-    Model *m_spaceship.obj = 0;
-    Model *m_sphere.obj = 0;
-    Model *m_sphere2.obj = 0;
-    Model *m_sphere_different_texcoords.obj = 0;
+    Model *m_primitives_AnimatedStick = 0;
+    Model *m_primitives_complex_cube = 0;
+    Model *m_primitives_cube = 0;
+    Model *m_primitives_cylinder = 0;
+    Model *m_primitives_plane = 0;
+    Model *m_primitives_sphere = 0;
+    Model *m_robot = 0;
+    Model *m_robot_with_armature = 0;
+    Model *m_spaceship = 0;
+    Model *m_sphere = 0;
+    Model *m_sphere2 = 0;
+    Model *m_sphere_different_texcoords = 0;
 
     // programs:
     GLuint p_color_armature = 0;
@@ -254,10 +253,11 @@ private:
     bool canLoadNextResource();
     void loadTextures();
     void loadPrograms();
+    void loadModels();
     void loadAttributesAndUniforms();
     void loadTexture(const char *name, GLuint *out);
+    void loadModel(const char *name, Model **out);
     void loadTextureCubeMap(GLuint *out);
-    void loadModel(const char *name, Model *out);
     /**
      * true if and only if program was loaded right now
      */

@@ -57,21 +57,6 @@ class Resources {
     } MATERIALS;
 
     ///////////////////////////////////////////////////////////////////////////
-    //------------------------------ MODELS ---------------------------------//
-    ///////////////////////////////////////////////////////////////////////////
-    static struct _MODELS {
-
-        // Primitive models
-        inline static Model* PLANE = new Model();
-        inline static Model* CUBE = new Model();
-        inline static Model* COMPLEX_CUBE = new Model();
-
-        // Robot models
-        inline static Model* ROBOT = new Model();
-
-    } MODELS;
-
-    ///////////////////////////////////////////////////////////////////////////
     //----------------------------- SHADERS ---------------------------------//
     ///////////////////////////////////////////////////////////////////////////
     static struct _PROGRAMS {
@@ -90,7 +75,6 @@ class Resources {
     static void initTextures();
     static void initMaterials();
     static void initShaders();
-    static void initModels();
     static void loadTexture();
     static void loadMaterial();
     static void loadShader();

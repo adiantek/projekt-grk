@@ -2,6 +2,7 @@
 
 #include <Robot/Robot.hpp>
 #include <Resources/Resources.hpp>
+#include <ResourceLoader.hpp>
 #include <Time/Time.hpp>
 #include <utils/glmu.hpp>
 #include <Logger.h>
@@ -20,7 +21,7 @@ Robot::Robot() {
     GameObject* gameObject = new GameObject("Robot");
 
     this->gameObject = gameObject
-        ->setModel(Resources::MODELS.ROBOT)
+        ->setModel(resourceLoaderExternal->m_robot_with_armature)
         ->setScale(glm::vec3(0.3f, 0.3f, 0.3f))
         ->setMaterials({
             Resources::MATERIALS.ROBOT_BODY,
