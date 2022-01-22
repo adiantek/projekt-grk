@@ -58,6 +58,21 @@ public:
     GLuint tex_wall_height = 0;
     GLuint tex_wall_normal = 0;
 
+    // models:
+    Model *m_primitives_AnimatedStick.dae = 0;
+    Model *m_primitives_complex_cube.dae = 0;
+    Model *m_primitives_cube.dae = 0;
+    Model *m_primitives_cube.obj = 0;
+    Model *m_primitives_cylinder.obj = 0;
+    Model *m_primitives_plane.dae = 0;
+    Model *m_primitives_sphere.obj = 0;
+    Model *m_robot.dae = 0;
+    Model *m_robot_with_armature.dae = 0;
+    Model *m_spaceship.obj = 0;
+    Model *m_sphere.obj = 0;
+    Model *m_sphere2.obj = 0;
+    Model *m_sphere_different_texcoords.obj = 0;
+
     // programs:
     GLuint p_color_armature = 0;
     bool p_color_armature_loaded = false;
@@ -229,8 +244,6 @@ public:
     GLint p_chunk_uni_normalSampler = -1;
     GLint p_chunk_uni_roughnessMap = -1;
 
-    static void loadModelExternal(const char *name, Model *out);
-
 private:
     int totalResourcesCounter = 0;
     bool all_loaded = false;
@@ -244,6 +257,7 @@ private:
     void loadAttributesAndUniforms();
     void loadTexture(const char *name, GLuint *out);
     void loadTextureCubeMap(GLuint *out);
+    void loadModel(const char *name, Model *out);
     /**
      * true if and only if program was loaded right now
      */

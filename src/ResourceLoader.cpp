@@ -787,6 +787,15 @@ void ResourceLoader::dumpProgram(const char *name, GLuint program) {
 }
 
 void ResourceLoader::loadModelExternal(const char *name, Model *out) {
+    this->totalResourcesCounter++;
+    if (*out) {
+        this->loadedResources++;
+        return;
+    }
+    if (!canLoadNextResource()) {
+        return;
+    }
+    
     Model *model = new Model();
     model->loadModel(name);
 
