@@ -20,6 +20,7 @@ typedef struct JointRaw {
     int parent; // -1 if null
     char name[JOINT_MAX_LENGTH];
     float transform[4 * 4];
+    float localBindTransform[4 * 4];
 } JointRaw Packed;
 #ifdef _MSC_VER
 #pragma pack(pop)
@@ -38,6 +39,8 @@ char *JointIO::serialize(std::vector<Joint *> vector, size_t *outLen) {
         memcpy(joints[i].name, vector[i]->getName().c_str(), vector[i]->getName().length());
         const float *transf = glm::value_ptr(vector[i]->getTransform());
         memcpy(joints[i].transform, transf, 4 * 4 * sizeof(float));
+        const float *localBindTransf = glm::value_ptr(vector[i]->getLocalBindTransform());
+        memcpy(joints[i].localBindTransform, localBindTransf, 4 * 4 * sizeof(float));
     }
     return (char *)joints;
 }
@@ -47,11 +50,15 @@ std::vector<Joint *> JointIO::deserialize(char *data, size_t dataLen) {
     JointRaw *joints = (JointRaw *)data;
     for (size_t i = 0; i < dataLen / sizeof(JointRaw); i++) {
         glm::mat4 transform;
+        glm::mat4 localBindTransform;
         float *val = glm::value_ptr(transform);
+        float *valLocalBindTransform = glm::value_ptr(localBindTransform);
         for (int j = 0; j < 16; j++) {
             val[j] = joints[i].transform[j];
+            valLocalBindTransform[j] = joints[i].localBindTransform[j];
         }
         Joint *j = new Joint(joints[i].index, std::string(joints[i].name), transform);
+        j->setLocalBindTransform(localBindTransform);
         vector.push_back(j);
     }
     
