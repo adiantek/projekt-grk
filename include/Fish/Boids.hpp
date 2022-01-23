@@ -10,12 +10,12 @@
 
 class TempFish : world::Object3D {
    public:
-    TempFish(Core::RenderContext context, glm::vec3 initPos);
+    TempFish(glm::vec3 initPos);
     ~TempFish();
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
     void update() override;
-    Core::RenderContext context;
+    Model* context;
     physics::RigidBody* rigidBody;
     world::World* world;
 };

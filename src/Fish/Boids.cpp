@@ -1,12 +1,12 @@
-#include <Boids.hpp>
+#include <Fish/Boids.hpp>
 #include <ResourceLoader.hpp>
 #include <Random.hpp>
 #include <Robot/Robot.hpp>
 #include <Water/Water.hpp>
 #include <world/ChunkPosition.hpp>
 
-TempFish::TempFish(Core::RenderContext context, glm::vec3 initPos) {
-    this->context = context;
+TempFish::TempFish(glm::vec3 initPos) {
+    this->context = resourceLoaderExternal->m_primitives_sphere;
     Random x2((long long) initPos.x);
     physx::PxSphereGeometry geometry = physx::PxSphereGeometry(1.0f);
     physx::PxTransform pose = physx::PxTransform(initPos.x, initPos.y, initPos.z);
@@ -28,7 +28,9 @@ void TempFish::draw(glm::mat4 mat) {
     glUniform3f(resourceLoaderExternal->p_shader_color_uni_objectColor, 1.0f, 0.0f, 1.0f);
     glUniformMatrix4fv(resourceLoaderExternal->p_shader_color_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(resourceLoaderExternal->p_shader_color_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(transormation));
-    Core::DrawContext(this->context);
+    for (auto mesh : this->context->getMeshes()) {
+        Core::DrawContext(*mesh->getRenderContext());
+    }
     glUseProgram(0);
 }
 
@@ -38,7 +40,9 @@ void TempFish::drawShadow(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_environment_map);
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
-    Core::DrawContext(this->context);
+    for (auto mesh : this->context->getMeshes()) {
+        Core::DrawContext(*mesh->getRenderContext());
+    }
     glUseProgram(0);
 }
 
@@ -63,7 +67,7 @@ Boids::Boids(unsigned int amount, Core::RenderContext context, glm::vec3 positio
         float x = this->random.nextFloat(-(float)amount / 2.0f, (float)amount / 2.0f);
         float y = this->random.nextFloat(-3.0f, 3.0f);
         float z = this->random.nextFloat(-(float)amount / 2.0f, (float)amount / 2.0f);
-        TempFish* fish = new TempFish(context, position + glm::vec3(x, y, z));
+        TempFish* fish = new TempFish(position + glm::vec3(x, y, z));
         fish->world = w;
         this->boidList.push_back(fish);
     }

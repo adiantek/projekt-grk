@@ -23,7 +23,7 @@
 #include <world/World.hpp>
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
-#include <Boids.hpp>
+#include <Fish/Boids.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
