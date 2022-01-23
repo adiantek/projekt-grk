@@ -4,6 +4,8 @@
 #include <glm/ext.hpp>
 #include <utils/glmu.hpp>
 
+# define M_PI 3.14159265358979323846
+
 namespace utils {
 
 glm::mat4 glmu::to_mat4(const aiMatrix4x4& aAssimpMat) {
@@ -60,7 +62,10 @@ glm::vec2 glmu::circles_midpoint(glm::vec2 a, glm::vec2 b, float aRadius, float 
 }
 
 glm::vec3 glmu::curve(glm::vec3 a, glm::vec3 b, float t) {
-    return a + (b - a) * t;
+    t = std::min(1.0f, std::max(0.0f, t));
+    glm::vec3 resultVec = a + (b - a) * t;
+    resultVec.z += sin(t * M_PI) * 0.2f;
+    return resultVec;
 }
 
 }  // namespace utils

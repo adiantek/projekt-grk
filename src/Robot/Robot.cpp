@@ -1,4 +1,5 @@
 #include <list>
+#include <stdbool.h>
 
 #include <Robot/Robot.hpp>
 #include <Resources/Resources.hpp>
@@ -36,6 +37,7 @@ Robot::Robot() {
     this->mode = Robot::MODE_STATIONARY;
     this->movementSpeed = Robot::DEFAULT_WALKING_MOVEMENT_SPEED;
 
+    this->initialPosition = glm::vec3(this->position);
     this->initialModelMatrix = this->gameObject->getModelMatrix();
     this->createBody();
     this->createLegs();
@@ -78,7 +80,7 @@ Robot::Robot() {
             );
 
             Gizmos::cube(
-                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
+                this->gameObject->getModelMatrix() * glm::vec4(leg->globalAttachmentPoint, 1.0f),
                 glm::vec3(0.02f, 0.02f, 0.02f), glm::vec3(1.0f, 1.0f, 1.0f)
             );
 
@@ -88,21 +90,15 @@ Robot::Robot() {
                 glm::vec3(0.0f, 1.0f, 0.0f)
             );
 
-            Gizmos::cube(
-                this->gameObject->getModelMatrix() * glm::vec4(leg->currentAttachmentPoint, 1.0f),
-                glm::vec3(0.02f, 0.02f, 0.02f),
-                glm::vec3(0.5f, 0.5f, 0.0f)
-            );
-
             Gizmos::line(
-                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
+                this->gameObject->getModelMatrix() * glm::vec4(leg->globalAttachmentPoint, 1.0f),
                 this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentEstimation, 1.0f),
-                glm::vec3(1.0f, 0.0f, 0.0f)
+                glm::vec3(0.0f, 1.0f, 0.0f)
             );
 
             Gizmos::line(
                 this->gameObject->getModelMatrix() * glm::vec4(leg->lowerJointOrigin, 1.0f),
-                this->gameObject->getModelMatrix() * glm::vec4(leg->attachmentPoint, 1.0f),
+                this->gameObject->getModelMatrix() * glm::vec4(leg->globalAttachmentPoint, 1.0f),
                 glm::vec3(1.0f, 0.0f, 0.0f)
             );
         }
@@ -114,7 +110,7 @@ Robot::~Robot() {
 }
 
 void Robot::enableIncreasedSpeedMode() {
-    if( this->mode == Robot::MODE_WALKING) {
+    if (this->mode == Robot::MODE_WALKING) {
         this->movementSpeed = Robot::MAX_WALKING_SPEED_INCREASED;
     } else {
         this->movementSpeed = Robot::MAX_SWIMMING_SPEED_INCREASED;
@@ -122,7 +118,7 @@ void Robot::enableIncreasedSpeedMode() {
 }
 
 void Robot::disableIncreasedSpeedMode() {
-    if( this->mode == Robot::MODE_WALKING) {
+    if (this->mode == Robot::MODE_WALKING) {
         this->movementSpeed = Robot::DEFAULT_WALKING_MOVEMENT_SPEED;
     } else {
         this->movementSpeed = Robot::DEFAULT_SWIMMING_MOVEMENT_SPEED;
@@ -230,14 +226,21 @@ void Robot::createBody() {
 void Robot::updateBody() {
     this->bodyOrigin = glm::inverse(this->body->getLocalBindTransform()) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
+    glm::vec3 backCenter = (this->legs[0]->globalAttachmentPoint + this->legs[1]->globalAttachmentPoint) / 2;
+    glm::vec3 frontCenter = (this->legs[2]->globalAttachmentPoint + this->legs[3]->globalAttachmentPoint) / 2;
+    glm::vec3 center = (backCenter + frontCenter) / 2;
+    center.z = 0;
+
     // Random body transformation
-    glm::mat4 bodyPositionTransform = glm::translate(utils::glmu::s_random_offset(0.3f, (float)timeExternal->lastFrame * 5.0f));
-    glm::vec3 bodyRotation = utils::glmu::s_random_offset(10.0f, (float)((timeExternal->lastFrame + 1000.0f) * 5.0f));
+    glm::vec3 currentPos = this->body->getTransform() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    glm::vec3 deltaPos = center - currentPos;
+    glm::vec3 newPos = currentPos + (deltaPos * 0.01f);
+
+    glm::mat4 bodyPositionTransform = glm::translate(newPos);
 
     this->applyBodyTransformation(
         glm::translate(this->bodyOrigin)
         * bodyPositionTransform
-        * glm::eulerAngleXYZ(glm::radians(bodyRotation.x), glm::radians(bodyRotation.y), glm::radians(bodyRotation.z))
         * glm::translate(glm::vec3(this->body->getLocalBindTransform() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)))
     );
 }
@@ -246,6 +249,7 @@ void Robot::createLegs() {
     Model* model = this->gameObject->getModel();
     glm::vec3 scale = this->gameObject->getScale();
     glm::vec3 offset = glm::vec3(0.7f, 0.0f, 0.0f);
+    glm::vec3 targetOffset = glm::vec3(0.3f, 0.0f, 0.0f);
 
     glm::mat4 modelMatrix = this->gameObject->getModelMatrix();
 
@@ -275,9 +279,11 @@ void Robot::createLegs() {
 
     for (RobotLeg* leg : this->legs) {
         glm::vec3 legVector = leg->lowerJoint->getOrigin();
-        glm::mat4 localOffset = (leg->lowerJoint->getOrigin().x < leg->upperJoint->getOrigin().x) ?
+            legVector.z = 0.0f;
+        glm::mat4 localOffset = (leg->lowerJoint->getOrigin().x > leg->upperJoint->getOrigin().x) ?
             glm::translate(offset) : glm::inverse(glm::translate(offset));
-        legVector.z = 0.0f;
+        glm::mat4 localTargetOffset = (leg->lowerJoint->getOrigin().x > leg->upperJoint->getOrigin().x) ?
+            glm::translate(targetOffset) : glm::inverse(glm::translate(targetOffset));
 
         // This I am not pretty sure, but I think is ok
         leg->lowerJointLengthVector = localOffset * glm::vec4(leg->lowerJoint->getOrigin() - legVector, 1.0f);
@@ -285,44 +291,48 @@ void Robot::createLegs() {
         // This two lengths are pretty accurate
         leg->upperJointLength = glm::distance(leg->upperJoint->getOrigin(), leg->lowerJoint->getOrigin());
         leg->lowerJointLength = glm::length(leg->lowerJointLengthVector);
+
+        // calculate lower leg part joint origin
+        glm::vec3 lowerJointOrigin = leg->lowerJoint->getOrigin();
+        lowerJointOrigin.z = 0.0f;
+
+        // Zigzag offset -> define what offset should be between opposite legs
+        float zigzagOffset = 0.5f * (leg->id == 1 || leg->id == 2);
+
+        // calculate current attachment point in world space
+        leg->attachmentPoint = localTargetOffset * glm::vec4(lowerJointOrigin + glm::vec3(0.0f, zigzagOffset, 0.0f), 1.0f);
     }
 }
 
 void Robot::updateLegs() {
     glm::mat4 modelMatrix = this->gameObject->getModelMatrix();
     glm::mat4 invertedModelMatrix = glm::inverse(modelMatrix)
-        * (glm::translate(glm::vec3(0.0f, 0.0f, 6.0f))
+        * (glm::translate(this->initialPosition)
         * this->initialModelMatrix);
 
-    //! Need to be tweaked, legs are not on that point
-    glm::vec3 offset = glm::vec3(0.55f, 0.0f, 0.0f);
+    glm::vec3 offset = glm::vec3(0.7f, 0.0f, 0.0f);
+    glm::vec3 targetOffset = glm::vec3(0.3f, 0.0f, 0.0f);
 
     for (RobotLeg* leg : this->legs) {
-
-        // Zigzag offset is good
-        float zigzagOffset = 0.5f * (leg->id == 1 || leg->id == 2);
-
-        // This works good at first sight
         glm::vec3 lowerJointOrigin = leg->lowerJoint->getOrigin();
         lowerJointOrigin.z = 0.0f;
         glm::mat4 localOffset = (leg->lowerJoint->getOrigin().x > leg->upperJoint->getOrigin().x) ?
             glm::translate(offset) : glm::inverse(glm::translate(offset));
+        glm::mat4 localTargetOffset = (leg->lowerJoint->getOrigin().x > leg->upperJoint->getOrigin().x) ?
+            glm::translate(targetOffset) : glm::inverse(glm::translate(targetOffset));
 
-        // This should be runned only at the start and I thinks this works well
-        if (leg->currentAttachmentPoint.x == -1.0f) {
-            LOGD("Attachment point: %d", leg->id);
-            leg->currentAttachmentPoint = localOffset * glm::vec4(lowerJointOrigin + glm::vec3(0.0f, zigzagOffset, 0.0f), 1.0f);
-        }
-
-        leg->attachmentPoint = glm::vec3(invertedModelMatrix * glm::vec4(leg->currentAttachmentPoint, 1.0f));
-        leg->attachmentEstimation = localOffset * glm::vec4(lowerJointOrigin, 1.0f);
+         // Calculate attachment point estimation
+        leg->attachmentEstimation = localTargetOffset * glm::vec4(lowerJointOrigin, 1.0f);
+        leg->attachmentEstimation.y += 1.0f * (leg->id < 2);
+        glm::vec3 globalAttachmentEstimation = glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f));
+        glm::vec3 globalAttachmentPoint = glm::vec3(invertedModelMatrix * glm::vec4(leg->attachmentPoint, 1.0f));
+        leg->globalAttachmentPoint = globalAttachmentPoint;
 
         // Calculate circle midpoint between attachment point and upper leg joint origin
-        glm::vec2 attachmentPositionFlat = glm::vec2(leg->attachmentPoint.x, leg->attachmentPoint.z);
+        glm::vec2 attachmentPositionFlat = glm::vec2(globalAttachmentPoint.x, globalAttachmentPoint.z);
         glm::vec2 upperJointOriginFlat = glm::vec2(leg->upperJointOrigin.x, leg->upperJointOrigin.z);
         glm::vec2 midPointFlat = utils::glmu::circles_midpoint(attachmentPositionFlat, upperJointOriginFlat, leg->lowerJointLength, leg->upperJointLength);
-        // LOGD("Midpoint: %f", leg->attachmentPoint.y);
-        glm::vec3 midPoint = glm::vec3(midPointFlat.x, (leg->attachmentPoint.y + leg->upperJointOrigin.y) / 2, midPointFlat.y);
+        glm::vec3 midPoint = glm::vec3(midPointFlat.x, (globalAttachmentPoint.y + leg->upperJointOrigin.y) / 2, midPointFlat.y);
         leg->lowerJointOrigin = midPoint;
 
         // Calculate upper joint rotation and position
@@ -337,41 +347,42 @@ void Robot::updateLegs() {
         );
 
         glm::vec3 lCurrentDirectionVector = glm::normalize(glm::vec3(localOffset * glm::vec4(lowerJointOrigin, 1.0f)) - leg->lowerJoint->getOrigin());
-        glm::vec3 lNewDirectionVector = glm::normalize(leg->attachmentPoint - leg->lowerJointOrigin);
+        glm::vec3 lNewDirectionVector = glm::normalize(globalAttachmentPoint - leg->lowerJointOrigin);
         glm::quat lQuaternionRotation = glm::rotationCamera(lCurrentDirectionVector, lNewDirectionVector);
 
-
-        //! This works really bad
-        // The vector should be transformed by the upper joint transform first
-        // Next from this vector we could actually calculate quaternion rotation
         leg->lowerJoint->setTransform(
-            // glm::translate(leg->attachmentPoint)
             glm::translate(leg->lowerJointOrigin)
             * glm::mat4_cast(lQuaternionRotation)
-            // * glm::translate(leg->lowerJointLengthVector)
             * glm::inverse(glm::translate(leg->lowerJoint->getOrigin()))
         );
 
-        float distanceSquare = glm::distance2(leg->attachmentPoint, leg->attachmentEstimation);
+        float distanceSquare = glm::distance2(leg->globalAttachmentPoint, leg->attachmentEstimation);
 
+        if (distanceSquare > Robot::LEG_MAX_DISTANCE_SQUARE && leg->step < 0.0f) {
+            bool isStationary = true;
+            for (RobotLeg* leg : this->legs) {
+                if (leg->step > 0.0f) {
+                    isStationary = false;
+                    break;
+                }
+            }
 
-        if (distanceSquare > Robot::LEG_MAX_DISTANCE_SQUARE && leg->step == -1.0f) {
-            LOGD("Distance: %f", distanceSquare);
-            leg->targetAttachmentPoint = glm::vec3(leg->attachmentEstimation.x, leg->attachmentEstimation.y, leg->attachmentEstimation.z);
-            leg->previousAttachmentPoint = glm::vec3(leg->currentAttachmentPoint.x, leg->currentAttachmentPoint.y, leg->currentAttachmentPoint.z);
-            leg->step = 0.0f;
+            if (isStationary) {
+                leg->previousAttachmentPoint = glm::vec3(leg->attachmentPoint);
+                leg->targetAttachmentPoint = glm::vec3(glm::inverse(invertedModelMatrix) * glm::vec4(leg->attachmentEstimation, 1.0f));
+                leg->step = 0.0f;
+            }
+            
         }
 
-        if (leg->step >= 0.0f) {
-            // LOGD("leg->step: %f", leg->step);
-            leg->step += timeExternal->deltaTime * Robot::LEG_STEP_SPEED;
-            leg->currentAttachmentPoint = utils::glmu::curve(leg->previousAttachmentPoint, leg->targetAttachmentPoint, leg->step);
+        if (leg->step >= 0.0f && leg->step < 1.0f) {
+            leg->attachmentPoint = glmu::curve(leg->previousAttachmentPoint, leg->targetAttachmentPoint, leg->step);
+            leg->step += Robot::LEG_STEP_SPEED * timeExternal->deltaTime;
         }
 
-        if (leg->step >= 1.0f) {
+        if (leg->step > 1.0f) {
+            leg->attachmentPoint = leg->targetAttachmentPoint;
             leg->step = -1.0f;
-            glm::vec3 modelAttachmentPoint = modelMatrix * glm::vec4(leg->attachmentPoint, 1.0f);
-            leg->currentAttachmentPoint = glm::vec3(modelAttachmentPoint.x, modelAttachmentPoint.y, leg->attachmentPoint.z);
         }
     }
 }

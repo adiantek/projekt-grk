@@ -19,9 +19,9 @@ struct RobotLeg {
 
     /* This is the actual point attached to the leg (when move, bones are also moving) */
     glm::vec3 attachmentPoint = glm::vec3(0.0f);
-    glm::vec3 attachmentEstimation = glm::vec3(0.0f);
+    glm::vec3 globalAttachmentPoint = glm::vec3(0.0f);
 
-    glm::vec3 currentAttachmentPoint = glm::vec3(-1.0f);
+    glm::vec3 attachmentEstimation = glm::vec3(0.0f);
     glm::vec3 targetAttachmentPoint = glm::vec3(0.0f);
     glm::vec3 previousAttachmentPoint = glm::vec3(0.0f);
     float step = -1.0f;
@@ -35,15 +35,15 @@ struct RobotLeg {
 class Robot : world::Object3D {
    public:
     // SPEEDS
-    inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 1.0f;
+    inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 0.5f;
     inline static const float MAX_SWIMMING_SPEED_INCREASED = 2.0f * 10;
 
-    inline static const float DEFAULT_WALKING_MOVEMENT_SPEED = 1.0f;
+    inline static const float DEFAULT_WALKING_MOVEMENT_SPEED = 0.5f;
     inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f * 10;
 
-    inline static const float ROTATION_SPEED = 20.0f;
-    inline static const float LEG_STEP_SPEED = 0.2f;
-    inline static const float LEG_MAX_DISTANCE_SQUARE = 0.4f;
+    inline static const float ROTATION_SPEED = 15.0f;
+    inline static const float LEG_STEP_SPEED = 10.0f;
+    inline static const float LEG_MAX_DISTANCE_SQUARE = 0.6f;
 
     // MODES
     static const int MODE_STATIONARY = 0;
@@ -91,6 +91,7 @@ class Robot : world::Object3D {
     Animator::Joint* eyeCover;
 
     glm::mat4 initialModelMatrix;
+    glm::vec3 initialPosition;
 };
 
 }  // namespace entity
