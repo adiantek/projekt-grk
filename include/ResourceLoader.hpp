@@ -71,6 +71,7 @@ public:
     Model *m_sphere = 0;
     Model *m_sphere2 = 0;
     Model *m_sphere_different_texcoords = 0;
+    Model *m_pilotfish = 0;
 
     // programs:
     GLuint p_color_armature = 0;

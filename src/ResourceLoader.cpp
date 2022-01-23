@@ -262,6 +262,7 @@ void ResourceLoader::loadModels() {
     loadModel("assets/models/sphere.obj", &this->m_sphere);
     loadModel("assets/models/sphere2.obj", &this->m_sphere2);
     loadModel("assets/models/sphere_different_texcoords.obj", &this->m_sphere_different_texcoords);
+    loadModel("assets/models/entities/pilotfish.dae", &this->m_pilotfish);
 }
 
 bool ResourceLoader::loadResources() {
