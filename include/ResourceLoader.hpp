@@ -55,7 +55,9 @@ public:
     GLuint tex_test_normals = 0;
     GLuint tex_uv_grid = 0;
     GLuint tex_wall = 0;
+    GLuint tex_wall_ao = 0;
     GLuint tex_wall_height = 0;
+    GLuint tex_wall_roughness = 0;
     GLuint tex_wall_normal = 0;
     GLuint tex_pilotfish = 0;
 
@@ -260,6 +262,26 @@ public:
     GLint p_pilotfish_uni_waterHeight = -1;
     GLint p_pilotfish_uni_caustics = -1;
     GLint p_pilotfish_uni_colorTexture = -1;
+    // cubefish:
+    GLuint p_cubefish = 0;
+    bool p_cubefish_loaded = false;
+    GLint p_cubefish_attr_vertexBitangent = -1;
+    GLint p_cubefish_attr_vertexNormal = -1;
+    GLint p_cubefish_attr_vertexPosition = -1;
+    GLint p_cubefish_attr_vertexTangent = -1;
+    GLint p_cubefish_attr_vertexTexCoord = -1;
+    GLint p_cubefish_uni_cameraPosition = -1;
+    GLint p_cubefish_uni_lightPosition = -1;
+    GLint p_cubefish_uni_lightTransformation = -1;
+    GLint p_cubefish_uni_modelMatrix = -1;
+    GLint p_cubefish_uni_transformation = -1;
+    GLint p_cubefish_uni_waterHeight = -1;
+    GLint p_cubefish_uni_aoMap = -1;
+    GLint p_cubefish_uni_caustics = -1;
+    GLint p_cubefish_uni_colorTexture = -1;
+    GLint p_cubefish_uni_depthMap = -1;
+    GLint p_cubefish_uni_normalSampler = -1;
+    GLint p_cubefish_uni_roughnessMap = -1;
 
 private:
     int totalResourcesCounter = 0;

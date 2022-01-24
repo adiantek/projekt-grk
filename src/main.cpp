@@ -25,6 +25,7 @@
 #include <Physics/RigidBody.hpp>
 #include <Fish/Boids.hpp>
 #include <Fish/Pilotfish.hpp>
+#include <Fish/Cubefish.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -53,10 +54,8 @@ bool initialized = false;
 
 ResourceLoader resourceLoader;
 
-physics::RigidBody* rigidBody;
-physics::RigidBody* rigidBodyHeavy;
-
 std::vector<Boids<Pilotfish>*> boids;
+std::vector<Cubefish*> cubefish;
 
 world::World *w;
 
@@ -153,6 +152,8 @@ void do_frame()
 	camera->update();
 	for(auto boid : boids)
 		boid->update();
+	for(auto cube : cubefish)
+		cube->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -170,8 +171,6 @@ void do_frame()
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(-9, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)));
 	waterObject->drawObject(sphereContext2, glm::translate(lightPos));
 	waterObject->drawObject(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)));
-	waterObject->drawObject(brickWallContext, rigidBody->getModelMatrix());
-	waterObject->drawObject(brickWallContext, rigidBodyHeavy->getModelMatrix());
 	waterObject->stopUsingFramebuffer();
 
 	waterObject->update();
@@ -195,6 +194,10 @@ void do_frame()
 	glUniform3f(resourceLoader.p_chunk_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_chunk_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
 
+	glUseProgram(resourceLoader.p_cubefish);
+	glUniform3f(resourceLoader.p_cubefish_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(resourceLoader.p_cubefish_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
+
 	glUseProgram(resourceLoader.p_pilotfish);
 	glUniform3f(resourceLoader.p_pilotfish_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_pilotfish_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
@@ -212,14 +215,14 @@ void do_frame()
 	drawObjectTexNormalCaustics(sphereContext, eu * glm::translate(glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(0.2f)), resourceLoader.tex_moon, resourceLoader.tex_moon_normals);
 	drawObjectTexNormalParallax(brickWallContext, glm::translate(glm::vec3(-10, 2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(20, 126, -15)) * glm::eulerAngleY((float)timeExternal->lastFrame / 2.0f) * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
-	drawObjectTexNormalCaustics(brickWallContext, rigidBody->getModelMatrix(), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
-	drawObjectTexNormalCaustics(brickWallContext, rigidBodyHeavy->getModelMatrix(), resourceLoader.tex_wall, resourceLoader.tex_wall_normal, resourceLoader.tex_wall_height);
 	drawObjectTexNormalCaustics(brickWallContext, glm::translate(glm::vec3(-8, -2, 0)) * eu2 * glm::scale(glm::vec3(1.0f)), resourceLoader.tex_wall, resourceLoader.tex_wall_normal);
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
 	for (auto boid : boids)
 		boid->draw(viewMatrix);
+	for(auto cube : cubefish)
+		cube->draw(viewMatrix);
 
 	waterObject->draw(viewMatrix);
 
@@ -255,23 +258,12 @@ void init() {
 	// Initialize resources (textures, shaders, materials)
 	Resources::init();
 
+	new water::Water(192.0f, 300.0f, 80.0f, 512, 256.0f, 1000);
+
 	w = new world::World(0);
+	waterObject->addWorldObject((world::Object3D*) w);
 	
 	new physics::Physics(9.8f, w);
-
-	physx::PxTransform initPose = physx::PxTransform(24.0f, 400.0f, -95.0f);
-	physx::PxBoxGeometry geometry = physx::PxBoxGeometry(1.0f, 1.0f, 1.0f);
-	world::Object3D* objectDummy = new world::Object3D();
-	rigidBody = new physics::RigidBody(false, initPose, geometry, objectDummy, 0.5f, 0.5f, 0.001f);
-	rigidBody->setMass(1.0f);
-	rigidBody->density = 0.8f;
-
-
-	initPose = physx::PxTransform(27.0f, 400.0f, -95.0f);
-	geometry = physx::PxBoxGeometry(1.0f, 1.0f, 1.0f);
-	rigidBodyHeavy = new physics::RigidBody(false, initPose, geometry, objectDummy, 0.5f, 0.5f, 0.001f);
-	rigidBodyHeavy->setMass(3.0f);
-	rigidBodyHeavy->density = 0.8f * 3.0f;
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -280,15 +272,17 @@ void init() {
 	loadModelToContext("assets/models/primitives/cube.obj", brickWallContext);
 	planeContext.initPlane(2.0f, 2.0f);
 
-	new water::Water(192.0f, 300.0f, 80.0f, 512, 256.0f, 1000);
-	waterObject->addWorldObject((world::Object3D*) w);
-
 	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(0.0f, 180.0f, 0.0f), w));
 	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(128.0f, 180.0f, -128.0f), w));
 	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(-128.0f, 180.0f, -128.0f), w));
 	waterObject->addWorldObject((world::Object3D*) boids[0]);
 	waterObject->addWorldObject((world::Object3D*) boids[1]);
 	waterObject->addWorldObject((world::Object3D*) boids[2]);
+
+	cubefish.push_back(new Cubefish(glm::vec3(24.0f, 400.0f, -95.0f), 1.0f, 0.8f));
+	cubefish.push_back(new Cubefish(glm::vec3(27.0f, 400.0f, -95.0f), 3.0f, 2.4f));
+	waterObject->addWorldObject((world::Object3D*) cubefish[0]);
+	waterObject->addWorldObject((world::Object3D*) cubefish[1]);
 }
 
 int main(int argc, char **argv)

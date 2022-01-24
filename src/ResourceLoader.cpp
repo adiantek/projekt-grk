@@ -55,7 +55,9 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/test_normals.png", &this->tex_test_normals);
     loadTexture("assets/textures/uv_grid.png", &this->tex_uv_grid);
     loadTexture("assets/textures/wall.png", &this->tex_wall);
+    loadTexture("assets/textures/wall_ao.png", &this->tex_wall_ao);
     loadTexture("assets/textures/wall_height.png", &this->tex_wall_height);
+    loadTexture("assets/textures/wall_roughness.png", &this->tex_wall_roughness);
     loadTexture("assets/textures/wall_normal.png", &this->tex_wall_normal);
     loadTexture("assets/textures/entities/pilotfish/pilotfish_albedo.png", &this->tex_pilotfish);
 }
@@ -260,6 +262,26 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(pilotfish, caustics);
         UNIFORM(pilotfish, colorTexture);
     }
+    LOAD_PROGRAM(cubefish, 2, "fish/cubefish.frag", "fish/cubefish.vert") {
+        // DUMP(cubefish);
+        ATTRIBUTE(cubefish, vertexBitangent);
+        ATTRIBUTE(cubefish, vertexNormal);
+        ATTRIBUTE(cubefish, vertexPosition);
+        ATTRIBUTE(cubefish, vertexTangent);
+        ATTRIBUTE(cubefish, vertexTexCoord);
+        UNIFORM(cubefish, cameraPosition);
+        UNIFORM(cubefish, lightPosition);
+        UNIFORM(cubefish, lightTransformation);
+        UNIFORM(cubefish, modelMatrix);
+        UNIFORM(cubefish, transformation);
+        UNIFORM(cubefish, waterHeight);
+        UNIFORM(cubefish, aoMap);
+        UNIFORM(cubefish, caustics);
+        UNIFORM(cubefish, colorTexture);
+        UNIFORM(cubefish, depthMap);
+        UNIFORM(cubefish, normalSampler);
+        UNIFORM(cubefish, roughnessMap);
+    }
 
 #undef LOAD_PROGRAM
 #undef ATTRIBUTE
@@ -269,7 +291,7 @@ void ResourceLoader::loadPrograms() {
 void ResourceLoader::loadModels() {
     loadModel("assets/models/primitives/AnimatedStick.dae", &this->m_primitives_AnimatedStick);
     loadModel("assets/models/primitives/complex_cube.dae", &this->m_primitives_complex_cube);
-    loadModel("assets/models/primitives/cube.dae", &this->m_primitives_cube);
+    loadModel("assets/models/primitives/cube.obj", &this->m_primitives_cube);
     loadModel("assets/models/primitives/cylinder.obj", &this->m_primitives_cylinder);
     loadModel("assets/models/primitives/plane.dae", &this->m_primitives_plane);
     loadModel("assets/models/primitives/sphere.obj", &this->m_primitives_sphere);
