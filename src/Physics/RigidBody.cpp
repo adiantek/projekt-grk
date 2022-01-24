@@ -77,4 +77,12 @@ void RigidBody::wakeUp() {
         this->sleep = false;
     }
 }
+
+void RigidBody::rotateForward(glm::mat4 rot) {
+    glm::vec3 velocity = this->getLinearVelocity();
+    if (glm::length(velocity) > 0.0f) {
+        auto quat = glm::quat_cast(glm::orientation(glm::normalize(velocity), glm::vec3(0.0f, 1.0f, 0.0f)) * rot);
+        this->inner->setGlobalPose(physx::PxTransform(this->inner->getGlobalPose().p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
+    }
+}
 }  // namespace physics

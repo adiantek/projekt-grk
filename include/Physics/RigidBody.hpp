@@ -25,6 +25,7 @@ class RigidBody {
     void applyDrag(float density);
     void putToSleep();
     void wakeUp();
+    void rotateForward(glm::mat4 rot);
     world::Object3D* object;
     float density = 1.0f;
     bool drag = true;
