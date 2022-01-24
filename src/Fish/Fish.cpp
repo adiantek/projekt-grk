@@ -48,10 +48,10 @@ void Fish::update() {
     world::Chunk* chunk = this->world->getChunkAt(world::ChunkPosition(position));
     float waterDistance = position.y - waterObject->getY();
     if (waterDistance < 0.0f) { // I should be underwater
-        this->rigidBody->addForce(glm::vec3(0.0f, std::max(2.0f / waterDistance, -10.0f), 0.0f));
+        this->rigidBody->addForce(glm::vec3(0.0f, std::max(10.0f / waterDistance, -15.0f), 0.0f));
     } // Else I am over the water level and let gravity do the thing
     if (chunk) { // I should be higher than ground
-        this->rigidBody->addForce(glm::vec3(0.0f, std::min(2.0f / abs(position.y - chunk->maxY), 10.0f), 0.0f));
+        this->rigidBody->addForce(glm::vec3(0.0f, std::min(10.0f / abs(position.y - chunk->maxY), 15.0f), 0.0f));
     }
     // I want to go to the target
     glm::vec3 targetDirection = this->target - position;

@@ -12,9 +12,9 @@ template<class T>
 Boids<T>::Boids(unsigned int amount, glm::vec3 position, world::World* w) : random(seeder) {;
     seeder++;
     for (unsigned int i = 0; i < amount; ++i) {
-        float x = this->random.nextFloat(-(float)amount / 2.0f, (float)amount / 2.0f);
-        float y = this->random.nextFloat(-3.0f, 3.0f);
-        float z = this->random.nextFloat(-(float)amount / 2.0f, (float)amount / 2.0f);
+        float x = this->random.nextFloat(-(float)amount / 3.0f, (float)amount / 3.0f);
+        float y = this->random.nextFloat(-4.0f, 4.0f);
+        float z = this->random.nextFloat(-(float)amount / 3.0f, (float)amount / 3.0f);
         this->boidList.push_back(new T(position + glm::vec3(x, y, z), w));
     }
     this->world = w;

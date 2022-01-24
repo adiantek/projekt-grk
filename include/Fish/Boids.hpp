@@ -30,7 +30,7 @@ class Boids : world::Object3D {
     float avoidFactor = 0.04f;
     float matchingFactor = 0.005f;
     float randomFactor = 0.7f;
-    float minAvoidDistance = 4.0f;
+    float minAvoidDistance = 3.5f;
     float visualRange = 75.0f;
     float lastTargetChange = -6.0f;
     std::vector<T*> boidList;

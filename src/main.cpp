@@ -22,6 +22,9 @@
 #include <vector>
 #include <world/World.hpp>
 
+#define BOIDS_AMOUNT 5
+#define BOIDS_SIZE 10
+
 // Window
 GLFWwindow *window;
 double lastTitleUpdate = 0.0;
@@ -140,12 +143,13 @@ void init() {
 
     glEnable(GL_DEPTH_TEST);
 
-    boids.push_back(new Boids<Pilotfish>(20, glm::vec3(0.0f, 180.0f, 0.0f), w));
-    boids.push_back(new Boids<Pilotfish>(20, glm::vec3(128.0f, 180.0f, -128.0f), w));
-    boids.push_back(new Boids<Pilotfish>(20, glm::vec3(-128.0f, 180.0f, -128.0f), w));
-    waterObject->addWorldObject((world::Object3D *)boids[0]);
-    waterObject->addWorldObject((world::Object3D *)boids[1]);
-    waterObject->addWorldObject((world::Object3D *)boids[2]);
+    Random random(0L);
+
+    for (int i=0; i<BOIDS_AMOUNT;++i) {
+        Boids<Pilotfish> *boid = new Boids<Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-64.0f, 64.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-64.0f, 64.0f)), w);
+        waterObject->addWorldObject((world::Object3D *)boid);
+        boids.push_back(boid);
+    }
 
     cubefish.push_back(new Cubefish(glm::vec3(24.0f, 400.0f, -95.0f), 1.0f, 0.8f));
     cubefish.push_back(new Cubefish(glm::vec3(27.0f, 400.0f, -95.0f), 3.0f, 2.4f));
