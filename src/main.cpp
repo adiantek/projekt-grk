@@ -284,8 +284,8 @@ void init() {
 	waterObject->addWorldObject((world::Object3D*) w);
 
 	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(0.0f, 180.0f, 0.0f), w));
-	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(40.0f, 180.0f, 40.0f), w));
-	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(-40.0f, 180.0f, -40.0f), w));
+	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(128.0f, 180.0f, -128.0f), w));
+	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(-128.0f, 180.0f, -128.0f), w));
 	waterObject->addWorldObject((world::Object3D*) boids[0]);
 	waterObject->addWorldObject((world::Object3D*) boids[1]);
 	waterObject->addWorldObject((world::Object3D*) boids[2]);
