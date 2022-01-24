@@ -41,8 +41,6 @@ void Surface::draw(glm::mat4 viewMatrix) {
     Core::DrawContext(this->geometry);
 
     glDisable(GL_BLEND);
-
-    glUseProgram(0);
 }
 
 void Surface::update() {

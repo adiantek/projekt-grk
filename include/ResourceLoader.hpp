@@ -58,6 +58,20 @@ public:
     GLuint tex_wall_height = 0;
     GLuint tex_wall_normal = 0;
 
+    // models:
+    Model *m_primitives_AnimatedStick = 0;
+    Model *m_primitives_complex_cube = 0;
+    Model *m_primitives_cube = 0;
+    Model *m_primitives_cylinder = 0;
+    Model *m_primitives_plane = 0;
+    Model *m_primitives_sphere = 0;
+    Model *m_robot = 0;
+    Model *m_robot_with_armature = 0;
+    Model *m_spaceship = 0;
+    Model *m_sphere = 0;
+    Model *m_sphere2 = 0;
+    Model *m_sphere_different_texcoords = 0;
+
     // programs:
     GLuint p_color_armature = 0;
     bool p_color_armature_loaded = false;
@@ -169,6 +183,7 @@ public:
     GLint p_water_simulation_uni_time = -1;
     GLint p_water_simulation_uni_transition = -1;
     GLint p_water_simulation_uni_waveCount = -1;
+    GLint p_water_simulation_uni_waves = -1;
 
     GLuint p_water_surface = 0;
     bool p_water_surface_loaded = false;
@@ -228,8 +243,6 @@ public:
     GLint p_chunk_uni_normalSampler = -1;
     GLint p_chunk_uni_roughnessMap = -1;
 
-    static void loadModelExternal(const char *name, Model *out);
-
 private:
     int totalResourcesCounter = 0;
     bool all_loaded = false;
@@ -240,8 +253,10 @@ private:
     bool canLoadNextResource();
     void loadTextures();
     void loadPrograms();
+    void loadModels();
     void loadAttributesAndUniforms();
     void loadTexture(const char *name, GLuint *out);
+    void loadModel(const char *name, Model **out);
     void loadTextureCubeMap(GLuint *out);
     /**
      * true if and only if program was loaded right now

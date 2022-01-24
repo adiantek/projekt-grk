@@ -11,7 +11,6 @@ namespace water {
         this->y = y;
         glUseProgram(resourceLoaderExternal->p_chunk);
         glUniform1f(resourceLoaderExternal->p_chunk_uni_waterHeight, y);
-        glUseProgram(0);
     }
 
     Water::~Water() {}

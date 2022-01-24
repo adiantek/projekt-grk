@@ -10,11 +10,11 @@ namespace vertex {
 class VertexBuffer {
    private:
     VertexFormat *format;
-    uint8_t *buff;
     uint32_t vertices;
     uint8_t *buffPos;
 
    public:
+    uint8_t *buff;
     VertexBuffer(VertexFormat *format, uint32_t vertices);
     ~VertexBuffer();
     VertexFormat *getFormat();
