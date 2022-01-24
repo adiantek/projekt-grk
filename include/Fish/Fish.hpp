@@ -12,10 +12,12 @@ class Fish : world::Object3D {
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
     void update() override;
+    void setTarget(glm::vec3 target);
 
     physics::RigidBody* rigidBody;
 
-   private:
+   protected:
     Model* model;
     world::World* world;
+    glm::vec3 target;
 };

@@ -51,4 +51,11 @@ void Fish::update() {
     if (chunk) { // I should be higher than ground
         this->rigidBody->addForce(glm::vec3(0.0f, std::min(2.0f / abs(position.y - chunk->maxY), 10.0f), 0.0f));
     }
+    // I want to go to the target
+    glm::vec3 targetDirection = this->target - position;
+    this->rigidBody->addForce(targetDirection * 0.00002f * glm::length(targetDirection));
+}
+
+void Fish::setTarget(glm::vec3 target) {
+    this->target = target;
 }

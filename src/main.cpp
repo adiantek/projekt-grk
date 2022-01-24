@@ -24,6 +24,7 @@
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
 #include <Fish/Boids.hpp>
+#include <Fish/Pilotfish.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -55,7 +56,7 @@ ResourceLoader resourceLoader;
 physics::RigidBody* rigidBody;
 physics::RigidBody* rigidBodyHeavy;
 
-Boids* boids;
+Boids<Pilotfish>* boids;
 
 world::World *w;
 
@@ -193,6 +194,12 @@ void do_frame()
 	glUniform3f(resourceLoader.p_chunk_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_chunk_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
 
+	glUseProgram(resourceLoader.p_pilotfish);
+	glUniform3f(resourceLoader.p_pilotfish_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(resourceLoader.p_pilotfish_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
+	glUniform1f(resourceLoader.p_pilotfish_uni_waterHeight, waterObject->getY());
+	glUniformMatrix4fv(resourceLoader.p_pilotfish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
+
 	glUseProgram(resourceLoader.p_shader_4_1);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
@@ -274,7 +281,7 @@ void init() {
 	new water::Water(192.0f, 300.0f, 80.0f, 512, 256.0f, 1000);
 	waterObject->addWorldObject((world::Object3D*) w);
 
-	boids = new Boids(20, sphereContext, glm::vec3(0.0f, 180.0f, 0.0f), w);
+	boids = new Boids<Pilotfish>(20, glm::vec3(0.0f, 180.0f, 0.0f), w);
 	waterObject->addWorldObject((world::Object3D*) boids);
 }
 
