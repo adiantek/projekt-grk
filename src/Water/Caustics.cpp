@@ -45,6 +45,7 @@ namespace water {
 
     void Caustics::update() {
         this->simulation.update();
+        this->environmentMap.update();
 
         glUseProgram(resourceLoaderExternal->p_caustics);
 
@@ -64,7 +65,7 @@ namespace water {
         glBindTexture(GL_TEXTURE_2D, this->simulation.getHeightMap());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_heightMap, 0);
         glActiveTexture(GL_TEXTURE0 + 1);
-        glBindTexture(GL_TEXTURE_2D, this->environmentMap.getMapTexture());
+        glBindTexture(GL_TEXTURE_2D, this->environmentMap.getEnvironmentMap());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_environmentMap, 1);
         glActiveTexture(GL_TEXTURE0 + 2);
         glBindTexture(GL_TEXTURE_2D, this->simulation.getNormalMap());
@@ -102,18 +103,6 @@ namespace water {
 
     glm::mat4 Caustics::getLightCamera() {
         return this->environmentMap.getLightCamera();
-    }
-
-    void Caustics::useFramebuffer() {
-        this->environmentMap.useFramebuffer();
-    }
-
-    void Caustics::stopUsingFramebuffer() {
-        this->environmentMap.stopUsingFramebuffer();
-    }
-
-    void Caustics::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
-        this->environmentMap.drawObject(context, modelMatrix);
     }
 
     void Caustics::addWorldObject(world::Object3D* object) {

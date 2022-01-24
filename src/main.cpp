@@ -64,9 +64,6 @@ void do_frame() {
     for (auto cube : cubefish)
         cube->update();
 
-    waterObject->useFramebuffer();
-    waterObject->stopUsingFramebuffer();
-
     waterObject->update();
 
     w->update();
@@ -134,7 +131,7 @@ void init() {
     // Initialize resources (textures, shaders, materials)
     Resources::init();
 
-    new water::Water(192.0f, 300.0f, 80.0f, 512, 256.0f, 1000);
+    new water::Water(192.0f, 500.0f, 80.0f, 512, 256.0f, 1000);
 
     w = new world::World(0);
     waterObject->addWorldObject((world::Object3D *)w);

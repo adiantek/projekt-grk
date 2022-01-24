@@ -26,21 +26,6 @@ namespace water {
             this->lastUpdateTime = (float)glfwGetTime();
         }
     }
-    
-    void Water::useFramebuffer() {
-        if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME)
-            this->caustics.useFramebuffer();
-    }
-
-    void Water::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
-        if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME)
-            this->caustics.drawObject(context, modelMatrix);
-    }
-
-    void Water::stopUsingFramebuffer() {
-        if (timeExternal->lastFrame - this->lastUpdateTime > DELTATIME)
-            this->caustics.stopUsingFramebuffer();
-    }
 
     glm::mat4 Water::getLightCamera() {
         return this->caustics.getLightCamera();
