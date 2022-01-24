@@ -26,15 +26,17 @@ class Boids : world::Object3D {
     void addRandomMovement(T* boid);
     void updateTarget();
 
-    float centeringFactor = 0.015f;
-    float avoidFactor = 0.07f;
+    float centeringFactor = 0.03f;
+    float avoidFactor = 0.04f;
     float matchingFactor = 0.005f;
     float randomFactor = 0.7f;
-    float minAvoidDistance = 5.0f;
+    float minAvoidDistance = 4.0f;
     float visualRange = 75.0f;
+    float lastTargetChange = -6.0f;
     std::vector<T*> boidList;
     glm::vec3 target;
     Random random;
+    world::World* world;
 };
 
 #include <Fish/Boids.cpp>

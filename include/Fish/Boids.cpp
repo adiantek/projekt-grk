@@ -4,15 +4,20 @@
 #include <Robot/Robot.hpp>
 #include <Water/Water.hpp>
 #include <world/ChunkPosition.hpp>
+#include <world/World.hpp>
+
+long long static seeder = 0L;
 
 template<class T>
-Boids<T>::Boids(unsigned int amount, glm::vec3 position, world::World* w) : random(0L) {;
+Boids<T>::Boids(unsigned int amount, glm::vec3 position, world::World* w) : random(seeder) {;
+    seeder++;
     for (unsigned int i = 0; i < amount; ++i) {
         float x = this->random.nextFloat(-(float)amount / 2.0f, (float)amount / 2.0f);
         float y = this->random.nextFloat(-3.0f, 3.0f);
         float z = this->random.nextFloat(-(float)amount / 2.0f, (float)amount / 2.0f);
         this->boidList.push_back(new T(position + glm::vec3(x, y, z), w));
     }
+    this->world = w;
     this->target = glm::vec3(robot->position);
 }
 
@@ -112,7 +117,7 @@ void Boids<T>::matchVelocity(T* boid) {
 
 template<class T>
 void Boids<T>::limitSpeed(T* boid) {
-    if (glm::length(boid->rigidBody->getLinearVelocity()) > 15.0f) {
+    if (glm::length(boid->rigidBody->getLinearVelocity()) > 20.0f) {
         boid->rigidBody->addForce(-boid->rigidBody->getLinearVelocity());
     }
 }
@@ -124,5 +129,13 @@ void Boids<T>::addRandomMovement(T* boid) {
 
 template<class T>
 void Boids<T>::updateTarget() {
-    this->target = glm::vec3(robot->position);
+    if ((float)timeExternal->lastFrame - this->lastTargetChange > 5.0f) {
+        glm::vec3 offset = glm::vec3(this->random.nextFloat(-120.0f, 120.0f), 0.0f, this->random.nextFloat(-120.0f, 120.0f)) + robot->position;
+        world::Chunk* chunk = this->world->getChunkAt(world::ChunkPosition(offset));
+        if (chunk) {
+            offset.y = (waterObject->getY() - chunk->maxY) / 2.0f + chunk->maxY;
+        }
+        this->target = glm::vec3(offset);
+        this->lastTargetChange = (float)timeExternal->lastFrame;
+    }
 }

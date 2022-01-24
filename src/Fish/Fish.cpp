@@ -2,6 +2,8 @@
 #include <Physics/Physics.hpp>
 #include <ResourceLoader.hpp>
 #include <Water/Water.hpp>
+#include <Robot/Robot.hpp>
+#include <Time/Time.hpp>
 
 Fish::Fish(Model* model, glm::vec3 position, world::World* world) {
     this->model = model;
@@ -54,6 +56,11 @@ void Fish::update() {
     // I want to go to the target
     glm::vec3 targetDirection = this->target - position;
     this->rigidBody->addForce(targetDirection * 0.00002f * glm::length(targetDirection));
+    // I dont like robots
+    glm::vec3 robotDirection = robot->position - position;
+    if (glm::length(robotDirection) < 10.0f) {
+        this->rigidBody->addForce(-robotDirection * (1.0f / glm::length(targetDirection)));
+    }
 }
 
 void Fish::setTarget(glm::vec3 target) {
