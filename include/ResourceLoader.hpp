@@ -57,6 +57,7 @@ public:
     GLuint tex_wall = 0;
     GLuint tex_wall_height = 0;
     GLuint tex_wall_normal = 0;
+    GLuint tex_pilotfish = 0;
 
     // models:
     Model *m_primitives_AnimatedStick = 0;
@@ -243,6 +244,22 @@ public:
     GLint p_chunk_uni_depthMap = -1;
     GLint p_chunk_uni_normalSampler = -1;
     GLint p_chunk_uni_roughnessMap = -1;
+    // pilotfish:
+    GLuint p_pilotfish = 0;
+    bool p_pilotfish_loaded = false;
+    GLint p_pilotfish_attr_vertexBitangent = -1;
+    GLint p_pilotfish_attr_vertexNormal = -1;
+    GLint p_pilotfish_attr_vertexPosition = -1;
+    GLint p_pilotfish_attr_vertexTangent = -1;
+    GLint p_pilotfish_attr_vertexTexCoord = -1;
+    GLint p_pilotfish_uni_cameraPosition = -1;
+    GLint p_pilotfish_uni_lightPosition = -1;
+    GLint p_pilotfish_uni_lightTransformation = -1;
+    GLint p_pilotfish_uni_modelMatrix = -1;
+    GLint p_pilotfish_uni_transformation = -1;
+    GLint p_pilotfish_uni_waterHeight = -1;
+    GLint p_pilotfish_uni_caustics = -1;
+    GLint p_pilotfish_uni_colorTexture = -1;
 
 private:
     int totalResourcesCounter = 0;

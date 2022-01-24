@@ -57,6 +57,7 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/wall.png", &this->tex_wall);
     loadTexture("assets/textures/wall_height.png", &this->tex_wall_height);
     loadTexture("assets/textures/wall_normal.png", &this->tex_wall_normal);
+    loadTexture("assets/textures/entities/pilotfish/pilotfish_albedo.png", &this->tex_pilotfish);
 }
 
 void ResourceLoader::loadPrograms() {
@@ -242,6 +243,22 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(chunk, roughnessMap);
         UNIFORM(chunk, transformation);
         UNIFORM(chunk, waterHeight);
+    }
+    LOAD_PROGRAM(pilotfish, 2, "fish/pilotfish.frag", "fish/pilotfish.vert") {
+        // DUMP(pilotfish);
+        ATTRIBUTE(pilotfish, vertexBitangent);
+        ATTRIBUTE(pilotfish, vertexNormal);
+        ATTRIBUTE(pilotfish, vertexPosition);
+        ATTRIBUTE(pilotfish, vertexTangent);
+        ATTRIBUTE(pilotfish, vertexTexCoord);
+        UNIFORM(pilotfish, cameraPosition);
+        UNIFORM(pilotfish, lightPosition);
+        UNIFORM(pilotfish, lightTransformation);
+        UNIFORM(pilotfish, modelMatrix);
+        UNIFORM(pilotfish, transformation);
+        UNIFORM(pilotfish, waterHeight);
+        UNIFORM(pilotfish, caustics);
+        UNIFORM(pilotfish, colorTexture);
     }
 
 #undef LOAD_PROGRAM
