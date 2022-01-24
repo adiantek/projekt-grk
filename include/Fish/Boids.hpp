@@ -30,7 +30,7 @@ class Boids : world::Object3D {
     float avoidFactor = 0.07f;
     float matchingFactor = 0.005f;
     float randomFactor = 0.7f;
-    float minAvoidDistance = 7.0f;
+    float minAvoidDistance = 5.0f;
     float visualRange = 75.0f;
     std::vector<T*> boidList;
     glm::vec3 target;

@@ -56,7 +56,7 @@ ResourceLoader resourceLoader;
 physics::RigidBody* rigidBody;
 physics::RigidBody* rigidBodyHeavy;
 
-Boids<Pilotfish>* boids;
+std::vector<Boids<Pilotfish>*> boids;
 
 world::World *w;
 
@@ -151,7 +151,8 @@ void do_frame()
 	controller->update();
 	robot->update();
 	camera->update();
-	boids->update();
+	for(auto boid : boids)
+		boid->update();
 
 	viewMatrix = camera->getTransformationMatrix();
 
@@ -217,7 +218,8 @@ void do_frame()
 
 	drawObjectColor(sphereContext2, glm::translate(lightPos), glm::vec3(1.0f, 0.8f, 0.2f));
 
-	boids->draw(viewMatrix);
+	for (auto boid : boids)
+		boid->draw(viewMatrix);
 
 	waterObject->draw(viewMatrix);
 
@@ -281,8 +283,12 @@ void init() {
 	new water::Water(192.0f, 300.0f, 80.0f, 512, 256.0f, 1000);
 	waterObject->addWorldObject((world::Object3D*) w);
 
-	boids = new Boids<Pilotfish>(20, glm::vec3(0.0f, 180.0f, 0.0f), w);
-	waterObject->addWorldObject((world::Object3D*) boids);
+	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(0.0f, 180.0f, 0.0f), w));
+	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(40.0f, 180.0f, 40.0f), w));
+	boids.push_back(new Boids<Pilotfish>(20, glm::vec3(-40.0f, 180.0f, -40.0f), w));
+	waterObject->addWorldObject((world::Object3D*) boids[0]);
+	waterObject->addWorldObject((world::Object3D*) boids[1]);
+	waterObject->addWorldObject((world::Object3D*) boids[2]);
 }
 
 int main(int argc, char **argv)

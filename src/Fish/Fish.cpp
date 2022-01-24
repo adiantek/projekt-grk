@@ -6,7 +6,7 @@
 Fish::Fish(Model* model, glm::vec3 position, world::World* world) {
     this->model = model;
     physx::PxTransform pose = physx::PxTransform(position.x, position.y, position.z);
-    physx::PxSphereGeometry geometry = physx::PxSphereGeometry(1.0f); // TODO: create geomtery from mesh
+    physx::PxSphereGeometry geometry = physx::PxSphereGeometry(0.5f); // TODO: create geomtery from mesh
     this->rigidBody = new physics::RigidBody(false, pose, geometry, this);
     this->rigidBody ->setMass(1.0f);
     this->rigidBody->density = 0.997f;
