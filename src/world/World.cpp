@@ -3,6 +3,7 @@
 #include <Time/Time.hpp>
 #include <world/ChunkPositionComparator.hpp>
 #include <world/World.hpp>
+#include <utils/Gizmos.hpp>
 
 using namespace world;
 
@@ -143,6 +144,22 @@ Chunk *World::getChunkAt(ChunkPosition pos) {
     }
     std::pair<const uint64_t, Chunk *> pair = *c;
     return pair.second;
+}
+
+float World::getHeightAt(int32_t x, int32_t z) {
+    Chunk *c = this->getChunkAt(ChunkPosition(x >> 4, z >> 4));
+    if (!c) {
+        return NAN;
+    }
+    return c->getHeightAt(x, z);
+}
+
+float World::getHeightAt(float x, float z) {
+    Chunk *c = this->getChunkAt(ChunkPosition(glm::vec3(x, 0, z)));
+    if (!c) {
+        return NAN;
+    }
+    return c->getHeightAt(x, z);
 }
 
 void World::updateChunks() {

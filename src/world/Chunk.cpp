@@ -7,6 +7,7 @@
 #include <vertex/VertexBuffer.hpp>
 #include <world/Chunk.hpp>
 #include <world/World.hpp>
+#include <utils/glmu.hpp>
 
 using namespace world;
 
@@ -69,9 +70,6 @@ void Chunk::generate() {
                 for (int y1 = 0; y1 < 2; y1++) {
                     float locX = (float)(x + minX + x1);
                     float locY = noise[(z + y1 + 1) * 19 + (x + x1 + 1)];
-                    if (locY > waterObject->getY()) {
-                        locY = waterObject->getY() + (locY - waterObject->getY()) / 2.0f;
-                    }
                     float locZ = (float)(z + minZ + y1);
                     squares[x1][y1] = glm::vec3(locX, locY, locZ);
                 }
@@ -107,13 +105,13 @@ void Chunk::generate() {
     int32_t lines[2 * 3 * 16 * 16];
     for (int x = 0; x < 16; x++) {
         for (int z = 0; z < 16; z++) {
-            lines[lineNum++] = x * 17 + z;
-            lines[lineNum++] = x * 17 + z + 1;
-            lines[lineNum++] = x * 17 + z + 17;
+            lines[lineNum++] = x * 17 + z;       // [0, 0]
+            lines[lineNum++] = x * 17 + z + 1;   // [0, 1]
+            lines[lineNum++] = x * 17 + z + 17;  // [1, 0]
 
-            lines[lineNum++] = x * 17 + z + 17 + 1;
-            lines[lineNum++] = x * 17 + z + 17;
-            lines[lineNum++] = x * 17 + z + 1;
+            lines[lineNum++] = x * 17 + z + 17 + 1;  // [1, 1]
+            lines[lineNum++] = x * 17 + z + 17;      // [1, 0]
+            lines[lineNum++] = x * 17 + z + 1;       // [0, 1]
         }
     }
     physx::PxTransform transform = physx::PxTransform(0.0f, 0.0f, 0.0f);
@@ -182,6 +180,49 @@ void Chunk::update() {
             vb.configureColor(resourceLoaderExternal->p_simple_color_shader_attr_vertexColor);
             vb.configurePos(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition);
         }
+    }
+}
+
+float Chunk::getHeightAt(int32_t x, int32_t z) {
+    x &= 0xF;
+    z &= 0xF;
+    return this->heightMap[z * 17 + x];
+}
+
+float Chunk::getHeightAt(float x, float z) {
+    int32_t ix = (int32_t)x;
+    int32_t iz = (int32_t)z;
+
+    // floor
+    ix = (x < (float)ix ? ix - 1 : ix);
+    iz = (z < (float)iz ? iz - 1 : iz);
+
+    float fractX = x - ix;
+    float fractZ = z - iz;
+
+    ix &= 0xF;
+    iz &= 0xF;
+
+    float h01 = this->heightMap[(iz + 1) * 17 + (ix + 0)];
+    float h10 = this->heightMap[(iz + 0) * 17 + (ix + 1)];
+
+    float fractSum = fractX + fractZ;
+
+    if (fractSum == 1.0f) {
+        // diagonal
+        return h01 + (h10 - h01) * fractX;
+    } else if (fractSum > 1.0f) {
+        // U-triangle
+        float h11 = this->heightMap[(iz + 1) * 17 + (ix + 1)];
+        float u, v, w;
+        utils::glmu::barycentric(glm::vec2(fractX, fractZ), glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(1, 1), &u, &v, &w);
+        return u * h01 + v * h10 + w * h11;
+    } else {
+        // L-triangle
+        float h00 = this->heightMap[(iz + 0) * 17 + (ix + 0)];
+        float u, v, w;
+        utils::glmu::barycentric(glm::vec2(fractX, fractZ), glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0), &u, &v, &w);
+        return u * h01 + v * h10 + w * h00;
     }
 }
 

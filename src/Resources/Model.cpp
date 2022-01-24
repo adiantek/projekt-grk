@@ -29,10 +29,6 @@ void Model::loadModel(const char* filename) {
     } else {
         this->joints = this->loadJoints(scene);
         utils::Gizmos::dumpJoints(this->joints);
-        size_t len;
-        char* data = Animator::JointIO::serialize(this->joints, &len);
-        this->joints = Animator::JointIO::deserialize(data, len);
-        utils::Gizmos::dumpJoints(this->joints);
         this->processNode(scene->mRootNode, scene, aiMatrix4x4());
     }
 }

@@ -21,12 +21,12 @@ class Chunk : Object3D {
     double created;
     physics::RigidBody* rigidBody;
     bool minFishYCalculated = false;
-
+    int64_t seed;
+    float heightMap[17 * 17];
+    
    public:
     ChunkPosition pos;
-    int64_t seed;
     World *world;
-    float heightMap[17 * 17];
     float maxY;
     float allowFishAbove = 256;
     Chunk(World *world, ChunkPosition pos);
@@ -37,6 +37,12 @@ class Chunk : Object3D {
      */
     Random *createChunkRandom();
     void generate();
+
+    /**
+     * @brief equals to getHeightAt((float)x, (float)z);
+     */
+    float getHeightAt(int32_t x, int32_t z);
+    float getHeightAt(float x, float z);
 
     void update() override;
     void draw(glm::mat4 mat) override;
