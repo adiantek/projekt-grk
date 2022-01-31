@@ -80,9 +80,9 @@ void do_frame() {
 
     waterObject->update();
 
-    fog->useFramebuffer();
-
     w->update();
+
+    fog->useFramebuffer();
 
     glUseProgram(resourceLoader.p_shader_tex);
     glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);

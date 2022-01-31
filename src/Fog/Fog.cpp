@@ -8,8 +8,6 @@ Fog::Fog(unsigned int width, unsigned int height, float maxDepth) {
     this->width = width;
     this->height = height;
 
-
-
     // Create framebuffer
     glGenFramebuffers(1, &this->framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
@@ -44,7 +42,7 @@ Fog::Fog(unsigned int width, unsigned int height, float maxDepth) {
 
     // Bind texture to framebuffer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->texture, 0);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, this->depthTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture, 0);
 
     GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
     glDrawBuffers(1, &drawBuffer);
@@ -83,6 +81,7 @@ Fog::~Fog() {
     glDeleteTextures(1, &this->depthTexture);
     glDeleteRenderbuffers(1, &this->depthbuffer);
     glDeleteFramebuffers(1, &this->framebuffer);
+
 }
 
 void Fog::useFramebuffer() {
@@ -95,7 +94,6 @@ void Fog::useFramebuffer() {
 }
 
 void Fog::stopUsingFramebuffer() {
-
     glUseProgram(resourceLoaderExternal->p_underwater_fog_shader);
 
     glActiveTexture(GL_TEXTURE0);
