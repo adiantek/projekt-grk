@@ -17,14 +17,18 @@ class RigidBody {
     ~RigidBody();
     glm::mat4 getModelMatrix();
     float getMass();
+    glm::vec3 getLinearVelocity();
     void setMass(float mass);
-    void addForce(glm::vec3 force);
+    void setLinearVelocity(glm::vec3 velocity);
+    void addForce(glm::vec3 force, physx::PxForceMode::Enum mode = physx::PxForceMode::eFORCE);
     void addTorque(glm::vec3 torque);
     void applyDrag(float density);
     void putToSleep();
     void wakeUp();
+    void rotateForward(glm::mat4 rot);
     world::Object3D* object;
     float density = 1.0f;
+    bool drag = true;
 
    private:
     physx::PxRigidBody* inner;
