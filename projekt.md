@@ -6,7 +6,7 @@ Celem projektu jest stworzenie gry, która rozgrywa się w środowisku podwodnym
 
 ## Wymagania obowiązkowe (30%)
 W projekcie muszą się znaleźć:
--	[ ] [Pływające ryby](https://github.com/adiantek/projekt-grk/issues/6),
+-	[x] [Pływające ryby](https://github.com/adiantek/projekt-grk/issues/6),
 -	[ ] [rośliny morskie](https://github.com/adiantek/projekt-grk/issues/7),
 -	[ ] [bąble powietrza](https://github.com/adiantek/projekt-grk/issues/5),
 -	[ ] [mgła](https://github.com/adiantek/projekt-grk/issues/8),
@@ -34,7 +34,7 @@ Wymagane jest zrobienie jednej prostej i jednej trudniejszej metody dodatkowej.
 ### Łatwe (15%)
 -	[ ] [Bloom](https://github.com/adiantek/projekt-grk/issues/20),
 -	[x] [Parallax Mapping](https://github.com/adiantek/projekt-grk/issues/21),
--	[ ] [Boids](https://github.com/adiantek/projekt-grk/issues/22),
+-	[x] [Boids](https://github.com/adiantek/projekt-grk/issues/22),
 -	[ ] [Realistic swimming motion (shader level)](https://github.com/adiantek/projekt-grk/issues/23),
 -	[ ] [Particle generator](https://github.com/adiantek/projekt-grk/issues/24)
 -	[ ] [Parallel transport frames](https://github.com/adiantek/projekt-grk/issues/25)

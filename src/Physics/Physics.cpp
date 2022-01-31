@@ -1,5 +1,3 @@
-#include <Logger.h>
-
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
 #include <Physics/SimulationEventCallback.hpp>

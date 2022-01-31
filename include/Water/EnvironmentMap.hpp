@@ -11,10 +11,7 @@ class EnvironmentMap {
    public:
     EnvironmentMap(float size, float y, unsigned int textureSize, float maxDepth, glm::vec3 lightDirection = glm::vec3(0.0f, 1.0f, 0.0f));
     ~EnvironmentMap();
-    void useFramebuffer();
-    void stopUsingFramebuffer();
-    void drawObject(Core::RenderContext context, glm::mat4 modelMatrix);
-    unsigned int getMapTexture();
+    unsigned int getEnvironmentMap();
     glm::mat4 getLightCamera();
     glm::vec3 getLightDirection();
     void setLightDirection(glm::vec3 newLightDirection);
@@ -38,6 +35,5 @@ class EnvironmentMap {
     unsigned int depthbuffer;
     unsigned int texture;
     glm::mat4 lightCameraMatrix;
-    int prevViewport[4];
 };
 }  // namespace water

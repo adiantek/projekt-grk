@@ -11,9 +11,6 @@ class Water : world::Object3D {
     ~Water();
     void draw(glm::mat4 viewMatrix) override;
     void update() override;
-    void useFramebuffer();
-    void drawObject(Core::RenderContext context, glm::mat4 modelMatrix);
-    void stopUsingFramebuffer();
     glm::mat4 getLightCamera();
     unsigned int getCausticsMap();
     void addWorldObject(world::Object3D* object);

@@ -4,7 +4,6 @@
 #include <ResourceLoader.hpp>
 #include <Water/EnvironmentMap.hpp>
 #include <glm/ext.hpp>
-#include <Fog/Fog.hpp>
 
 namespace water {
 EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, float maxDepth, glm::vec3 lightDirection) {
@@ -50,40 +49,7 @@ EnvironmentMap::~EnvironmentMap() {
     glDeleteFramebuffers(1, &this->framebuffer);
 }
 
-void EnvironmentMap::useFramebuffer() {
-    glUseProgram(resourceLoaderExternal->p_environment_map);
-
-    this->lightCameraMatrix = this->lightCameraProjectionMatrix 
-        * this->lightCameraRotationMatrix 
-        * glm::translate(glm::vec3(this->lightCameraTranslation.x - camera->position.x, -this->y, this->lightCameraTranslation.y - camera->position.z));
-
-    glGetIntegerv(GL_VIEWPORT, this->prevViewport);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
-    glViewport(0, 0, this->textureSize, this->textureSize);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void EnvironmentMap::stopUsingFramebuffer() {
-    this->update();
-    glm::mat4 modelMatrix = glm::translate(glm::vec3(camera->position.x, this->y - this->maxDepth + 1.0f, camera->position.z)) * glm::eulerAngleX(glm::radians(90.0f));
-    glm::mat4 transformation = this->lightCameraMatrix * modelMatrix;
-    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&transformation);
-    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
-    Core::DrawContext(this->geometry);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
-    glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
-}
-
-void EnvironmentMap::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
-    glm::mat4 transformation = this->lightCameraMatrix * modelMatrix;
-    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&transformation);
-    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
-    Core::DrawContext(context);
-}
-
-unsigned int EnvironmentMap::getMapTexture() {
+unsigned int EnvironmentMap::getEnvironmentMap() {
     return this->texture;
 }
 
@@ -107,9 +73,9 @@ void EnvironmentMap::addWorldObject(world::Object3D* object) {
     this->worldObjects.push_back(object);
 }
 
-void EnvironmentMap::removeWorldObject(world::Object3D* object) {  // TODO: rewrite this
+void EnvironmentMap::removeWorldObject(world::Object3D* object) {
     world::Object3D* lastObject = this->worldObjects.back();
-    for (auto object3D : this->worldObjects) {
+    for (auto & object3D : this->worldObjects) {
         if (object3D == object) {
             object3D = lastObject;
             break;
@@ -123,22 +89,29 @@ void EnvironmentMap::clearWorldObjects() {
 }
 
 void EnvironmentMap::update() {
-    //glUseProgram(resourceLoaderExternal->p_environment_map);
+    int prevViewport[4];
+    glGetIntegerv(GL_VIEWPORT, prevViewport);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+    glViewport(0, 0, this->textureSize, this->textureSize);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->lightCameraMatrix = this->lightCameraProjectionMatrix * this->lightCameraRotationMatrix 
         * glm::translate(glm::vec3(this->lightCameraTranslation.x - camera->position.x, -this->y, this->lightCameraTranslation.y - camera->position.z));
-
-    //glGetIntegerv(GL_VIEWPORT, this->prevViewport);
-    //glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
-    //glViewport(0, 0, this->textureSize, this->textureSize);
-    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (auto object3D : this->worldObjects) {
         object3D->drawShadow(this->lightCameraMatrix);
     }
 
-    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    //glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
+    glUseProgram(resourceLoaderExternal->p_environment_map);
+    glm::mat4 modelMatrix = glm::translate(glm::vec3(camera->position.x, this->y - this->maxDepth + 1.0f, camera->position.z)) * glm::eulerAngleX(glm::radians(90.0f));
+    glm::mat4 transformation = this->lightCameraMatrix * modelMatrix;
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
+    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+    Core::DrawContext(this->geometry);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 }
 }  // namespace water

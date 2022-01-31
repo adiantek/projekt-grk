@@ -55,8 +55,11 @@ public:
     GLuint tex_test_normals = 0;
     GLuint tex_uv_grid = 0;
     GLuint tex_wall = 0;
+    GLuint tex_wall_ao = 0;
     GLuint tex_wall_height = 0;
+    GLuint tex_wall_roughness = 0;
     GLuint tex_wall_normal = 0;
+    GLuint tex_pilotfish = 0;
 
     // models:
     Model *m_primitives_AnimatedStick = 0;
@@ -71,6 +74,7 @@ public:
     Model *m_sphere = 0;
     Model *m_sphere2 = 0;
     Model *m_sphere_different_texcoords = 0;
+    Model *m_pilotfish = 0;
 
     // programs:
     GLuint p_color_armature = 0;
@@ -251,6 +255,42 @@ public:
     GLint p_chunk_uni_depthMap = -1;
     GLint p_chunk_uni_normalSampler = -1;
     GLint p_chunk_uni_roughnessMap = -1;
+    // pilotfish:
+    GLuint p_pilotfish = 0;
+    bool p_pilotfish_loaded = false;
+    GLint p_pilotfish_attr_vertexBitangent = -1;
+    GLint p_pilotfish_attr_vertexNormal = -1;
+    GLint p_pilotfish_attr_vertexPosition = -1;
+    GLint p_pilotfish_attr_vertexTangent = -1;
+    GLint p_pilotfish_attr_vertexTexCoord = -1;
+    GLint p_pilotfish_uni_cameraPosition = -1;
+    GLint p_pilotfish_uni_lightPosition = -1;
+    GLint p_pilotfish_uni_lightTransformation = -1;
+    GLint p_pilotfish_uni_modelMatrix = -1;
+    GLint p_pilotfish_uni_transformation = -1;
+    GLint p_pilotfish_uni_waterHeight = -1;
+    GLint p_pilotfish_uni_caustics = -1;
+    GLint p_pilotfish_uni_colorTexture = -1;
+    // cubefish:
+    GLuint p_cubefish = 0;
+    bool p_cubefish_loaded = false;
+    GLint p_cubefish_attr_vertexBitangent = -1;
+    GLint p_cubefish_attr_vertexNormal = -1;
+    GLint p_cubefish_attr_vertexPosition = -1;
+    GLint p_cubefish_attr_vertexTangent = -1;
+    GLint p_cubefish_attr_vertexTexCoord = -1;
+    GLint p_cubefish_uni_cameraPosition = -1;
+    GLint p_cubefish_uni_lightPosition = -1;
+    GLint p_cubefish_uni_lightTransformation = -1;
+    GLint p_cubefish_uni_modelMatrix = -1;
+    GLint p_cubefish_uni_transformation = -1;
+    GLint p_cubefish_uni_waterHeight = -1;
+    GLint p_cubefish_uni_aoMap = -1;
+    GLint p_cubefish_uni_caustics = -1;
+    GLint p_cubefish_uni_colorTexture = -1;
+    GLint p_cubefish_uni_depthMap = -1;
+    GLint p_cubefish_uni_normalSampler = -1;
+    GLint p_cubefish_uni_roughnessMap = -1;
 
 private:
     int totalResourcesCounter = 0;

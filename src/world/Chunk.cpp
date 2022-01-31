@@ -61,6 +61,7 @@ void Chunk::generate() {
     }
 
     vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX_TANGENT_BITANGENT, 17 * 17);
+    float vert[17 * 17 * 3];
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
             glm::vec3 squares[2][2];
@@ -96,6 +97,10 @@ void Chunk::generate() {
 
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
+
+            vert[3 * (x * 17 + z)] = squares[0][0].x;
+            vert[3 * (x * 17 + z) + 1] = squares[0][0].y;
+            vert[3 * (x * 17 + z) + 2] = squares[0][0].z;
         }
     }
     int n = 0;
