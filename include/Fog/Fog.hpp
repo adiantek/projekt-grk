@@ -2,6 +2,7 @@
 
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
+#include <opengl.h>
 
 #include <Logger.h>
 
