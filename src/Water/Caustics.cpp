@@ -4,6 +4,7 @@
 #include<Camera/Camera.hpp>
 #include<glm/glm.hpp>
 #include<glm/ext.hpp>
+#include <Fog/Fog.hpp>
 
 namespace water {
     Caustics::Caustics(float size, float y, unsigned int textureSize, float maxDepth) 
@@ -84,7 +85,7 @@ namespace water {
 
         glDisable(GL_BLEND);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
         glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
     }
 

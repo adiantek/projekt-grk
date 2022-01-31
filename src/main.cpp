@@ -23,6 +23,7 @@
 #include <world/World.hpp>
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
+#include <Fog/Fog.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -170,6 +171,8 @@ void do_frame()
 
 	waterObject->update();
 	
+	fog->useFramebuffer();
+
 	w->update();
 	w->draw(viewMatrix);
 
@@ -208,6 +211,8 @@ void do_frame()
 
 	waterObject->draw(viewMatrix);
 
+	fog->stopUsingFramebuffer();
+
 	utils::Gizmos::draw();
 
 	if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
@@ -241,6 +246,7 @@ void init() {
 	Resources::init();
 
 	w = new world::World(0);
+	fog = new Fog(1280, 720, 256.0);
 	
 	new physics::Physics(9.8f, w);
 

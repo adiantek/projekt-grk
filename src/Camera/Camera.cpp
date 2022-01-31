@@ -6,6 +6,7 @@
 #include <Camera/Camera.hpp>
 #include <Controller/Controller.hpp>
 #include <Robot/Robot.hpp>
+#include <Fog/Fog.hpp>
 #include <Time/Time.hpp>
 
 Camera::Camera(int width, int height, float fov, float near, float far, int x, int y) {
@@ -36,6 +37,8 @@ void Camera::setSize(int width, int height) {
     this->width = width;
     this->height = height;
     updatePerspective();
+    delete fog;
+    fog = new Fog(width, height, 256.0);
 }
 
 void Camera::setFov(float fov) {

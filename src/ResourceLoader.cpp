@@ -103,6 +103,14 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(skybox_shader, skybox);
     }
 
+    LOAD_PROGRAM(underwater_fog_shader, 2, "fog/underwaterFog.frag", "fog/underwaterFog.vert") {
+        // DUMP(skybox_shader);
+        ATTRIBUTE(underwater_fog_shader, vertexPosition);
+        ATTRIBUTE(underwater_fog_shader, vertexTexCoord);
+        UNIFORM(underwater_fog_shader, screenTexture);
+        UNIFORM(underwater_fog_shader, depthTexture);
+    }
+
     LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
         // DUMP(shader_4_1);
         ATTRIBUTE(shader_4_1, vertexNormal);

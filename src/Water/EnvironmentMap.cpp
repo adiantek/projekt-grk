@@ -4,6 +4,7 @@
 #include <ResourceLoader.hpp>
 #include <Water/EnvironmentMap.hpp>
 #include <glm/ext.hpp>
+#include <Fog/Fog.hpp>
 
 namespace water {
 EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, float maxDepth, glm::vec3 lightDirection) {
@@ -70,7 +71,8 @@ void EnvironmentMap::stopUsingFramebuffer() {
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&transformation);
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&modelMatrix);
     Core::DrawContext(this->geometry);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
     glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
 }
 

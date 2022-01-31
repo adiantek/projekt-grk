@@ -5,6 +5,7 @@
 #include <ResourceLoader.hpp>
 #include <Time/Time.hpp>
 #include <Water/Simulation.hpp>
+#include <Fog/Fog.hpp>
 
 namespace water {
 Simulation::Simulation(float size, unsigned int textureSize, glm::vec2 offset) {
@@ -63,8 +64,8 @@ void Simulation::update() {
     glViewport(0, 0, this->textureSize, this->textureSize);
 
     Core::DrawContext(this->geometry);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 }
 
