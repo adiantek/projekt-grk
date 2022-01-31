@@ -58,3 +58,5 @@ class World : Object3D {
 };
 
 }  // namespace world
+
+extern world::World *worldObject;

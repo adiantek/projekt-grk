@@ -1,7 +1,7 @@
 #pragma once
 
 #include <assimp/matrix4x4.h>
-
+#include <stdbool.h>
 #include <glm/ext.hpp>
 
 namespace utils {
@@ -24,6 +24,7 @@ class glmu {
     static glm::vec3 midpoint(glm::vec3 a, glm::vec3 b);
 
     static glm::vec2 circles_midpoint(glm::vec2 a, glm::vec2 b, float aRadius, float bRadius);
+    static glm::vec3 circles_midpoint(glm::vec3 a, glm::vec3 b, float aRadius, float bRadius, glm::vec3 up);
 
     static glm::vec3 curve(glm::vec3 a, glm::vec3 b, float t);
 

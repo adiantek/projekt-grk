@@ -10,6 +10,7 @@ using namespace world;
 #define VIEW_DISTANCE 16
 
 World::World(int64_t seed) {
+    worldObject = this;
     this->seed = seed;
     this->chunkBorderDebugRenderer = new ChunkBorderDebugRenderer();
     this->crosshair = new Crosshair();
@@ -222,3 +223,5 @@ bool World::chunksLoaded(glm::vec3 pos) {
     }
     return true;
 }
+
+World *worldObject;

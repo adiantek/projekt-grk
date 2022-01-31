@@ -25,6 +25,7 @@ struct RobotLeg {
     glm::vec3 targetAttachmentPoint = glm::vec3(0.0f);
     glm::vec3 previousAttachmentPoint = glm::vec3(0.0f);
     float step = -1.0f;
+    float currentStepDistance = 0.0f;
 
     glm::vec3 lowerJointLengthVector = glm::vec3(0.0f);
 
@@ -42,7 +43,7 @@ class Robot : world::Object3D {
     inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f * 10;
 
     inline static const float ROTATION_SPEED = 15.0f;
-    inline static const float LEG_STEP_SPEED = 10.0f;
+    inline static const float LEG_STEP_SPEED = 7.0f;
     inline static const float LEG_MAX_DISTANCE_SQUARE = 0.6f;
 
     // MODES
@@ -50,6 +51,7 @@ class Robot : world::Object3D {
     static const int MODE_WALKING = 1;
     static const int MODE_SWIMMING = 2;
     static const int MODE_SLEEPING = 3;
+    static const int MODE_JUMPING = 4;
 
     float currentSpeed = 0;
     float currentTurnSpeed = 0;
@@ -66,6 +68,8 @@ class Robot : world::Object3D {
     void enableIncreasedSpeedMode();
     void disableIncreasedSpeedMode();
 
+    void jump();
+
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 direction;
@@ -81,19 +85,24 @@ class Robot : world::Object3D {
 
     void createBody();
     void updateBody();
+    void updateDirections();
     void applyBodyTransformation(glm::mat4 transformation);
+    glm::vec3 getWorldPointAt(glm::vec3 point);
 
     GameObject* gameObject;
 
     std::vector<RobotLeg*> legs;
     Animator::Joint* body;
     glm::vec3 bodyOrigin;
+    glm::quat bodyRotation = glm::quat(0.0f, 0.0f, 0.0f, 0.0f);
     Animator::Joint* eyeCover;
 
     glm::mat4 initialModelMatrix;
     glm::vec3 initialPosition;
+    glm::vec3 up;
+    glm::vec3 forward;
 };
 
 }  // namespace entity
 
-extern entity::Robot* robot;
+extern entity::Robot *robot;

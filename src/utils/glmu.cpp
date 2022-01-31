@@ -61,10 +61,28 @@ glm::vec2 glmu::circles_midpoint(glm::vec2 a, glm::vec2 b, float aRadius, float 
     }
 }
 
+glm::vec3 glmu::circles_midpoint(glm::vec3 a, glm::vec3 b, float aRadius, float bRadius, glm::vec3 up) {
+    float d = glm::distance(a, b);
+
+    if (aRadius + bRadius <= d) {
+        return (glm::normalize(a - b) * bRadius) + b;
+    }
+
+    float h = (1.0f / 2.0f) + ((aRadius * aRadius) - (bRadius * bRadius)) / (2 * d * d);
+    glm::vec3 c_i = a + (h * (b - a));
+    float r_i = sqrt((aRadius * aRadius) - (h * h * d * d));
+    glm::vec3 n_i = (b - a) / d;
+
+    glm::vec3 t_i = glm::normalize(glm::cross(up, n_i));
+    glm::vec3 b_i = glm::cross(t_i, n_i);
+
+    return c_i + r_i * (t_i * cos(M_PI + M_PI/2) + b_i * sin(M_PI + M_PI/2));
+}
+
 glm::vec3 glmu::curve(glm::vec3 a, glm::vec3 b, float t) {
     t = std::min(1.0f, std::max(0.0f, t));
     glm::vec3 resultVec = a + (b - a) * t;
-    resultVec.z += sin(t * M_PI) * 0.2f;
+    resultVec.z += (float)sin(t * M_PI) * 0.2f;
     return resultVec;
 }
 
