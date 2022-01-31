@@ -3,6 +3,7 @@
 #include <Camera/Camera.hpp>
 #include <ResourceLoader.hpp>
 #include <Water/EnvironmentMap.hpp>
+#include <Fog/Fog.hpp>
 #include <glm/ext.hpp>
 
 namespace water {
@@ -40,7 +41,7 @@ EnvironmentMap::EnvironmentMap(float size, float y, unsigned int textureSize, fl
         LOGE("Framebuffer not created");
     }
     // Bind previous framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
 }
 
 EnvironmentMap::~EnvironmentMap() {
@@ -111,7 +112,7 @@ void EnvironmentMap::update() {
 
     Core::DrawContext(this->geometry);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
     glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 }
 }  // namespace water
