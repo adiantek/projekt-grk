@@ -25,15 +25,22 @@ void main()
   // ----- FOG FATNESS -----
 
   // lighter fog
-  // float visibility = ((exp((depth * density) -95.0) + (depth * 10.0)) * 0.01) + 0.05;
+  // float visibility = ((exp((depth * 100.0) -93.0) + (depth * 10.0)) * 0.001) + 0.05;
+  float visibility = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.001) + 0.05;
 
   // fatter fog
   // float visibility = ((exp((depth * 100.0) -95.0) + (depth * 20.0)) * 0.01) + 0.05;
 
   // current fog
-  float visibility = ((exp((depth * 100.0) -95.0) + exp(depth * 3.5)) * 0.01) + 0.05;
+  // float visibility = ((exp((depth * 100.0) -95.0) + exp(depth * 3.5)) * 0.01) + 0.05;
   
   visibility = clamp(visibility, 0.0, 1.0);
 
+  // ----- FOG -----
+
   FragColor = mix(colorBuffer, vec4(fogColor, 1.0), visibility);
+
+  // ----- WITHOUT FOG -----
+
+  // FragColor = colorBuffer;
 }
