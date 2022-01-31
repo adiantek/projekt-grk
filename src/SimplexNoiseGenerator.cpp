@@ -75,6 +75,7 @@ float *SimplexNoiseGenerator::draw(float x, float y) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
     glViewport(0, 0, 19, 19);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE);
