@@ -114,13 +114,10 @@ void do_frame() {
     w->draw(viewMatrix);
     for (auto boid : boids)
         boid->draw(viewMatrix);
-    Glow::glow->startFB();
-    for (auto boid : boids)
-        boid->drawShadow(viewMatrix);
-    Glow::glow->stopFB();
     for (auto cube : cubefish)
         cube->draw(viewMatrix);
     waterObject->draw(viewMatrix);
+    physicsObject->draw(viewMatrix);
 
     utils::Gizmos::draw();
     Glow::glow->draw(viewMatrix);
