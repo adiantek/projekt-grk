@@ -2,14 +2,19 @@
 #include <Physics/RigidBody.hpp>
 #include <Physics/SimulationEventCallback.hpp>
 #include <Water/Water.hpp>
+#include <Camera/Camera.hpp>
 #include <glm/glm.hpp>
+#include <utils/Gizmos.hpp>
 #include <vector>
+#include <Logger.h>
 
 #define PX_RELEASE(x) \
     if (x) {          \
         x->release(); \
         x = NULL;     \
     }
+
+#define GRAB_DIST 30.0f
 
 using namespace physics;
 
@@ -79,6 +84,11 @@ void Physics::update(float deltaTime) {
                 } else {
                     rigidBody->applyDrag(0.001225f);
                 }
+                if (rigidBody->grabbed) {
+                    glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
+                    ((physx::PxRigidBody*)actor)->setLinearVelocity(physx::PxVec3(direction.x, direction.y, direction.z));
+                    utils::Gizmos::line(robot->position, glm::vec3(rigidBody->getModelMatrix()[3]));
+                }
             }
         }
 
@@ -135,6 +145,37 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuff
     triGeom.triangleMesh = this->cooking->createTriangleMesh(meshDesc, this->physx->getPhysicsInsertionCallback());
 
     return triGeom;
+}
+
+void Physics::grab() {
+    glm::vec4 start(0.0f, 0.0f, -1.0f, 1.0f);
+    glm::vec4 end(0.0f, 0.0f, 1.0f, 1.0f);
+
+    glm::mat4 viewInverse = glm::inverse(camera->getTransformationMatrix());
+
+    start = viewInverse * start;
+    end = viewInverse * end;
+
+    start /= start.w;
+    end /= end.w;
+
+    glm::vec4 dir = glm::normalize(end - start);
+
+    physx::PxVec3 position(start.x, start.y, start.z);
+    physx::PxVec3 direction(dir.x, dir.y, dir.z);
+
+    PxRaycastBuffer hit;
+    this->scene->raycast(position, direction, GRAB_DIST, hit);
+
+    if (hit.hasAnyHits() && hit.block.actor->getType() == PxActorType::eRIGID_DYNAMIC) {
+        LOGD("Hit");
+        physx::PxRaycastHit block = hit.block;
+        if (block.actor->getType() == PxActorType::eRIGID_DYNAMIC) {
+            ((RigidBody*)block.actor->userData)->grabbed = !((RigidBody*)block.actor->userData)->grabbed;
+        }
+    } else {
+        LOGD("No hit");
+    }
 }
 
 physics::Physics* physicsObject;

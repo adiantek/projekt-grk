@@ -34,15 +34,21 @@ void RigidBody::setMass(float mass) {
 }
 
 void RigidBody::setLinearVelocity(glm::vec3 velocity) {
-    this->inner->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
+    if (!this->grabbed) {
+        this->inner->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
+    }
 }
 
 void RigidBody::addForce(glm::vec3 force, physx::PxForceMode::Enum mode) {
-    this->inner->addForce(physx::PxVec3(force.x, force.y, force.z), mode);
+    if (!this->grabbed) {
+        this->inner->addForce(physx::PxVec3(force.x, force.y, force.z), mode);
+    }
 }
 
 void RigidBody::addTorque(glm::vec3 torque) {
-    this->inner->addTorque(physx::PxVec3(torque.x, torque.y, torque.z));
+    if (!this->grabbed) {
+        this->inner->addTorque(physx::PxVec3(torque.x, torque.y, torque.z));
+    }
 }
 
 void RigidBody::applyDrag(float density) {
@@ -79,10 +85,12 @@ void RigidBody::wakeUp() {
 }
 
 void RigidBody::rotateForward(glm::mat4 rot) {
-    glm::vec3 velocity = this->getLinearVelocity();
-    if (glm::length(velocity) > 0.0f) {
-        auto quat = glm::quat_cast(glm::orientation(glm::normalize(velocity), glm::vec3(0.0f, 1.0f, 0.0f)) * rot);
-        this->inner->setGlobalPose(physx::PxTransform(this->inner->getGlobalPose().p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
+    if (!this->grabbed) {
+        glm::vec3 velocity = this->getLinearVelocity();
+        if (glm::length(velocity) > 0.0f) {
+            auto quat = glm::quat_cast(glm::orientation(glm::normalize(velocity), glm::vec3(0.0f, 1.0f, 0.0f)) * rot);
+            this->inner->setGlobalPose(physx::PxTransform(this->inner->getGlobalPose().p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
+        }
     }
 }
 }  // namespace physics

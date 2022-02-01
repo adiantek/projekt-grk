@@ -29,6 +29,7 @@ class RigidBody {
     world::Object3D* object;
     float density = 1.0f;
     bool drag = true;
+    bool grabbed = false;
 
    private:
     physx::PxRigidBody* inner;

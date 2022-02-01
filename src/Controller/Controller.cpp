@@ -5,6 +5,7 @@
 #include <Logger.h>
 #include <Controller/Controller.hpp>
 #include <Camera/Camera.hpp>
+#include <Physics/Physics.hpp>
 #include <Robot/Robot.hpp>
 #include <ResourceLoader.hpp>
 
@@ -56,6 +57,9 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
         if (key == GLFW_KEY_2) {
             glUseProgram(resourceLoaderExternal->p_chunk);
             glUniform1i(resourceLoaderExternal->p_chunk_uni_modeSwitch, 1);
+        }
+        if (key == GLFW_KEY_F) {
+            physicsObject->grab();
         }
     } else if (action == 0) {
         LOGI("Released key: %d", key);

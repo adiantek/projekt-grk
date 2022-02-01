@@ -18,6 +18,7 @@ class Physics {
     void deleteRigidBody(physx::PxRigidBody* rigidBody);
     physx::PxTriangleMeshGeometry createTriangleGeometry(float* vertices, int verticesNumber, int* indices, int trianglesNumber);
     physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, int trianglesNumber);
+    void grab();
 
    private:
     physx::PxDefaultAllocator allocator;
