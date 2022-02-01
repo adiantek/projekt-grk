@@ -5,6 +5,7 @@
 #include <Camera/Camera.hpp>
 #include <glm/glm.hpp>
 #include <utils/Gizmos.hpp>
+#include <Glow/GlowShader.hpp>
 #include <vector>
 #include <Logger.h>
 
@@ -15,6 +16,7 @@
     }
 
 #define GRAB_DIST 30.0f
+#define GLOW_DIST 100.0f
 
 using namespace physics;
 
@@ -87,7 +89,6 @@ void Physics::update(float deltaTime) {
                 if (rigidBody->grabbed) {
                     glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
                     ((physx::PxRigidBody*)actor)->setLinearVelocity(physx::PxVec3(direction.x, direction.y, direction.z));
-                    utils::Gizmos::line(robot->position, glm::vec3(rigidBody->getModelMatrix()[3]));
                 }
             }
         }
@@ -147,7 +148,7 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuff
     return triGeom;
 }
 
-void Physics::grab() {
+std::pair<physx::PxVec3, physx::PxVec3> calculateRay() {
     glm::vec4 start(0.0f, 0.0f, -1.0f, 1.0f);
     glm::vec4 end(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -161,20 +162,57 @@ void Physics::grab() {
 
     glm::vec4 dir = glm::normalize(end - start);
 
-    physx::PxVec3 position(start.x, start.y, start.z);
-    physx::PxVec3 direction(dir.x, dir.y, dir.z);
+    return std::make_pair(physx::PxVec3(start.x, start.y, start.z), physx::PxVec3(dir.x, dir.y, dir.z));
+}
+
+void Physics::grab() {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxVec3 position = pair.first;
+    physx::PxVec3 direction = pair.second;
 
     PxRaycastBuffer hit;
-    this->scene->raycast(position, direction, GRAB_DIST, hit);
+    PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+    this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
-    if (hit.hasAnyHits() && hit.block.actor->getType() == PxActorType::eRIGID_DYNAMIC) {
+    if (hit.hasAnyHits()) {
         LOGD("Hit");
-        physx::PxRaycastHit block = hit.block;
-        if (block.actor->getType() == PxActorType::eRIGID_DYNAMIC) {
-            ((RigidBody*)block.actor->userData)->grabbed = !((RigidBody*)block.actor->userData)->grabbed;
-        }
+        ((RigidBody*)hit.block.actor->userData)->grabbed = !((RigidBody*)hit.block.actor->userData)->grabbed;
     } else {
         LOGD("No hit");
+    }
+}
+
+void Physics::draw(glm::mat4 mat) {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxVec3 position = pair.first;
+    physx::PxVec3 direction = pair.second;
+
+    PxRaycastBuffer hit;
+    PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+    this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+    if (hit.hasAnyHits()) {
+        physx::PxRaycastHit block = hit.block;
+        Glow::glow->startFB();
+        ((RigidBody*)block.actor->userData)->object->drawShadow(mat);
+        Glow::glow->stopFB();
+    }
+
+    physx::PxU32 nbActors = this->scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+    if (nbActors > 0) {
+        std::vector<PxRigidActor*> actors(nbActors);
+        this->scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, (PxActor**)&actors[0], nbActors);
+        for (auto actor : actors) {
+            if (!actor->userData)
+                continue;
+            physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
+            if (rigidBody->grabbed) {
+                glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
+                utils::Gizmos::line(robot->position, glm::vec3(rigidBody->getModelMatrix()[3]), glm::vec3(0.0f));
+            }
+        }
     }
 }
 
