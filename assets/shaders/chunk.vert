@@ -18,10 +18,12 @@ out vec2 texturePosition;
 out vec3 viewDirectionTS;
 out vec3 lightDirectionTS;
 out vec3 positionLS;
+out vec3 worldPos;
 out float lightIntensity;
 
 void main() {
     gl_Position = transformation * vec4(vertexPosition, 1.0);
+    worldPos = vertexPosition;
 
     position = (modelMatrix * vec4(vertexPosition, 1.0)).xyz;
     texturePosition = vertexTexCoord;
