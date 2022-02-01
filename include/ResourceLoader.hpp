@@ -111,13 +111,14 @@ public:
     GLint p_skybox_shader_uni_projection = -1;
     GLint p_skybox_shader_uni_skybox = -1;
 
-    // fog
+    // underwater_fog_shader:
     GLuint p_underwater_fog_shader = 0;
     bool p_underwater_fog_shader_loaded = false;
-    GLint p_underwater_fog_shader_attr_vertexPosition = -1;
+    GLint p_underwater_fog_shader_attr_aPos = -1;
     GLint p_underwater_fog_shader_attr_vertexTexCoord = -1;
-    GLint p_underwater_fog_shader_uni_screenTexture = -1;
+    GLint p_underwater_fog_shader_uni_distanceToSurface = -1;
     GLint p_underwater_fog_shader_uni_depthTexture = -1;
+    GLint p_underwater_fog_shader_uni_screenTexture = -1;
 
     GLuint p_shader_4_1 = 0;
     bool p_shader_4_1_loaded = false;

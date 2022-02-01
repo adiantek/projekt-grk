@@ -4,6 +4,7 @@ precision highp float;
 
 uniform sampler2D screenTexture;
 uniform sampler2D depthTexture;
+uniform float distanceToSurface;
 
 in vec2 interpTexCoord;
 
@@ -38,7 +39,11 @@ void main()
 
   // ----- FOG -----
 
-  FragColor = mix(colorBuffer, vec4(fogColor, 1.0), visibility);
+  if (distanceToSurface > 0.0) {
+    FragColor = mix(colorBuffer, vec4(fogColor, 1.0), visibility);
+  } else {
+    FragColor = colorBuffer;
+  }
 
   // ----- WITHOUT FOG -----
 

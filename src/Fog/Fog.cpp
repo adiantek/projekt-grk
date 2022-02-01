@@ -1,4 +1,5 @@
 #include <Camera/Camera.hpp>
+#include <Water/Water.hpp>
 #include <ResourceLoader.hpp>
 #include <Fog/Fog.hpp>
 #include <glm/ext.hpp>
@@ -95,6 +96,8 @@ void Fog::useFramebuffer() {
 
 void Fog::stopUsingFramebuffer() {
     glUseProgram(resourceLoaderExternal->p_underwater_fog_shader);
+
+    glUniform1f(resourceLoaderExternal->p_underwater_fog_shader_uni_distanceToSurface, waterObject->getY() - camera->position.y);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->texture);
