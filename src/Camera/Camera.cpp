@@ -7,6 +7,7 @@
 #include <Controller/Controller.hpp>
 #include <Robot/Robot.hpp>
 #include <Time/Time.hpp>
+#include <Glow/GlowShader.hpp>
 
 Camera::Camera(int width, int height, float fov, float near, float far, int x, int y) {
     camera = this;
@@ -36,6 +37,7 @@ void Camera::setSize(int width, int height) {
     this->width = width;
     this->height = height;
     updatePerspective();
+    Glow::glow->resize(width, height);
 }
 
 void Camera::setFov(float fov) {

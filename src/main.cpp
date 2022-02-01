@@ -21,6 +21,7 @@
 #include <utils/Gizmos.hpp>
 #include <vector>
 #include <world/World.hpp>
+#include <Glow/GlowShader.hpp>
 
 #define BOIDS_AMOUNT 5
 #define BOIDS_SIZE 10
@@ -106,17 +107,23 @@ void do_frame() {
 
     glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Glow::glow->clear();
     // Draw area
     viewMatrix = camera->getTransformationMatrix();
 
     w->draw(viewMatrix);
     for (auto boid : boids)
         boid->draw(viewMatrix);
+    Glow::glow->startFB();
+    for (auto boid : boids)
+        boid->drawShadow(viewMatrix);
+    Glow::glow->stopFB();
     for (auto cube : cubefish)
         cube->draw(viewMatrix);
     waterObject->draw(viewMatrix);
 
     utils::Gizmos::draw();
+    Glow::glow->draw(viewMatrix);
 
     if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
         lastTitleUpdate = timeExternal->lastFrame;
@@ -133,6 +140,8 @@ void init() {
 
     // Initialize resources (textures, shaders, materials)
     Resources::init();
+
+    new Glow::GlowShader(camera->width, camera->height);
 
     new water::Water(192.0f, 500.0f, 80.0f, 512, 256.0f, 1000);
 

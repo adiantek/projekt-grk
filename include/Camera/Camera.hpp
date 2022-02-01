@@ -42,6 +42,10 @@ class Camera {
     glm::vec3 getDirection();
     /* Camera position in world */
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+    /* Viewport width */
+    int width;
+    /* Viewport height */
+    int height;
 
    protected:
     /* Update camera perspective matrix */
@@ -69,10 +73,6 @@ class Camera {
     float far;
     /* Field of view in degrees */
     float fov;
-    /* Viewport width */
-    int width;
-    /* Viewport height */
-    int height;
     /* Viewport position x */
     int x;
     /* Viewport position y */
