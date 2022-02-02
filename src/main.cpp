@@ -124,8 +124,10 @@ void do_frame() {
     Glow::glow->draw(viewMatrix);
     if (controller->mouseRightClicked) {
         glDisable(GL_DEPTH_TEST);
-        utils::Line::draw(glm::mat4(), glm::vec3(-0.02f, -0.02f, 1.0f), glm::vec3(0.02f, 0.02f, 1.0f), glm::vec3(0.0f));
-        utils::Line::draw(glm::mat4(), glm::vec3(0.02f, -0.02f, 1.0f), glm::vec3(-0.02f, 0.02f, 1.0f), glm::vec3(0.0f));
+        float ratio = (float) camera->width / (float) camera->height;
+        float size = 0.01f;
+        utils::Line::draw(glm::mat4(), glm::vec3(-size, -size * ratio, 1.0f), glm::vec3(size, size * ratio, 1.0f), glm::vec3(0.0f));
+        utils::Line::draw(glm::mat4(), glm::vec3(size, -size * ratio, 1.0f), glm::vec3(-size, size * ratio, 1.0f), glm::vec3(0.0f));
         glEnable(GL_DEPTH_TEST);
     } 
 
