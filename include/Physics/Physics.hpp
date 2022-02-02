@@ -16,8 +16,8 @@ class Physics {
     void update(float deltaTime);
     physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution);
     void deleteRigidBody(physx::PxRigidBody* rigidBody);
-    physx::PxTriangleMeshGeometry createTriangleGeometry(float* vertices, int verticesNumber, int* indices, int trianglesNumber);
-    physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, int trianglesNumber);
+    physx::PxTriangleMeshGeometry createTriangleGeometry(float* vertices, unsigned int verticesNumber, int* indices, unsigned int trianglesNumber);
+    physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, unsigned int trianglesNumber);
     void grab();
     void draw(glm::mat4 mat);
     world::World* world = nullptr;

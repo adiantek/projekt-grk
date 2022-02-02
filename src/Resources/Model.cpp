@@ -260,8 +260,8 @@ physx::PxTriangleMeshGeometry Model::createGeometry() {
         for(auto element : mesh->indices) {
             indicesBuffer.push_back(element + prevSize);
         }
-        prevSize = vertexBuffer.size();
+        prevSize = (int)vertexBuffer.size();
     }
 
-    return physicsObject->createTriangleGeometry(vertexBuffer.data(), vertexBuffer.size() / 3, indicesBuffer.data(), indicesBuffer.size() / 3);
+    return physicsObject->createTriangleGeometry(vertexBuffer.data(), (unsigned int)vertexBuffer.size() / 3, indicesBuffer.data(), (unsigned int)indicesBuffer.size() / 3);
 }

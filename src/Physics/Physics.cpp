@@ -123,7 +123,7 @@ void Physics::deleteRigidBody(PxRigidBody* rigidBody) {
     PX_RELEASE(rigidBody);
 }
 
-physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float* vertices, int verticesNumber, int* indices, int trianglesNumber) {
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float* vertices, unsigned int verticesNumber, int* indices, unsigned int trianglesNumber) {
     physx::PxTriangleMeshDesc meshDesc;
     meshDesc.points.count = verticesNumber;
     meshDesc.points.stride = sizeof(physx::PxVec3);
@@ -139,7 +139,7 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float* vertices, i
     return triGeom;
 }
 
-physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuffer *vb, int* indices, int trianglesNumber) {
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuffer *vb, int* indices, unsigned int trianglesNumber) {
     physx::PxTriangleMeshDesc meshDesc;
     meshDesc.points.count = vb->getVertices();
     meshDesc.points.stride = vb->getFormat()->getGPUSize();
