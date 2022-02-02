@@ -263,5 +263,5 @@ physx::PxTriangleMeshGeometry Model::createGeometry() {
         prevSize = vertexBuffer.size();
     }
 
-    return physicsObject->createTriangleGeometry(vertexBuffer.data(), vertexBuffer.size(), indicesBuffer.data(), indicesBuffer.size() / 3);
+    return physicsObject->createTriangleGeometry(vertexBuffer.data(), vertexBuffer.size() / 3, indicesBuffer.data(), indicesBuffer.size() / 3);
 }
