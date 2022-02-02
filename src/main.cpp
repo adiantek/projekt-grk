@@ -22,6 +22,7 @@
 #include <vector>
 #include <world/World.hpp>
 #include <Glow/GlowShader.hpp>
+#include <utils/Line.hpp>
 
 #define BOIDS_AMOUNT 5
 #define BOIDS_SIZE 10
@@ -121,6 +122,12 @@ void do_frame() {
 
     utils::Gizmos::draw();
     Glow::glow->draw(viewMatrix);
+    if (controller->mouseRightClicked) {
+        glDisable(GL_DEPTH_TEST);
+        utils::Line::draw(glm::mat4(), glm::vec3(-0.02f, -0.02f, 1.0f), glm::vec3(0.02f, 0.02f, 1.0f), glm::vec3(0.0f));
+        utils::Line::draw(glm::mat4(), glm::vec3(0.02f, -0.02f, 1.0f), glm::vec3(-0.02f, 0.02f, 1.0f), glm::vec3(0.0f));
+        glEnable(GL_DEPTH_TEST);
+    } 
 
     if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
         lastTitleUpdate = timeExternal->lastFrame;
