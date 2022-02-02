@@ -15,7 +15,7 @@
         x = NULL;     \
     }
 
-#define GRAB_DIST 30.0f
+#define GRAB_DIST 100.0f
 #define GLOW_DIST 100.0f
 
 using namespace physics;
