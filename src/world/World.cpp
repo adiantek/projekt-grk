@@ -118,7 +118,7 @@ void World::updateChunkMap(bool firstLoad) {
 }
 
 void World::loadChunks() {
-    if (timeExternal->lastFrame - this->lastLoadChunks < 0.02) {  // 50 chunks per sec
+    if (timeExternal->lastFrame - this->lastLoadChunks < 0.01) {  // 100 chunks per sec
         return;
     }
     this->lastLoadChunks = timeExternal->lastFrame;
@@ -146,6 +146,7 @@ void World::loadChunks() {
                 if (found) {
                     this->loadChunkNow(this->noiseValues, noise);
                 }
+                std::sort(this->chunksQueue.begin(), this->chunksQueue.end(), ChunkPositionComparator_comparator);
             }
         }
     } else {
@@ -180,6 +181,15 @@ void World::updateChunks() {
 }
 
 void World::drawChunks(glm::mat4 mat) {
+    bool first = true;
+    for (auto &it : this->chunks) {
+        Chunk *ch = it.second;
+        if (first) {
+            Chunk::prepareRendering(mat);
+            first = false;
+        }
+        ch->drawTerrain(mat);
+    }
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
         ch->draw(mat);

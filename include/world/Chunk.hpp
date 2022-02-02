@@ -38,8 +38,9 @@ class Chunk : Object3D {
     Random *createChunkRandom();
     void generate(float *noise);
 
-    static void setupTextures();
+    static void prepareRendering(glm::mat4 mat);
     void update() override;
+    void drawTerrain(glm::mat4 mat);
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
 };

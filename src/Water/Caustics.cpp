@@ -49,8 +49,8 @@ namespace water {
 
         glUseProgram(resourceLoaderExternal->p_caustics);
 
-        int prevViewport[4];
-        glGetIntegerv(GL_VIEWPORT, prevViewport);
+        // int prevViewport[4];
+        // glGetIntegerv(GL_VIEWPORT, prevViewport);
 
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
         glViewport(0, 0, this->textureSize, this->textureSize);
@@ -86,7 +86,8 @@ namespace water {
         glDisable(GL_BLEND);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+        camera->useCameraViewport();
+        // glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
     }
 
     unsigned int Caustics::getCausticsMap() {

@@ -183,7 +183,9 @@ void Chunk::update() {
     }
 }
 
-void Chunk::setupTextures() {
+void Chunk::prepareRendering(glm::mat4 mat) {
+    glUseProgram(resourceLoaderExternal->p_chunk);
+
     const GLint textures = 3;
     GLint arr[textures];
     arr[0] = 1;
@@ -233,17 +235,6 @@ void Chunk::setupTextures() {
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_ao);
     glActiveTexture(GL_TEXTURE0 + arr[2]);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Sand_Muddy2_2x2_1K_Sand_Muddy2_2x2_1K_ao);
-}
-
-void Chunk::draw(glm::mat4 mat) {
-    double alpha = (timeExternal->lastFrame - this->created) / 1.0;
-    if (alpha >= 0.0 && alpha < 1.0) {
-        glEnable(GL_BLEND);
-        glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
-        glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-    }
-    glUseProgram(resourceLoaderExternal->p_chunk);
-    Chunk::setupTextures();
 
     glUniform1i(resourceLoaderExternal->p_chunk_uni_caustics, 0);
     glActiveTexture(GL_TEXTURE0);
@@ -252,20 +243,25 @@ void Chunk::draw(glm::mat4 mat) {
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
+}
+
+void Chunk::drawTerrain(glm::mat4 mat) {
+    double alpha = (timeExternal->lastFrame - this->created) / 1.0;
+    if (alpha >= 0.0 && alpha < 1.0) {
+        glEnable(GL_BLEND);
+        glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
+        glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+    }
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
-
-    // if (this->minFishYCalculated) {
-    //     glUseProgram(resourceLoaderExternal->p_simple_color_shader);
-    //     glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
-    //     glBindVertexArray(this->vaoLines);
-    //     glLineWidth(1.0F);
-    //     glDrawArrays(GL_LINES, 0, 12);
-    // }
 
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
     }
+}
+
+void Chunk::draw(glm::mat4 mat) {
+    // TODO fishes, stones, etc.
 }
 
 void Chunk::drawShadow(glm::mat4 mat) {
