@@ -3,6 +3,8 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
+#define BASE_CAMERA_OFFSET 0.2f
+
 class Camera {
    public:
     Camera(int width, int height, float fov = 80.0f, float near = 0.1f, float far = 1000.0f, int x = 0, int y = 0);
@@ -77,6 +79,8 @@ class Camera {
     int x;
     /* Viewport position y */
     int y;
+
+    float offset = BASE_CAMERA_OFFSET;
 };
 
 extern Camera *camera;
