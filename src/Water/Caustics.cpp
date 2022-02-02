@@ -7,10 +7,10 @@
 
 namespace water {
     Caustics::Caustics(float size, float y, unsigned int textureSize, float maxDepth) 
-    : environmentMap(size, y, textureSize * 2, maxDepth), simulation(size, textureSize) {
+    : environmentMap(size, y, 2048, maxDepth), simulation(size, textureSize) {
         this->size = size;
         this->y = y;
-        this->textureSize = textureSize * 4;
+        this->textureSize = 2048;
         this->geometrySize = textureSize;
         this->geometry.initPlane(size, size, this->geometrySize, this->geometrySize);
         // Create framebuffer
@@ -45,11 +45,12 @@ namespace water {
 
     void Caustics::update() {
         this->simulation.update();
+        this->environmentMap.update();
 
         glUseProgram(resourceLoaderExternal->p_caustics);
 
-        int prevViewport[4];
-        glGetIntegerv(GL_VIEWPORT, prevViewport);
+        // int prevViewport[4];
+        // glGetIntegerv(GL_VIEWPORT, prevViewport);
 
         glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
         glViewport(0, 0, this->textureSize, this->textureSize);
@@ -64,7 +65,7 @@ namespace water {
         glBindTexture(GL_TEXTURE_2D, this->simulation.getHeightMap());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_heightMap, 0);
         glActiveTexture(GL_TEXTURE0 + 1);
-        glBindTexture(GL_TEXTURE_2D, this->environmentMap.getMapTexture());
+        glBindTexture(GL_TEXTURE_2D, this->environmentMap.getEnvironmentMap());
         glUniform1i(resourceLoaderExternal->p_caustics_uni_environmentMap, 1);
         glActiveTexture(GL_TEXTURE0 + 2);
         glBindTexture(GL_TEXTURE_2D, this->simulation.getNormalMap());
@@ -85,7 +86,8 @@ namespace water {
         glDisable(GL_BLEND);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+        camera->useCameraViewport();
+        // glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
     }
 
     unsigned int Caustics::getCausticsMap() {
@@ -102,18 +104,6 @@ namespace water {
 
     glm::mat4 Caustics::getLightCamera() {
         return this->environmentMap.getLightCamera();
-    }
-
-    void Caustics::useFramebuffer() {
-        this->environmentMap.useFramebuffer();
-    }
-
-    void Caustics::stopUsingFramebuffer() {
-        this->environmentMap.stopUsingFramebuffer();
-    }
-
-    void Caustics::drawObject(Core::RenderContext context, glm::mat4 modelMatrix) {
-        this->environmentMap.drawObject(context, modelMatrix);
     }
 
     void Caustics::addWorldObject(world::Object3D* object) {

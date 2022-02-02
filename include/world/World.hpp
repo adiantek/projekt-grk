@@ -21,12 +21,13 @@ class World : Object3D {
 
     glm::vec2 updateChunkRobotPos;
     ChunkPosition updateChunkLastPos;
+    ChunkPosition noiseValues;
     std::deque<ChunkPosition> chunksQueue;
     std::deque<ChunkPosition> chunksQueueDrop;
     bool shouldChunkBeLoaded(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t viewDistance);
     void loadChunkQueue(ChunkPosition pos);
     void unloadChunkQueue(ChunkPosition pos);
-    void loadChunkNow(ChunkPosition pos);
+    void loadChunkNow(ChunkPosition pos, float *noise);
     void unloadChunkNow(ChunkPosition pos);
     void updateChunkMap(bool firstLoad);
     std::unordered_map<uint64_t, Chunk *> chunks;

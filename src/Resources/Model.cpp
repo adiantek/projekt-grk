@@ -22,8 +22,6 @@ void Model::loadModel(const char* filename) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filename, aiProcess_CalcTangentSpace | /*aiProcess_FlipUVs |  | aiProcess_GenBoundingBoxes |*/ aiProcess_PopulateArmatureData);
 
-    LOGD("MODEL AFTER READFILE");
-
     if (!scene || !scene->mRootNode) {
         LOGE("ERROR::ASSIMP Could not load model: %s", importer.GetErrorString());
     } else {
@@ -47,7 +45,6 @@ void Model::processNode(aiNode* node, const aiScene* scene, aiMatrix4x4 transfor
 }
 
 Mesh* Model::loadMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation) {
-    LOGD("Processing mesh: %s", mesh->mName.C_Str());
     glm::vec3 extents;
     glm::vec3 origin;
 
@@ -58,7 +55,6 @@ Mesh* Model::loadMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transforma
 
     finalMesh->calculateRenderContext(mesh, this->bonesIds);
 
-    LOGD("[] Model class work success!...");
     return finalMesh;
     // ->setAssimpMesh(mesh);
     // ->setExtents(extents)

@@ -90,6 +90,9 @@
         background-color: black;
         color: white;
         font-family: 'Lucida Console', Monaco, monospace;
+        overflow-y: scroll;
+        white-space: pre-line;
+        word-break: break-all;
       }
       
       canvas {
@@ -117,7 +120,7 @@
       </div>
     </div>
     <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-    <textarea id="output"></textarea>
+    <div id="output"></div>
 
     <script type='text/javascript'>
 (function (global, factory) {
@@ -305,10 +308,6 @@ requestAnimationFrame(function loop() {
     stats.update();
     requestAnimationFrame(loop);
 });
-
-      
-      
-      
       window.addEventListener("keyup", function (ev) {
         ev.preventDefault();
       });
@@ -364,17 +363,24 @@ requestAnimationFrame(function loop() {
         ],
         print: (function() {
           var element = document.getElementById('output');
-          if (element) element.value = ''; // clear browser cache
           return function(text) {
             if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-            // These replacements are necessary if you render to raw HTML
-            //text = text.replace(/&/g, "&amp;");
-            //text = text.replace(/</g, "&lt;");
-            //text = text.replace(/>/g, "&gt;");
-            //text = text.replace('\n', '<br>', 'g');
             console.log(text);
             if (element) {
-              element.value += text + "\n";
+              // element.value += text + "\n";
+              element.appendChild(document.createTextNode(text + "\n"));
+              element.scrollTop = element.scrollHeight; // focus on bottom
+            }
+          };
+        })(),
+        printErr: (function() {
+          var element = document.getElementById('output');
+          return function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            console.log(text);
+            if (element) {
+              // element.value += text + "\n";
+              element.appendChild(document.createTextNode(text + "\n"));
               element.scrollTop = element.scrollHeight; // focus on bottom
             }
           };

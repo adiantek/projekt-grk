@@ -6,7 +6,7 @@
 
 typedef struct SimplexNoiseLayer {
     float x, y, z;
-    int permutationTable[256];
+    // int permutationTable[256];
     float weight;
     float scale;
 } SimplexNoiseLayer;
@@ -19,18 +19,23 @@ class SimplexNoiseGenerator {
     GLuint vao;
     GLuint fb;
     GLuint fbTxt;
+    GLuint permutationTex;
+    GLuint pbo;
+    GLsync sync;
 
    public:
     SimplexNoiseGenerator(Random *r);
     ~SimplexNoiseGenerator();
     /**
-     * @brief DO NOT FREE/DELETE!
-     * 
      * @param x offset x
      * @param y offset y
-     * @return float* size 19 * 19, values from -0.9506353780500628 to 0.9442659147897063
      */
-    float *draw(float x, float y);
+    void draw(float x, float y);
+    /**
+     * @brief DO NOT FREE/DELETE!
+     */
+    float *readNoise();
+    bool isBusy();
 
     void debugNoise(float x, float y);
 };

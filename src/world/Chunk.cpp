@@ -11,7 +11,7 @@
 
 using namespace world;
 
-Chunk::Chunk(World *world, ChunkPosition pos) {
+Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
     this->seed = world->seed;
     this->world = world;
     this->pos = pos;
@@ -20,7 +20,7 @@ Chunk::Chunk(World *world, ChunkPosition pos) {
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->elements);
     // LOGD("Chunk: loading %d %d", pos.coords.x, pos.coords.z);
-    this->generate();
+    this->generate(noise);
 }
 
 Chunk::~Chunk() {
@@ -43,11 +43,11 @@ Random *Chunk::createChunkRandom() {
     return r;
 }
 
-void Chunk::generate() {
+void Chunk::generate(float *noise) {
     int minX = this->pos.coords.x << 4;
     int minZ = this->pos.coords.z << 4;
-    float *noise = this->world->noise->draw((float)(this->pos.coords.x), (float)(this->pos.coords.z));
-
+    // float *noise = this->world->noise->readNoise();//this->world->noise->draw((float)(this->pos.coords.x), (float)(this->pos.coords.z));
+    // this->world->noise->debugNoise((float)(this->pos.coords.x), (float)(this->pos.coords.z));
     for (int i = 0; i < 19 * 19; i++) {
         noise[i] = noise[i] * 128 + 128;
     }
@@ -62,6 +62,7 @@ void Chunk::generate() {
     }
 
     vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX_TANGENT_BITANGENT, 17 * 17);
+    float vert[17 * 17 * 3];
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
             glm::vec3 squares[2][2];
@@ -94,6 +95,10 @@ void Chunk::generate() {
 
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
+
+            vert[3 * (x * 17 + z)] = squares[0][0].x;
+            vert[3 * (x * 17 + z) + 1] = squares[0][0].y;
+            vert[3 * (x * 17 + z) + 2] = squares[0][0].z;
         }
     }
     int n = 0;
@@ -229,42 +234,87 @@ void Chunk::draw(glm::mat4 mat) {
         glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
         glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
     }
+}
+
+void Chunk::prepareRendering(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_chunk);
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_colorTexture, 0);
+
+    const GLint textures = 3;
+    GLint arr[textures];
+    arr[0] = 1;
+    arr[1] = 2;
+    arr[2] = 3;
+
+    glUniform1iv(resourceLoaderExternal->p_chunk_uni_colorTexture, textures, arr);
+    glActiveTexture(GL_TEXTURE0 + arr[0]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Nature_Grass1_2x2_1K_Nature_Grass_1K_albedo);
+    glActiveTexture(GL_TEXTURE0 + arr[1]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_albedo);
+    glActiveTexture(GL_TEXTURE0 + arr[2]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Sand_Muddy2_2x2_1K_Sand_Muddy2_2x2_1K_albedo);
+    
+    for (GLint i = 0; i < textures; i++) arr[i] += textures;
+    glUniform1iv(resourceLoaderExternal->p_chunk_uni_normalSampler, textures, arr);
+    glActiveTexture(GL_TEXTURE0 + arr[0]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Nature_Grass1_2x2_1K_Nature_Grass_1K_normal);
+    glActiveTexture(GL_TEXTURE0 + arr[1]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_normal);
+    glActiveTexture(GL_TEXTURE0 + arr[2]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Sand_Muddy2_2x2_1K_Sand_Muddy2_2x2_1K_normal);
+    
+    for (GLint i = 0; i < textures; i++) arr[i] += textures;
+    glUniform1iv(resourceLoaderExternal->p_chunk_uni_depthMap, textures, arr);
+    glActiveTexture(GL_TEXTURE0 + arr[0]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Nature_Grass1_2x2_1K_Nature_Grass_1K_height);
+    glActiveTexture(GL_TEXTURE0 + arr[1]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_height);
+    glActiveTexture(GL_TEXTURE0 + arr[2]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Sand_Muddy2_2x2_1K_Sand_Muddy2_2x2_1K_height);
+    
+    for (GLint i = 0; i < textures; i++) arr[i] += textures;
+    glUniform1iv(resourceLoaderExternal->p_chunk_uni_roughnessMap, textures, arr);
+    glActiveTexture(GL_TEXTURE0 + arr[0]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Nature_Grass1_2x2_1K_Nature_Grass_1K_roughness);
+    glActiveTexture(GL_TEXTURE0 + arr[1]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_roughness);
+    glActiveTexture(GL_TEXTURE0 + arr[2]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Sand_Muddy2_2x2_1K_Sand_Muddy2_2x2_1K_roughness);
+    
+    for (GLint i = 0; i < textures; i++) arr[i] += textures;
+    glUniform1iv(resourceLoaderExternal->p_chunk_uni_aoMap, textures, arr);
+    glActiveTexture(GL_TEXTURE0 + arr[0]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Nature_Grass1_2x2_1K_Nature_Grass_1K_ao);
+    glActiveTexture(GL_TEXTURE0 + arr[1]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_ao);
+    glActiveTexture(GL_TEXTURE0 + arr[2]);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_generic_Sand_Muddy2_2x2_1K_Sand_Muddy2_2x2_1K_ao);
+
+    glUniform1i(resourceLoaderExternal->p_chunk_uni_caustics, 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_albedo);
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_normalSampler, 1);
-    glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_normal);
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_caustics, 2);
-    glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_depthMap, 3);
-    glActiveTexture(GL_TEXTURE0 + 3);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_height);
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_roughnessMap, 4);
-    glActiveTexture(GL_TEXTURE0 + 4);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_roughness);
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_aoMap, 5);
-    glActiveTexture(GL_TEXTURE0 + 5);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_Ground_Sand1_2x2_1K_Ground_Sand1_2x2_1K_ao);
+
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
+}
+
+void Chunk::drawTerrain(glm::mat4 mat) {
+    double alpha = (timeExternal->lastFrame - this->created) / 1.0;
+    if (alpha >= 0.0 && alpha < 1.0) {
+        glEnable(GL_BLEND);
+        glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
+        glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+    }
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
-
-    // if (this->minFishYCalculated) {
-    //     glUseProgram(resourceLoaderExternal->p_simple_color_shader);
-    //     glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
-    //     glBindVertexArray(this->vaoLines);
-    //     glLineWidth(1.0F);
-    //     glDrawArrays(GL_LINES, 0, 12);
-    // }
 
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
     }
+}
+
+void Chunk::draw(glm::mat4 mat) {
+    // TODO fishes, stones, etc.
 }
 
 void Chunk::drawShadow(glm::mat4 mat) {
