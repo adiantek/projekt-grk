@@ -1,6 +1,7 @@
 #include <list>
 #include <stdbool.h>
 #include <cmath>
+#include <iostream>
 
 #include <Robot/Robot.hpp>
 #include <Resources/Resources.hpp>
@@ -149,13 +150,39 @@ void Robot::disableIncreasedSpeedMode() {
 }
 
 void Robot::setMoveDirectionVector(glm::vec3 direction) {
-    if (direction.x == 0 && direction.y == 0 && direction.z == 0) {
-        this->mode = Robot::MODE_STATIONARY;
-    } else {
-        this->mode = Robot::MODE_SWIMMING;
+    if (this->mode == Robot::MODE_JUMPING || this->mode == Robot::MODE_LANDING) {
+        
     }
 
-    this->moveDirectionVector = glm::normalize(direction);
+    else if (direction.y == 1.0f && (this->mode == Robot::MODE_WALKING || this->mode == Robot::MODE_STATIONARY)) {
+        this->jump();
+    }
+
+    else if (direction.x == 0 && direction.y == 0 && direction.z == 0) {
+
+        // Robot should change to stationary mode
+        if (this->isInGroundMode()) {
+            this->mode = Robot::MODE_STATIONARY;
+        } else {
+            this->mode = Robot::MODE_STATIONARY_FLOATING;
+        }
+
+    } else {
+
+        // Robot should change to walking or swimming mode
+        if (this->isInGroundMode()) {
+            this->mode = Robot::MODE_WALKING;
+        } else {
+            this->mode = Robot::MODE_SWIMMING;
+        }
+
+    }
+
+    if (glmu::isEmpty(direction)) {
+        this->moveDirectionVector = glm::vec3(0.0f);
+    } else {
+        this->moveDirectionVector = glm::normalize(direction);
+    }
 }
 
 void Robot::update() {
@@ -164,27 +191,36 @@ void Robot::update() {
     if (this->mode != Robot::MODE_STATIONARY) {
         this->position += this->moveDirectionVector * this->movementSpeed * timeExternal->deltaTime;
 
-        if (this->mode == Robot::MODE_SWIMMING) {
-            float rotationAngleX = 0.0f;
-            if (this->moveDirectionVector.y > 0.0f) {
-                rotationAngleX = 45.0f;
-            } else if (this->moveDirectionVector.y < 0.0f) {
-                rotationAngleX = -45.0f;
-            }
+        if (this->mode == Robot::MODE_JUMPING) {
+            this->jumpStage += timeExternal->deltaTime * Robot::JUMP_SPEED;
 
-            if (abs(rotationAngleX - this->rotation.x) < rotationSpeed) {
-                this->rotation.x = rotationAngleX;
-            } else if (this->rotation.x > rotationAngleX ) {
-                this->rotation.x -= rotationSpeed;
+            if (this->jumpStage >= 1.0f) {
+                this->mode = Robot::MODE_STATIONARY_FLOATING;
+                this->jumpStage = 0.0f;
+                this->position = glm::vec3(this->jumpTarget);
             } else {
-                this->rotation.x += rotationSpeed;
+                float smoothedStep = glm::smoothstep(0.0f, 1.0f, this->jumpStage);
+                this->position = this->jumpStart + (this->jumpTarget - this->jumpStart) * smoothedStep;
             }
+        }
 
-            // else {
-            //     rotaionAngleX = 0.0f;
-            // }
-        } else if (this->mode == Robot::MODE_WALKING) {
-            // rotation x for walking
+        if (this->mode == Robot::MODE_LANDING) {
+            this->landStage += timeExternal->deltaTime * Robot::LANDING_SPEED;
+
+            if (this->landStage >= 1.0f) {
+                this->mode = Robot::MODE_STATIONARY;
+                this->landStage = 0.0f;
+                this->position = glm::vec3(this->landTarget);
+            } else {
+                float smoothedStep = glm::smoothstep(0.0f, 1.0f, this->landStage);
+                this->position = this->landStart + (this->landTarget - this->landStart) * smoothedStep;
+            }
+        }
+
+        if (this->mode == Robot::MODE_SWIMMING) {
+            if (this->getDistanceFromGround() < 1.0f) {
+                this->land();
+            }
         }
 
         if (this->moveDirectionVector.x != 0.0f || this->moveDirectionVector.z != 0.0f) {
@@ -193,7 +229,6 @@ void Robot::update() {
             this->moveDirectionVector = glm::normalize(this->moveDirectionVector);
 
             float rotationAngle = glm::orientedAngle(glm::vec3(0, 0, -1), this->moveDirectionVector, glm::vec3(0, 1, 0)) / glm::pi<float>() * 180.0f;
-            // float rotationAngle = glm::orientedAngle(glm::vec3(0, 0, -1), iterpolatedVector, glm::vec3(0, 1, 0)) / glm::pi<float>() * 180.0f;
 
             if (rotation.y > 360) {
                 rotation.y -= 360;
@@ -214,24 +249,20 @@ void Robot::update() {
                 this->rotation.y += rotationSpeed;
             }
         }
-    } else {
-        float rotationAngleX = 0.0f;
-        if (abs(rotationAngleX - this->rotation.x) < rotationSpeed) {
-            this->rotation.x = rotationAngleX;
-        } else if (this->rotation.x > rotationAngleX ) {
-            this->rotation.x -= rotationSpeed;
-        } else {
-            this->rotation.x += rotationSpeed;
-        }
     }
 
-    this->position = this->getWorldPointAt(this->position);
+    std::cout << "Mode: " << this->mode << std::endl;
+
+    if (this->isInGroundMode()) {
+        this->position = this->getWorldPointAt(this->position);
+    }
 
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);
 
     this->updateBody();
     this->updateLegs();
+    
     this->updateDirections();
 }
 
@@ -375,10 +406,16 @@ void Robot::updateLegs() {
         glm::mat4 localTargetOffset = (leg->lowerJoint->getOrigin().x > leg->upperJoint->getOrigin().x) ?
             glm::translate(targetOffset) : glm::inverse(glm::translate(targetOffset));
 
-         // Calculate attachment point estimation
+        // Calculate attachment point estimation
         leg->attachmentEstimation = localTargetOffset * glm::vec4(lowerJointOrigin, 1.0f);
         leg->attachmentEstimation.y += 1.0f * (leg->id < 2);
-        leg->attachmentEstimation = glm::inverse(modelMatrix) * glm::vec4(this->getWorldPointAt(glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f))), 1.0f);
+
+        if (this->isInGroundMode()) {
+            leg->attachmentEstimation = glm::inverse(modelMatrix) * glm::vec4(this->getWorldPointAt(glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f))), 1.0f);
+        } else {
+            leg->attachmentEstimation = glm::inverse(modelMatrix) * glm::vec4(glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f)), 1.0f);
+        }
+
         glm::vec3 globalAttachmentEstimation = glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f));
         glm::vec3 globalAttachmentPoint = glm::vec3(invertedModelMatrix * glm::vec4(leg->attachmentPoint, 1.0f));
         leg->globalAttachmentPoint = globalAttachmentPoint;
@@ -387,7 +424,6 @@ void Robot::updateLegs() {
         glm::vec2 attachmentPositionFlat = glm::vec2(globalAttachmentPoint.x, globalAttachmentPoint.z);
         glm::vec2 upperJointOriginFlat = glm::vec2(leg->upperJointOrigin.x, leg->upperJointOrigin.z);
         glm::vec3 midPoint = utils::glmu::circles_midpoint(globalAttachmentPoint, leg->upperJointOrigin, leg->lowerJointLength, leg->upperJointLength, this->up);
-        // glm::vec3 midPoint = glm::vec3(midPointFlat.x, (globalAttachmentPoint.y + leg->upperJointOrigin.y) / 2, midPointFlat.y);
         leg->lowerJointOrigin = midPoint;
 
         // Calculate upper joint rotation and position
@@ -411,7 +447,14 @@ void Robot::updateLegs() {
             * glm::inverse(glm::translate(leg->lowerJoint->getOrigin()))
         );
 
-        float distanceSquare = glm::distance2(leg->globalAttachmentPoint, leg->attachmentEstimation);
+        float distanceSquare = 0.0f;
+
+        if (this->isInGroundMode()) {
+            distanceSquare = glm::distance2(leg->globalAttachmentPoint, leg->attachmentEstimation);
+        } else {
+            ignoreAnimation = true;
+            distanceSquare = INFINITY;
+        }
 
         if (distanceSquare > Robot::LEG_MAX_DISTANCE_SQUARE && leg->step < 0.0f) {
             bool isStationary = true;
@@ -443,7 +486,7 @@ void Robot::updateLegs() {
                 leg->targetAttachmentPoint = glm::vec3(glm::inverse(invertedModelMatrix) * glm::vec4(leg->attachmentEstimation, 1.0f));
                 leg->step = 0.0f;
                 leg->currentStepDistance = distanceSquare;
-            } 
+            }
         }
 
         if (ignoreAnimation) {
@@ -468,7 +511,17 @@ void Robot::updateLegs() {
 void Robot::jump() {
     this->mode = Robot::MODE_JUMPING;
 
-    // TODO: Rest of jumping logic
+    this->jumpStage = 0.0f;
+    this->jumpStart = glm::vec3(this->position);
+    this->jumpTarget = this->gameObject->getModelMatrix() * glm::vec4(this->up * Robot::JUMP_HEIGHT, 1.0f);
+}
+
+void Robot::land() {
+    this->mode = Robot::MODE_LANDING;
+
+    this->landStage = 0.0f;
+    this->landStart = glm::vec3(this->position);
+    this->landTarget = this->getWorldPointAt(this->position);
 }
 
 void Robot::updateDirections() {
@@ -497,8 +550,7 @@ glm::vec3 Robot::getWorldPointAt(glm::vec3 point) {
     result.y = worldObject->getHeightAt(point.x, point.z);
 
     if (isnan(result.y)) {
-        result.y = point.y;
-        return result;
+        return point;
     }
 
     // If robot would like 
@@ -516,6 +568,24 @@ glm::vec3 Robot::getWorldPointAt(glm::vec3 point) {
     // }
 
     return result;
+}
+
+bool Robot::isInGroundMode() {
+    return this->mode == Robot::MODE_STATIONARY
+        || this->mode == Robot::MODE_WALKING
+        || this->mode == Robot::MODE_SLEEPING
+        || this->mode == Robot::MODE_LANDING;
+}
+
+bool Robot::isInFloatingMode() {
+    return this->mode == Robot::MODE_STATIONARY_FLOATING
+        || this->mode == Robot::MODE_SWIMMING
+        || this->mode == Robot::MODE_JUMPING;
+}
+
+float Robot::getDistanceFromGround() {
+    glm::vec3 worldPoint = this->getWorldPointAt(this->position);
+    return this->position.y - worldPoint.y;
 }
 
 Robot *robot;

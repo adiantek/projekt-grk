@@ -86,4 +86,8 @@ glm::vec3 glmu::curve(glm::vec3 a, glm::vec3 b, float t) {
     return resultVec;
 }
 
+bool glmu::isEmpty(glm::vec3 vec) {
+    return vec.x == 0 && vec.y == 0 && vec.z == 0;
+}
+
 }  // namespace utils

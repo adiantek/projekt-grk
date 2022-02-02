@@ -27,6 +27,7 @@ class glmu {
     static glm::vec3 circles_midpoint(glm::vec3 a, glm::vec3 b, float aRadius, float bRadius, glm::vec3 up);
 
     static glm::vec3 curve(glm::vec3 a, glm::vec3 b, float t);
+    static bool isEmpty(glm::vec3 vec);
 
     /**
      * @brief Compute barycentric coordinates (u, v, w) for point p with respect to triangle (a, b, c)
