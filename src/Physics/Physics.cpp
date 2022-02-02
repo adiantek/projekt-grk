@@ -20,6 +20,11 @@
 
 using namespace physics;
 
+enum ActiveGroup {
+    ROBOT = (1<<0),
+    RAYHITABBLE = (1<<1)
+};
+
 const float stepTime = 1.0f / 60.f;
 
 static PxFilterFlags simulationFilterShader(PxFilterObjectAttributes attributes0,
@@ -102,6 +107,9 @@ PxRigidBody* Physics::createRigidBody(bool isStatic, PxTransform& pose, PxGeomet
     PxMaterial* material = this->physx->createMaterial(staticFriction, dynamicFriction, restitution);
     PxRigidBody* rigidBody = isStatic ? (PxRigidBody*)this->physx->createRigidStatic(pose) : (PxRigidBody*)this->physx->createRigidDynamic(pose);
     PxShape* shape = this->physx->createShape(geometry, *material);
+    PxFilterData filterData;
+    filterData.word0 = (((RigidBody*)object)->object == (world::Object3D*)robot) ? ROBOT : RAYHITABBLE;
+    shape->setQueryFilterData(filterData);
     rigidBody->attachShape(*shape);
     rigidBody->userData = object;
     PX_RELEASE(shape);
@@ -172,6 +180,7 @@ void Physics::grab() {
 
     PxRaycastBuffer hit;
     PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+    filterData.data.word0 = RAYHITABBLE;
     this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
     if (hit.hasAnyHits()) {
@@ -190,6 +199,7 @@ void Physics::draw(glm::mat4 mat) {
 
     PxRaycastBuffer hit;
     PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+    filterData.data.word0 = RAYHITABBLE;
     this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
     if (hit.hasAnyHits()) {
