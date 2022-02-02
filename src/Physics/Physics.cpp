@@ -30,11 +30,10 @@ static PxFilterFlags simulationFilterShader(PxFilterObjectAttributes attributes0
     return physx::PxFilterFlag::eDEFAULT;
 }
 
-Physics::Physics(float gravity, world::World* world, ErrorCallback::LogLevel logLevel)
+Physics::Physics(float gravity, ErrorCallback::LogLevel logLevel)
     : errorCallback(logLevel) {
     physicsObject = this;
     this->gravity = gravity;
-    this->world = world;
     this->foundation = PxCreateFoundation(PX_PHYSICS_VERSION, this->allocator, (PxErrorCallback&)this->errorCallback);
     this->physx = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true);
     this->cooking = PxCreateCooking(PX_PHYSICS_VERSION, *this->foundation, PxCookingParams(PxTolerancesScale()));

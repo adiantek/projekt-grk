@@ -150,11 +150,12 @@ void init() {
     new Glow::GlowShader(camera->width, camera->height);
 
     new water::Water(192.0f, 500.0f, 80.0f, 512, 256.0f, 1000);
+    new physics::Physics(9.8f);
 
     w = new world::World(0);
     waterObject->addWorldObject((world::Object3D *)w);
 
-    new physics::Physics(9.8f, w);
+    physicsObject->world = w;
 
     glEnable(GL_DEPTH_TEST);
 
