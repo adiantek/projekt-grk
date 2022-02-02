@@ -12,7 +12,7 @@ Pilotfish::~Pilotfish() {}
 void Pilotfish::update() {
     Fish::update();
     // I should be flying forward
-    this->rigidBody->rotateForward(glm::eulerAngleY(glm::radians(90.0f)));
+    this->rigidBody->rotateForward(glm::eulerAngleX(glm::radians(-90.0f)));
 }
 
 void Pilotfish::draw(glm::mat4 mat) {

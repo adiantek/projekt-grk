@@ -99,7 +99,7 @@ void RigidBody::rotateForward(glm::mat4 rot) {
     if (!this->grabbed && !this->kinematic) {
         glm::vec3 velocity = this->getLinearVelocity();
         if (glm::length(velocity) > 0.0f) {
-            auto quat = glm::quat_cast(glm::orientation(glm::normalize(velocity), glm::vec3(0.0f, 1.0f, 0.0f)) * rot);
+            auto quat = glm::quat_cast(glm::transpose(glm::lookAt(glm::vec3(0.0f), velocity, glm::vec3(0.0f, 1.0f, 0.0f))) * rot);
             this->inner->setGlobalPose(physx::PxTransform(this->inner->getGlobalPose().p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
         }
     }
