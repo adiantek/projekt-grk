@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <utils/Gizmos.hpp>
 #include <vector>
+#include <Physics/Physics.hpp>
 
 void Model::loadModel(const char* filename) {
     LOGD("Processing model: %s", filename);
@@ -244,4 +245,23 @@ Animator::Joint* Model::getJoint(std::string name) {
 /** Convert from a row-major ASSIMP matrix to a column-major GLM matrix */
 glm::mat4 Model::to_mat4(const aiMatrix4x4& aAssimpMat) {
     return glm::transpose(glm::make_mat4(&aAssimpMat.a1));
+}
+
+physx::PxTriangleMeshGeometry Model::createGeometry() {
+    std::vector<float> vertexBuffer;
+    std::vector<int> indicesBuffer;
+
+    int prevSize = 0;
+
+    for (auto mesh : this->meshes) {
+        for (auto vertex : mesh->vertices) {
+            vertexBuffer.push_back(vertex);
+        }
+        for(auto element : mesh->indices) {
+            indicesBuffer.push_back(element + prevSize);
+        }
+        prevSize = vertexBuffer.size();
+    }
+
+    return physicsObject->createTriangleGeometry(vertexBuffer.data(), vertexBuffer.size(), indicesBuffer.data(), indicesBuffer.size() / 3);
 }

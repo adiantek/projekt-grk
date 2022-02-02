@@ -20,7 +20,7 @@ std::string Mesh::getName() {
 }
 
 Mesh* Mesh::setVertices(std::vector<Vertex> vertices) {
-    this->vertices = vertices;
+    this->vertices2 = vertices;
     return this;
 }
 
@@ -43,6 +43,20 @@ Core::RenderContext* Mesh::getRenderContext() {
 void Mesh::calculateRenderContext(aiMesh* mesh, std::unordered_map<std::string, int> bonesIds) {
     this->renderContext = Core::RenderContext();
     this->renderContext.initFromAssimpMeshWithArmature(mesh, bonesIds);
+
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+        aiFace face = mesh->mFaces[i];
+        // retrieve all indices of the face and store them in the indices vector
+        for (unsigned int j = 0; j < face.mNumIndices; j++)
+            this->indices.push_back(face.mIndices[j]);
+    }
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+        if (mesh->mVertices != nullptr) {
+            this->vertices.push_back(mesh->mVertices[i].x);
+            this->vertices.push_back(mesh->mVertices[i].y);
+            this->vertices.push_back(mesh->mVertices[i].z);
+        }
+    }
 }
 
 Mesh* Mesh::setRootJoint(Animator::Joint* rootJoint) {

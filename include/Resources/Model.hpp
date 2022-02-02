@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <PxPhysicsAPI.h>
 
 class Model {
    public:
@@ -24,6 +25,7 @@ class Model {
     std::vector<Animator::Joint*> getJoints();
     Animator::Joint* getRootJoint();
     Animator::Joint* getJoint(std::string name);
+    physx::PxTriangleMeshGeometry createGeometry();
 
     std::string file;
 
