@@ -16,6 +16,7 @@ class Controller {
     bool keys[GLFW_KEY_LAST];
     bool mouseGrabbed = false;
     bool firstMouseMove = false;
+    bool mouseRightClicked = false;
 
     void init();
     void update();

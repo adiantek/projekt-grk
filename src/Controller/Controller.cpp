@@ -76,6 +76,8 @@ void Controller::onMouseButtonPress(GLFWwindow *window, int button, int action, 
         controller->mouseGrabbed = true;
         controller->firstMouseMove = true;
 #endif
+    } else if (button == 1) {
+        controller->mouseRightClicked = action == 1;
     }
 }
 
