@@ -16,10 +16,6 @@ World::World(int64_t seed) {
     this->robot = new entity::Robot();
     Random r(seed);
     this->noise = new SimplexNoiseGenerator(&r);
-    // this->noise->debugNoise(0, 0);
-    // this->noise->debugNoise(0, 1);
-    // this->noise->debugNoise(0, 2);
-
     this->updateChunkMap(true);
 }
 
@@ -37,8 +33,8 @@ bool World::shouldChunkBeLoaded(int32_t x1, int32_t y1, int32_t x2, int32_t y2, 
     return x >= -viewDistance && x <= viewDistance && y >= -viewDistance && y <= viewDistance;
 }
 
-void World::loadChunkNow(ChunkPosition pos) {
-    Chunk *ch = new Chunk(this, pos);
+void World::loadChunkNow(ChunkPosition pos, float *noise) {
+    Chunk *ch = new Chunk(this, pos, noise);
     this->chunks[pos.id] = ch;
 }
 
@@ -126,9 +122,40 @@ void World::loadChunks() {
         return;
     }
     this->lastLoadChunks = timeExternal->lastFrame;
-    if (this->chunksQueue.size() > 0) {
-        this->loadChunkNow(this->chunksQueue.front());
-        this->chunksQueue.pop_front();
+    if (this->noise->isBusy()) {
+        float *noise = this->noise->readNoise();
+        if (noise) {
+            ChunkPosition pos = this->chunksQueue.front();
+            if (pos.id == this->noiseValues.id) {
+                this->loadChunkNow(pos, noise);
+                this->chunksQueue.pop_front();
+            } else {
+                bool found = false;
+                for (std::deque<ChunkPosition>::reverse_iterator it = this->chunksQueue.rbegin(); it != this->chunksQueue.rend(); ++it) {
+                    if ((*it).id == this->noiseValues.id) {
+                        found = true;
+                        if (this->chunksQueue.back().id == this->noiseValues.id) {
+                            this->chunksQueue.pop_back();
+                        } else {
+                            *it = this->chunksQueue.back();
+                            this->chunksQueue.pop_back();
+                        }
+                        break;
+                    }
+                }
+                if (found) {
+                    this->loadChunkNow(this->noiseValues, noise);
+                }
+            }
+        }
+    } else {
+        if (this->chunksQueue.size() > 0) {
+            ChunkPosition pos = this->chunksQueue.front();
+            this->noise->draw((float)(pos.coords.x), (float)(pos.coords.z));
+            this->noiseValues = pos;
+            // this->loadChunkNow(this->chunksQueue.front());
+            // this->chunksQueue.pop_front();
+        }
     }
     if (this->chunksQueueDrop.size() > 0) {
         this->unloadChunkNow(this->chunksQueueDrop.back());

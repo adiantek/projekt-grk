@@ -3,7 +3,8 @@
 
 #ifdef EMSCRIPTEN
 #include <emscripten/emscripten.h>
-#define GLFW_INCLUDE_ES3
+#include <webgl/webgl2.h>
+#define GLFW_INCLUDE_ES31
 #else
 #include <glad/glad.h>
 #endif

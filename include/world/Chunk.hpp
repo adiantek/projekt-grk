@@ -29,14 +29,14 @@ class Chunk : Object3D {
     float heightMap[17 * 17];
     float maxY;
     float allowFishAbove = 256;
-    Chunk(World *world, ChunkPosition pos);
+    Chunk(World *world, ChunkPosition pos, float *noise);
     virtual ~Chunk();
 
     /**
      * delete Random after use
      */
     Random *createChunkRandom();
-    void generate();
+    void generate(float *noise);
 
     static void setupTextures();
     void update() override;

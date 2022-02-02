@@ -10,7 +10,7 @@
 
 using namespace world;
 
-Chunk::Chunk(World *world, ChunkPosition pos) {
+Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
     this->seed = world->seed;
     this->world = world;
     this->pos = pos;
@@ -19,7 +19,7 @@ Chunk::Chunk(World *world, ChunkPosition pos) {
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->elements);
     // LOGD("Chunk: loading %d %d", pos.coords.x, pos.coords.z);
-    this->generate();
+    this->generate(noise);
 }
 
 Chunk::~Chunk() {
@@ -42,11 +42,11 @@ Random *Chunk::createChunkRandom() {
     return r;
 }
 
-void Chunk::generate() {
+void Chunk::generate(float *noise) {
     int minX = this->pos.coords.x << 4;
     int minZ = this->pos.coords.z << 4;
-    float *noise = this->world->noise->draw((float)(this->pos.coords.x), (float)(this->pos.coords.z));
-
+    // float *noise = this->world->noise->readNoise();//this->world->noise->draw((float)(this->pos.coords.x), (float)(this->pos.coords.z));
+    // this->world->noise->debugNoise((float)(this->pos.coords.x), (float)(this->pos.coords.z));
     for (int i = 0; i < 19 * 19; i++) {
         noise[i] = noise[i] * 128 + 128;
     }

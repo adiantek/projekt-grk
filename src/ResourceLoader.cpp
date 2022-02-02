@@ -225,6 +225,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(simplex, p);
         UNIFORM(simplex, scale);
         UNIFORM(simplex, translation);
+        UNIFORM(simplex, layer);
     }
     LOAD_PROGRAM(environment_map, 2, "water/environment.frag", "water/environment.vert") {
         // DUMP(environment_map);
