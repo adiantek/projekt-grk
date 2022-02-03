@@ -10,42 +10,50 @@ in vec2 interpTexCoord;
 
 out vec4 FragColor;
 
+vec3 fogColor = vec3(0.0, 0.0, 0.0);
+
 // ----- COLORS -----
 
-// 1) COLOR: light turquoise
-// vec3 fogColor = vec3(0.525, 0.905, 0.933);
+// 1) COLOR: sea color
+vec3 fogColorLighter = vec3(0.203, 0.701, 0.898);
+vec3 fogColorDarker = vec3(0.043, 0.321, 0.576);
 
-// 2) COLOR: sea color
-vec3 fogColor = vec3(0.262, 0.662, 0.839);
+// 1) COLOR: blue color
+// vec3 fogColorLighter = vec3(0.356, 0.650, 0.984);
+// vec3 fogColorDarker = vec3(0, 0.247, 0.678);
+
+// 2) COLOR: sea color2
+// vec3 fogColorLighter = vec3(0.262, 0.662, 0.839);
+// vec3 fogColorDarker = vec3(0.050, 0.298, 0.627);
 
 void main()
 {
   vec4 colorBuffer = texture(screenTexture, interpTexCoord);
   float depth = texture(depthTexture, interpTexCoord).r;
 
-  // ----- FOG FATNESS -----
-
-  // lighter fog
-  // float visibility = ((exp((depth * 100.0) -93.0) + (depth * 10.0)) * 0.001) + 0.05;
-  float visibility = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.001) + 0.05;
-
-  // fatter fog
-  // float visibility = ((exp((depth * 100.0) -95.0) + (depth * 20.0)) * 0.01) + 0.05;
-
-  // current fog
-  // float visibility = ((exp((depth * 100.0) -95.0) + exp(depth * 3.5)) * 0.01) + 0.05;
+//-----------------------------------------------------------------------------------------
+  // depth = 1.0 - depth;
+  // float lighterFog = exp(-pow(depth * 100.0, 2.0));
+  // float fatterFog = exp(-pow(depth * 50.0, 1.2) - 0.05) + 0.05;
+//-----------------------------------------------------------------------------------------
+  float lighterFog = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00077) + 0.1;
+  float fatterFog = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00077) + 0.4;
+//-----------------------------------------------------------------------------------------
   
-  visibility = clamp(visibility, 0.0, 1.0);
+  lighterFog = clamp(lighterFog, 0.0, 1.0);
+  fatterFog = clamp(fatterFog, 0.0, 1.0);
+  
+  float hightDistance = distanceToSurface/140.0;
+  hightDistance = clamp(hightDistance, 0.0, 1.0);
 
-  // ----- FOG -----
-
+  vec3 fogColor = mix(fogColorLighter, fogColorDarker, hightDistance);
+  
+  float visibility = mix(lighterFog, fatterFog, hightDistance);
+  // visibility = clamp(visibility, 0.0, 1.0);
+  
   if (distanceToSurface > 0.0) {
     FragColor = mix(colorBuffer, vec4(fogColor, 1.0), visibility);
   } else {
     FragColor = colorBuffer;
   }
-
-  // ----- WITHOUT FOG -----
-
-  // FragColor = colorBuffer;
 }

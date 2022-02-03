@@ -18,7 +18,7 @@ Fog::Fog(unsigned int width, unsigned int height, float maxDepth) {
 
     glGenRenderbuffers(1, &this->depthbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, this->depthbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, this->width, this->height);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, this->width, this->height);
 
     // Bind depthbuffer to framebuffer
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this->depthbuffer);
@@ -27,17 +27,17 @@ Fog::Fog(unsigned int width, unsigned int height, float maxDepth) {
     glGenTextures(1, &this->texture);
     glBindTexture(GL_TEXTURE_2D, this->texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     // Create depth texture
     glGenTextures(1, &this->depthTexture);
     glBindTexture(GL_TEXTURE_2D, this->depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, this->width, this->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -82,14 +82,13 @@ Fog::~Fog() {
     glDeleteTextures(1, &this->depthTexture);
     glDeleteRenderbuffers(1, &this->depthbuffer);
     glDeleteFramebuffers(1, &this->framebuffer);
-
+    glDeleteVertexArrays(1, &this->rectVAO);
+    glDeleteBuffers(1, &this->rectVBO);
 }
 
 void Fog::useFramebuffer() {
     glUseProgram(resourceLoaderExternal->p_underwater_fog_shader);
-    glGetIntegerv(GL_VIEWPORT, this->prevViewport);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
-    glViewport(0, 0, this->width, this->height);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -109,7 +108,7 @@ void Fog::stopUsingFramebuffer() {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glViewport(this->prevViewport[0], this->prevViewport[1], this->prevViewport[2], this->prevViewport[3]);
+    camera->useCameraViewport();
 
     glClear(GL_COLOR_BUFFER_BIT);
 
