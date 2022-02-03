@@ -58,7 +58,7 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
             glUseProgram(resourceLoaderExternal->p_chunk);
             glUniform1i(resourceLoaderExternal->p_chunk_uni_modeSwitch, 1);
         }
-        if (key == GLFW_KEY_F) {
+        if (key == GLFW_KEY_F && controller->mouseRightClicked) {
             if (controller->sweepMode) {
                 physicsObject->grabMultiple();
             } else {

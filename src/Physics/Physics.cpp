@@ -214,39 +214,41 @@ void Physics::grabMultiple() {
 void Physics::draw(glm::mat4 mat) {
     std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
 
-    if (controller->sweepMode) {
-        physx::PxTransform position(pair.first);
-        physx::PxVec3 direction = pair.second;
+    if (controller->mouseRightClicked) {
+        if (controller->sweepMode) {
+            physx::PxTransform position(pair.first);
+            physx::PxVec3 direction = pair.second;
 
-        PxSweepHit hitBuffer[30];
-        PxSweepBuffer hit(hitBuffer, 30);
-        PxSphereGeometry geometry(5.0f);
-        PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eNO_BLOCK);
-        filterData.data.word0 = RAYHITABBLE;
-        this->scene->sweep(geometry, position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+            PxSweepHit hitBuffer[30];
+            PxSweepBuffer hit(hitBuffer, 30);
+            PxSphereGeometry geometry(5.0f);
+            PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eNO_BLOCK);
+            filterData.data.word0 = RAYHITABBLE;
+            this->scene->sweep(geometry, position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
-        if (hit.hasAnyHits()) {
-            unsigned int hitAmount = hit.getNbAnyHits();
-            Glow::glow->startFB();
-            for (unsigned int i = 0; i < hitAmount; ++i) {
-                ((RigidBody*)hit.getAnyHit(i).actor->userData)->object->drawShadow(mat);
+            if (hit.hasAnyHits()) {
+                unsigned int hitAmount = hit.getNbAnyHits();
+                Glow::glow->startFB();
+                for (unsigned int i = 0; i < hitAmount; ++i) {
+                    ((RigidBody*)hit.getAnyHit(i).actor->userData)->object->drawShadow(mat);
+                }
+                Glow::glow->stopFB();
             }
-            Glow::glow->stopFB();
-        }
-    } else {
-        physx::PxVec3 position = pair.first;
-        physx::PxVec3 direction = pair.second;
+        } else {
+            physx::PxVec3 position = pair.first;
+            physx::PxVec3 direction = pair.second;
 
-        PxRaycastBuffer hit;
-        PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
-        filterData.data.word0 = RAYHITABBLE;
-        this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+            PxRaycastBuffer hit;
+            PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+            filterData.data.word0 = RAYHITABBLE;
+            this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
-        if (hit.hasAnyHits()) {
-            physx::PxRaycastHit block = hit.block;
-            Glow::glow->startFB();
-            ((RigidBody*)block.actor->userData)->object->drawShadow(mat);
-            Glow::glow->stopFB();
+            if (hit.hasAnyHits()) {
+                physx::PxRaycastHit block = hit.block;
+                Glow::glow->startFB();
+                ((RigidBody*)block.actor->userData)->object->drawShadow(mat);
+                Glow::glow->stopFB();
+            }
         }
     }
 
