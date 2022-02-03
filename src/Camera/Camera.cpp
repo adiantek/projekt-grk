@@ -117,9 +117,9 @@ void Camera::updatePerspective() {
 
 void Camera::update() {
     if (controller->mouseRightClicked) {
-        this->offset = std::min(this->offset + 0.005f, 1.0f + BASE_CAMERA_OFFSET);
+        this->offset = std::min(this->offset + 0.01f, 1.0f + BASE_CAMERA_OFFSET);
     } else {
-        this->offset = std::max(this->offset - 0.005f, BASE_CAMERA_OFFSET);
+        this->offset = std::max(this->offset - 0.01f, BASE_CAMERA_OFFSET);
     }
     cameraTarget = glm::vec3(robot->position) + glm::vec3(0.0f, this->offset, 0.0f);
     
