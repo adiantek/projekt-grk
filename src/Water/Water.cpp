@@ -13,6 +13,8 @@ namespace water {
         glUniform1f(resourceLoaderExternal->p_chunk_uni_waterHeight, y);
         glUseProgram(resourceLoaderExternal->p_cubefish);
         glUniform1f(resourceLoaderExternal->p_cubefish_uni_waterHeight, y);
+        glUseProgram(resourceLoaderExternal->p_pilotfish);
+        glUniform1f(resourceLoaderExternal->p_pilotfish_uni_waterHeight, y);
     }
 
     Water::~Water() {}
