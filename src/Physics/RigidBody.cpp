@@ -2,9 +2,9 @@
 #include <Physics/RigidBody.hpp>
 
 namespace physics {
-RigidBody::RigidBody(bool isStatic, physx::PxTransform &pose, physx::PxGeometry &geometry, world::Object3D *object, float staticFriction, float dynamicFriction, float restitution, bool kinematic) {
+RigidBody::RigidBody(bool isStatic, physx::PxTransform &pose, physx::PxGeometry &geometry, world::Object3D *object, float staticFriction, float dynamicFriction, float restitution, bool kinematic, bool grabbable) {
     this->object = object;
-    this->inner = physicsObject->createRigidBody(isStatic, pose, geometry, this, staticFriction, dynamicFriction, restitution);
+    this->inner = physicsObject->createRigidBody(isStatic, pose, geometry, this, staticFriction, dynamicFriction, restitution, grabbable && !kinematic);
     this->kinematic = kinematic;
     if (kinematic) {
         this->inner->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);

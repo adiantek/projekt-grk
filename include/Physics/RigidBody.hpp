@@ -13,7 +13,7 @@ struct State {
 namespace physics {
 class RigidBody {
    public:
-    RigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, world::Object3D* object, float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.6f, bool kinematic = false);
+    RigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, world::Object3D* object, float staticFriction = 0.5f, float dynamicFriction = 0.5f, float restitution = 0.6f, bool kinematic = false, bool grabbable = true);
     ~RigidBody();
     glm::mat4 getModelMatrix();
     float getMass();

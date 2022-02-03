@@ -14,7 +14,7 @@ class Physics {
     Physics(float gravity, ErrorCallback::LogLevel logLevel = ErrorCallback::__DEBUG);
     ~Physics();
     void update(float deltaTime);
-    physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution);
+    physx::PxRigidBody* createRigidBody(bool isStatic, physx::PxTransform& pose, physx::PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution, bool grabbable);
     void deleteRigidBody(physx::PxRigidBody* rigidBody);
     physx::PxTriangleMeshGeometry createTriangleGeometry(float* vertices, unsigned int verticesNumber, int* indices, unsigned int trianglesNumber);
     physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, unsigned int trianglesNumber);

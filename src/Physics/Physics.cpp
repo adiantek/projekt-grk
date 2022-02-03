@@ -22,7 +22,7 @@
 using namespace physics;
 
 enum ActiveGroup {
-    ROBOT = (1<<0),
+    NONRAYHITABBLE = (1<<0),
     RAYHITABBLE = (1<<1)
 };
 
@@ -104,12 +104,12 @@ void Physics::update(float deltaTime) {
     }
 }
 
-PxRigidBody* Physics::createRigidBody(bool isStatic, PxTransform& pose, PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution) {
+PxRigidBody* Physics::createRigidBody(bool isStatic, PxTransform& pose, PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution, bool grabbable) {
     PxMaterial* material = this->physx->createMaterial(staticFriction, dynamicFriction, restitution);
     PxRigidBody* rigidBody = isStatic ? (PxRigidBody*)this->physx->createRigidStatic(pose) : (PxRigidBody*)this->physx->createRigidDynamic(pose);
     PxShape* shape = this->physx->createShape(geometry, *material);
     PxFilterData filterData;
-    filterData.word0 = (((RigidBody*)object)->object == (world::Object3D*)robot) ? ROBOT : RAYHITABBLE;
+    filterData.word0 = grabbable ? RAYHITABBLE : NONRAYHITABBLE;
     shape->setQueryFilterData(filterData);
     rigidBody->attachShape(*shape);
     rigidBody->userData = object;
