@@ -36,8 +36,8 @@ struct RobotLeg {
 class Robot : world::Object3D {
    public:
     // SPEEDS
-    inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 1.0f;
-    inline static const float MAX_SWIMMING_SPEED_INCREASED = 4.0f * 10;
+    inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 4.0f;
+    inline static const float MAX_SWIMMING_SPEED_INCREASED = 8.0f * 10;
 
     inline static const float DEFAULT_WALKING_MOVEMENT_SPEED = 0.5f;
     inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f * 10;
@@ -46,7 +46,7 @@ class Robot : world::Object3D {
     inline static const float LEG_STEP_SPEED = 7.0f;
     inline static const float LEG_MAX_DISTANCE_SQUARE = 0.6f;
     inline static const float JUMP_SPEED = 1.0f;
-    inline static const float LANDING_SPEED = 1.0f;
+    inline static const float LANDING_SPEED = 1.5f;
 
     inline static const float JUMP_HEIGHT = 10.0f;
 
@@ -96,6 +96,7 @@ class Robot : world::Object3D {
     void applyBodyTransformation(glm::mat4 transformation);
     bool isInGroundMode();
     bool isInFloatingMode();
+    bool isInMovingMode();
     float getDistanceFromGround();
     glm::vec3 getWorldPointAt(glm::vec3 point);
 

@@ -35,7 +35,7 @@ Robot::Robot() {
             Resources::MATERIALS.ROBOT_WIRE,
             Resources::MATERIALS.ROBOT_GLOW,
             Resources::MATERIALS.ROBOT_METAL_2,
-            Resources::MATERIALS.ROBOT_METAL_PAINTED
+            Resources::MATERIALS.ROBOT_PROPELERS
         });
 
     this->mode = Robot::MODE_STATIONARY;
@@ -48,7 +48,7 @@ Robot::Robot() {
     this->createBody();
     this->createLegs();
 
-    bool debug = true;
+    bool debug = false;
 
     if (debug) {
         Gizmos::onDraw([this]() {
@@ -251,9 +251,7 @@ void Robot::update() {
         }
     }
 
-    std::cout << "Mode: " << this->mode << std::endl;
-
-    if (this->isInGroundMode()) {
+    if (this->isInGroundMode() && this->mode != Robot::MODE_LANDING) {
         this->position = this->getWorldPointAt(this->position);
     }
 
@@ -395,6 +393,11 @@ void Robot::updateLegs() {
     glm::vec3 offset = glm::vec3(0.7f, 0.0f, 0.0f);
     glm::vec3 targetOffset = glm::vec3(0.3f, 0.0f, 0.0f);
 
+    if (this->isInFloatingMode()) {
+        targetOffset = glm::vec3(-0.4f, 0.0f, 0.0f);
+        ignoreAnimation = true;
+    }
+
     float longestStep = 0.0f;
     RobotLeg* legToMove = this->legs[0];
 
@@ -408,12 +411,15 @@ void Robot::updateLegs() {
 
         // Calculate attachment point estimation
         leg->attachmentEstimation = localTargetOffset * glm::vec4(lowerJointOrigin, 1.0f);
-        leg->attachmentEstimation.y += 1.0f * (leg->id < 2);
+
+        if (!this->isInFloatingMode())
+            leg->attachmentEstimation.y += 1.0f * (leg->id < 2);
 
         if (this->isInGroundMode()) {
             leg->attachmentEstimation = glm::inverse(modelMatrix) * glm::vec4(this->getWorldPointAt(glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f))), 1.0f);
         } else {
             leg->attachmentEstimation = glm::inverse(modelMatrix) * glm::vec4(glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f)), 1.0f);
+            leg->attachmentPoint = glm::vec3(glm::inverse(invertedModelMatrix) * glm::vec4(leg->attachmentEstimation, 1.0f));
         }
 
         glm::vec3 globalAttachmentEstimation = glm::vec3(modelMatrix * glm::vec4(leg->attachmentEstimation, 1.0f));
@@ -553,7 +559,7 @@ glm::vec3 Robot::getWorldPointAt(glm::vec3 point) {
         return point;
     }
 
-    // If robot would like 
+    // If robot would like to use physx, this is the place to do it
     // float maxSlope = 0.5f;
 
     // physx::PxVec3 origin = physx::PxVec3(point.x, std::max(result.y + maxSlope, point.y + maxSlope), point.z);
@@ -581,6 +587,11 @@ bool Robot::isInFloatingMode() {
     return this->mode == Robot::MODE_STATIONARY_FLOATING
         || this->mode == Robot::MODE_SWIMMING
         || this->mode == Robot::MODE_JUMPING;
+}
+
+bool Robot::isInMovingMode() {
+    return this->mode == Robot::MODE_SWIMMING
+        || this->mode == Robot::MODE_WALKING;
 }
 
 float Robot::getDistanceFromGround() {

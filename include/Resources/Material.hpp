@@ -8,10 +8,11 @@
 
 class Material {
     public:
-      inline static const int DIFFUSE_TEXTURE = 0;
+      inline static const int ALBEDO_TEXTURE = 0;
       inline static const int NORMAL_TEXTURE = 1;
       inline static const int AO_TEXTURE = 2;
       inline static const int ROUGHNESS_TEXTURE = 3;
+      inline static const int METALLIC_TEXTURE = 4;
 
       Material();
       Material(GLuint* program);
@@ -22,33 +23,54 @@ class Material {
 
       Material* setProgram(GLuint* program);
 
-      Material* setDiffuse(GLuint* diffuseTexture);
-      Material* setNormal(GLuint* normalTexture);
-      Material* setAO(GLuint* aoTexture);
-      Material* setRoughness(GLuint* roughnessTexture);
+      Material* setAlbedo(GLint* resourceLocation, GLuint* diffuseTexture);
+      Material* setNormal(GLint *resourceLocation, GLuint* normalTexture);
+      Material* setAO(GLint *resourceLocation, GLuint* aoTexture);
+      Material* setRoughness(GLint *resourceLocation, GLuint* roughnessTexture);
+      Material* setMetallic(GLint *resourceLocation, GLuint* metallicTexture);
+      Material* setTexture (int textureType, GLint *resourceLocation, GLuint* texture);
 
-      Material* setParam(std::string name, glm::vec3 value);
-      Material* setParam(std::string name, float value);
-      Material* setParam(std::string name, glm::mat4 value);
-      Material* setParam(std::string name);
+      Material* setParam(GLint *resourceLocation, glm::vec3 value);
+      Material* setParam(GLint *resourceLocation, float value);
+
+      Material* withCaustics(GLint *resourceLocation);
+      Material* withCameraPosition(GLint *resourceLocation);
+      Material* withLightPosition(GLint *resourceLocation);
+      Material* withWaterHeight(GLint *resourceLocation);
+      Material* withJointTransforms(GLint *resourceLocation);
+      Material* withLightTransformation(GLint *resourceLocation);
+      Material* withModelMatrix(GLint *resourceLocation);
+      Material* withModelViewProjectionMatrix(GLint *resourceLocation);
+
+      Material* setModelMatrix(glm::mat4 modelMatrix);
+      Material* setModelViewProjectionMatrix(glm::mat4 modelViewProjectionMatrix);
+      Material* setJointTransforms(std::vector<glm::mat4> jointTransforms);
 
       bool hasParam(std::string name);
 
-      GLuint* getDiffuse();
+      GLuint* getAlbedo();
       GLuint* getNormal();
       GLuint* getAO();
       GLuint* getRoughness();
+      GLuint* getMetallic();
 
       GLuint* program;
 
-      void loadToProgram(GLuint* program);
+      Material *loadToProgram(GLuint* program);
+      Material* use();
 
     private:
-      GLuint diffuseTexture;
-      GLuint normalTexture;
-      GLuint aoTexture;
-      GLuint roughnessTexture;
+      GLuint albedoTexture = -1;
+      GLuint normalTexture = -1;
+      GLuint aoTexture = -1;
+      GLuint roughnessTexture = -1;
+      GLuint metallicTexture = -1;
+
+      GLint* modelMatrixLocation;
+      GLint* modelViewProjectionMatrixLocation;
+      GLint* jointTransformsLocation;
 
       std::vector<std::function<void(GLuint)>> paramsFunctions = std::vector<std::function<void(GLuint)>>();
       std::vector<std::string> params = std::vector<std::string>();
+
 };

@@ -228,12 +228,7 @@ float Chunk::getHeightAt(float x, float z) {
 }
 
 void Chunk::draw(glm::mat4 mat) {
-    double alpha = (timeExternal->lastFrame - this->created) / 1.0;
-    if (alpha >= 0.0 && alpha < 1.0) {
-        glEnable(GL_BLEND);
-        glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
-        glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-    }
+
 }
 
 void Chunk::prepareRendering(glm::mat4 mat) {
@@ -299,18 +294,18 @@ void Chunk::prepareRendering(glm::mat4 mat) {
 }
 
 void Chunk::drawTerrain(glm::mat4 mat) {
-    // double alpha = (timeExternal->lastFrame - this->created) / 1.0;
-    // if (alpha >= 0.0 && alpha < 1.0) {
-    //     glEnable(GL_BLEND);
-    //     glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
-    //     glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-    // }
+    double alpha = (timeExternal->lastFrame - this->created) / 1.0;
+    if (alpha >= 0.0 && alpha < 1.0) {
+        glEnable(GL_BLEND);
+        glBlendColor(1.0f, 1.0f, 1.0f, (GLfloat)alpha);
+        glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+    }
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
 
-    // if (alpha >= 0.0 && alpha < 1.0) {
-    //     glDisable(GL_BLEND);
-    // }
+    if (alpha >= 0.0 && alpha < 1.0) {
+        glDisable(GL_BLEND);
+    }
 }
 
 void Chunk::drawShadow(glm::mat4 mat) {

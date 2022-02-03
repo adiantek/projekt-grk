@@ -52,7 +52,6 @@ GameObject* GameObject::setModel(Model* model) {
 }
 
 glm::mat4 GameObject::getModelMatrix() {
-    // TODO: Add rotation
     return 
         glm::translate(this->position)
         * glm::eulerAngleYXZ(glm::radians(this->rotation.y), glm::radians(this->rotation.x), glm::radians(this->rotation.z))
@@ -82,20 +81,16 @@ void GameObject::draw(glm::mat4 mat) {
             material = Resources::MATERIALS.DEFAULT;
         }
 
-        glUseProgram(*material->program);
-        material->loadToProgram(material->program);
-
-        // TODO cache lightDir, modelMatrix, etc. in material
-        // Set light
-        glUniform3f(glGetUniformLocation(*material->program, "lightDir"), lightDir.x, lightDir.y, lightDir.z);
-
-        // Set transformation
-        glUniformMatrix4fv(glGetUniformLocation(*material->program, "modelMatrix"), 1, GL_FALSE, (float*)&(modelMatrix));
-        glUniformMatrix4fv(glGetUniformLocation(*material->program, "modelViewProjectionMatrix"), 1, GL_FALSE, (float*)&(modelViewProjectionMatrix));
+        material
+            ->setModelMatrix(modelMatrix)
+            ->setModelViewProjectionMatrix(modelViewProjectionMatrix);
 
         if (this->model->hasJoints()) {
-            glUniformMatrix4fv(glGetUniformLocation(*material->program, "jointTransforms"), 20, GL_FALSE, glm::value_ptr(this->getJointTransforms()[0]));
+            material->setJointTransforms(this->getJointTransforms());
         }
+        
+        material->use();
+
         Core::DrawContext(*context);
     }
 }
