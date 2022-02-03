@@ -180,6 +180,15 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(skybox_shader, skybox);
     }
 
+    LOAD_PROGRAM(underwater_fog_shader, 2, "fog/underwaterFog.frag", "fog/underwaterFog.vert") {
+        // DUMP(underwater_fog_shader);
+        ATTRIBUTE(underwater_fog_shader, aPos);
+        ATTRIBUTE(underwater_fog_shader, vertexTexCoord);
+        UNIFORM(underwater_fog_shader, distanceToSurface);
+        UNIFORM(underwater_fog_shader, depthTexture);
+        UNIFORM(underwater_fog_shader, screenTexture);
+    }
+
     LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
         // DUMP(shader_4_1);
         ATTRIBUTE(shader_4_1, vertexNormal);

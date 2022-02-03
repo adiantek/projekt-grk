@@ -5,9 +5,10 @@
 #include <ResourceLoader.hpp>
 #include <SimplexNoiseGenerator.hpp>
 #include <vertex/VertexBuffer.hpp>
+#include <Fog/Fog.hpp>
 
 SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
-    double scale = 0.25;  // im mniejsza wartosc tym teren lagodniejszy
+    double scale = 0.20;  // im mniejsza wartosc tym teren lagodniejszy
     double weight = 1.0 / ((1 << 4) - 1);
 
     uint8_t permutationTable[4 * 256];
@@ -116,6 +117,7 @@ void SimplexNoiseGenerator::draw(float x, float y) {
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
     glBindBuffer(GL_PIXEL_PACK_BUFFER, this->pbo);
     glViewport(0, 0, 19, 19);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE);
@@ -136,7 +138,7 @@ void SimplexNoiseGenerator::draw(float x, float y) {
     glReadPixels(0, 0, 19, 19, GL_RED, GL_FLOAT, 0);
     this->sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     glDisable(GL_BLEND);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     camera->useCameraViewport();
 }
