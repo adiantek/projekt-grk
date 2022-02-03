@@ -83,14 +83,14 @@ void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
 }
 
 void Camera::increaseCameraDistance() {
-    if( distance < 2.0f ) {
+    if( distance < 2.2f ) {
         distance += 0.1f;
         position -= getDirection() * 0.1f;
     }
 }
 
 void Camera::decreaseCameraDistance() {
-    if( distance > 0.5f ) {
+    if( distance > 0.8f ) {
         distance -= 0.1f;
         position += getDirection() * 0.1f;
     }

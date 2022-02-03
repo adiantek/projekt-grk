@@ -7,7 +7,8 @@ out vec4 FragColor;
 
 uniform vec2 translation;
 uniform float scale;
-uniform int p[256];
+uniform sampler2D p;
+uniform float layer;
 
 const float grads[24] = float[24](
     1.0, 1.0,
@@ -34,7 +35,7 @@ const vec2 F_22 = vec2(F_2, F_2);
 const vec2 G_22 = vec2(G_2, G_2);
 
 int getPermutValue(int permutIndex) {
-    return p[permutIndex & 255];
+    return int(texture(p, vec2(float(permutIndex) / 256.0, layer / 4.0)).r * 256.0);
 }
 
 float processGrad(int gradIndex, vec2 xy) {

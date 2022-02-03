@@ -90,8 +90,8 @@ void EnvironmentMap::clearWorldObjects() {
 }
 
 void EnvironmentMap::update() {
-    int prevViewport[4];
-    glGetIntegerv(GL_VIEWPORT, prevViewport);
+    // int prevViewport[4];
+    // glGetIntegerv(GL_VIEWPORT, prevViewport);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
     glViewport(0, 0, this->textureSize, this->textureSize);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -113,6 +113,6 @@ void EnvironmentMap::update() {
     Core::DrawContext(this->geometry);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
-    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+    camera->useCameraViewport();
 }
 }  // namespace water

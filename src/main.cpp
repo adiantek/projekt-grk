@@ -155,7 +155,6 @@ void init() {
 	new physics::Physics(9.8f, w);
     new water::Water(192.0f, 500.0f, 80.0f, 512, 256.0f, 1000);
 
-    w = new world::World(0);
     waterObject->addWorldObject((world::Object3D *)w);
 
     new physics::Physics(9.8f, w);
@@ -211,6 +210,11 @@ int main(int argc, char **argv) {
             if (!gladLoadGL()) {
                 LOGE("gladLoadGL() failed");
                 return EXIT_FAILURE;
+            }
+            // stupid fix for gladLoadGL()
+            for (int i = 0; i < 100; i++) {
+                if (!glGetError())
+                    break;
             }
             LOGI("OpenGL Version %d.%d loaded", GLVersion.major, GLVersion.minor);
 #endif
