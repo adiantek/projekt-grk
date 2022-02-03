@@ -25,7 +25,8 @@ class Model {
     std::vector<Animator::Joint*> getJoints();
     Animator::Joint* getRootJoint();
     Animator::Joint* getJoint(std::string name);
-    physx::PxTriangleMeshGeometry createGeometry();
+    physx::PxTriangleMeshGeometry createGeometry(glm::vec3 scale = glm::vec3(1.0f));
+    physx::PxBoxGeometry createGeometryAABB(glm::vec3 scale = glm::vec3(1.0f));
 
     std::string file;
 
@@ -40,4 +41,7 @@ class Model {
     std::vector<Mesh*> meshes;
     std::vector<Animator::Joint*> joints;
     std::unordered_map<std::string, int> bonesIds;
+
+    physx::PxVec3 aabbMin = physx::PxVec3(2000000000.0f);
+    physx::PxVec3 aabbMax = physx::PxVec3(-2000000000.0f);
 };
