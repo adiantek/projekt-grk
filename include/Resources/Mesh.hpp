@@ -25,13 +25,15 @@ class Mesh {
     void calculateRenderContext(aiMesh* mesh, std::unordered_map<std::string, int> bonesIds);
 
     Core::RenderContext* getRenderContext();
-    std::vector<Vertex> getVertices();
     Animator::Joint* getRootJoint();
     std::vector<Animator::Joint*> getJoints();
     std::string getName();
     int getJointsCount();
 
     bool hasJoints();
+
+    std::vector<float> vertices;
+    std::vector<int> indices;
 
    private:
     std::string name;
@@ -40,7 +42,7 @@ class Mesh {
     glm::vec3 origin;
     /* -- Not implemented yet */
     glm::vec3 extents;
-    std::vector<Vertex> vertices;
+    std::vector<Vertex> vertices2;
 
     Core::RenderContext renderContext;
     Animator::Joint* rootJoint;

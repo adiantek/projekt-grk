@@ -5,6 +5,7 @@
 #include <zlib/zlib.h>
 
 #include <Camera/Camera.hpp>
+#include <Camera/Scope.hpp>
 #include <Controller/Controller.hpp>
 #include <Fish/Boids.hpp>
 #include <Fish/Cubefish.hpp>
@@ -21,6 +22,8 @@
 #include <utils/Gizmos.hpp>
 #include <vector>
 #include <world/World.hpp>
+#include <Glow/GlowShader.hpp>
+#include <utils/Line.hpp>
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
 #include <Fog/Fog.hpp>
@@ -119,6 +122,7 @@ void do_frame() {
 
     glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Glow::glow->clear();
     // Draw area
     viewMatrix = camera->getTransformationMatrix();
 
@@ -128,10 +132,13 @@ void do_frame() {
     for (auto cube : cubefish)
         cube->draw(viewMatrix);
     waterObject->draw(viewMatrix);
+    physicsObject->draw(viewMatrix);
 
     fog->stopUsingFramebuffer();
 
     utils::Gizmos::draw();
+    Glow::glow->draw(viewMatrix);
+    scope->draw();
 
     if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
         lastTitleUpdate = timeExternal->lastFrame;
@@ -149,15 +156,18 @@ void init() {
     // Initialize resources (textures, shaders, materials)
     Resources::init();
 
-	w = new world::World(0);
+    new Scope();
+
+    new Glow::GlowShader(camera->width, camera->height);
+
 	fog = new Fog(1280, 720, 256.0);
-	
-	new physics::Physics(9.8f, w);
-    new water::Water(192.0f, 500.0f, 80.0f, 512, 256.0f, 1000);
+    new water::Water(192.0f, 320.0f, 65.0f, 512, 256.0f, 1000);
+    new physics::Physics(9.8f);
+	w = new world::World(0);
 
     waterObject->addWorldObject((world::Object3D *)w);
 
-    new physics::Physics(9.8f, w);
+    physicsObject->world = w;
 
     glEnable(GL_DEPTH_TEST);
 

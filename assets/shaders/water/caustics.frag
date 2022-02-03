@@ -28,5 +28,5 @@ void main() {
 
         causticsIntensity = causticsFactor * ratio;
     }
-    fragColor = vec4(causticsIntensity, 0.0, 0.0, depth);
+    fragColor = vec4(clamp(causticsIntensity, 0.0, 1.0), 0.0, 0.0, depth);
 }

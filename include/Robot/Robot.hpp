@@ -5,6 +5,7 @@
 #include <Resources/GameObject.hpp>
 #include <glm/ext.hpp>
 #include <world/Object3D.hpp>
+#include <Physics/RigidBody.hpp>
 
 namespace entity {
 
@@ -91,6 +92,8 @@ class Robot : world::Object3D {
     Animator::Joint* eyeCover;
 
     glm::mat4 initialModelMatrix;
+
+    physics::RigidBody* rigidBody;
 };
 
 }  // namespace entity

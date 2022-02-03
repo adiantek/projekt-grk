@@ -5,6 +5,7 @@
 #include <Logger.h>
 #include <Controller/Controller.hpp>
 #include <Camera/Camera.hpp>
+#include <Physics/Physics.hpp>
 #include <Robot/Robot.hpp>
 #include <ResourceLoader.hpp>
 
@@ -57,6 +58,16 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
             glUseProgram(resourceLoaderExternal->p_chunk);
             glUniform1i(resourceLoaderExternal->p_chunk_uni_modeSwitch, 1);
         }
+        if (key == GLFW_KEY_F && controller->mouseRightClicked) {
+            if (controller->sweepMode) {
+                physicsObject->grabMultiple();
+            } else {
+                physicsObject->grab();
+            }
+        }
+        if (key == GLFW_KEY_R) {
+            controller->sweepMode = !controller->sweepMode;
+        }
     } else if (action == 0) {
         LOGI("Released key: %d", key);
         controller->keys[key] = false;
@@ -72,6 +83,8 @@ void Controller::onMouseButtonPress(GLFWwindow *window, int button, int action, 
         controller->mouseGrabbed = true;
         controller->firstMouseMove = true;
 #endif
+    } else if (button == 1) {
+        controller->mouseRightClicked = action == 1;
     }
 }
 

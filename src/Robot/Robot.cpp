@@ -44,9 +44,16 @@ Robot::Robot() {
     Gizmos::onDraw([this]() {
         Gizmos::cube(this->position);
     });
+
+    physx::PxTransform pose = physx::PxTransform(this->position.x, this->position.y, this->position.z);
+    physx::PxTriangleMeshGeometry geometry = this->gameObject->getModel()->createGeometry(glm::vec3(0.3f));
+    
+    this->rigidBody = new physics::RigidBody(false, pose, geometry, this, 0.5f, 0.5f, 0.0f, true);
+    geometry.triangleMesh->release();
 }
 
 Robot::~Robot() {
+    delete this->rigidBody;
     // TODO oczyscic robota
 }
 
@@ -145,6 +152,8 @@ void Robot::update() {
 
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);
+
+    this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
 
     // this->updateBody();
     // this->updateLegs();

@@ -8,6 +8,7 @@
 #include <Robot/Robot.hpp>
 #include <Fog/Fog.hpp>
 #include <Time/Time.hpp>
+#include <Glow/GlowShader.hpp>
 
 Camera::Camera(int width, int height, float fov, float near, float far, int x, int y) {
     camera = this;
@@ -37,6 +38,9 @@ void Camera::setSize(int width, int height) {
     this->width = width;
     this->height = height;
     updatePerspective();
+    
+    Glow::glow->resize(width, height);
+
     delete fog;
     fog = new Fog(width, height, 256.0);
 }
@@ -79,7 +83,7 @@ void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
     float offsetZ = horizontalD * cos(glm::radians(angle));
     position.x = robot->position.x - offsetX;
     position.z = robot->position.z - offsetZ;
-    position.y = robot->position.y + verticalD;
+    position.y = robot->position.y + this->offset + verticalD;
 }
 
 void Camera::increaseCameraDistance() {
@@ -117,7 +121,12 @@ void Camera::updatePerspective() {
 }
 
 void Camera::update() {
-    cameraTarget = glm::vec3(robot->position) + glm::vec3(0.0f, 0.2f, 0.0f);
+    if (controller->mouseRightClicked) {
+        this->offset = std::min(this->offset + 0.01f, 1.0f + BASE_CAMERA_OFFSET);
+    } else {
+        this->offset = std::max(this->offset - 0.01f, BASE_CAMERA_OFFSET);
+    }
+    cameraTarget = glm::vec3(robot->position) + glm::vec3(0.0f, this->offset, 0.0f);
     
     float horizontalDistance = this->horizontalDistance();
     float verticalDistance = this->verticalDistance();

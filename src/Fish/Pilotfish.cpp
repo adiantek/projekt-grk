@@ -2,19 +2,21 @@
 #include <ResourceLoader.hpp>
 #include <Water/Water.hpp>
 
+#define PILOTFISH_SCALE 0.2f
+
 Pilotfish::Pilotfish(glm::vec3 position, world::World* world)
-: Fish(resourceLoaderExternal->m_pilotfish, position, world) {}
+: Fish(resourceLoaderExternal->m_pilotfish, position, world, glm::vec3(PILOTFISH_SCALE)) {}
 
 Pilotfish::~Pilotfish() {}
 
 void Pilotfish::update() {
     Fish::update();
     // I should be flying forward
-    this->rigidBody->rotateForward(glm::eulerAngleY(glm::radians(90.0f)));
+    this->rigidBody->rotateForward(glm::eulerAngleX(glm::radians(-90.0f)));
 }
 
 void Pilotfish::draw(glm::mat4 mat) {
-    glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(0.3f));
+    glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(PILOTFISH_SCALE));
     glm::mat4 transformation = mat * model;
     glUseProgram(resourceLoaderExternal->p_pilotfish);
     glUniform1i(resourceLoaderExternal->p_pilotfish_uni_colorTexture, 0);
@@ -31,7 +33,7 @@ void Pilotfish::draw(glm::mat4 mat) {
 }
 
 void Pilotfish::drawShadow(glm::mat4 mat) {
-    glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(0.3f));
+    glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(PILOTFISH_SCALE));
     glm::mat4 transformation = mat * model;
     glUseProgram(resourceLoaderExternal->p_environment_map);
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));

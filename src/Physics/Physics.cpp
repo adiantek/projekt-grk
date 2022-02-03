@@ -2,8 +2,13 @@
 #include <Physics/RigidBody.hpp>
 #include <Physics/SimulationEventCallback.hpp>
 #include <Water/Water.hpp>
+#include <Camera/Camera.hpp>
 #include <glm/glm.hpp>
+#include <utils/Gizmos.hpp>
+#include <Glow/GlowShader.hpp>
+#include <Controller/Controller.hpp>
 #include <vector>
+#include <Logger.h>
 
 #define PX_RELEASE(x) \
     if (x) {          \
@@ -11,7 +16,15 @@
         x = NULL;     \
     }
 
+#define GRAB_DIST 100.0f
+#define GLOW_DIST 100.0f
+
 using namespace physics;
+
+enum ActiveGroup {
+    NONRAYHITABBLE = (1<<0),
+    RAYHITABBLE = (1<<1)
+};
 
 const float stepTime = 1.0f / 60.f;
 
@@ -23,11 +36,10 @@ static PxFilterFlags simulationFilterShader(PxFilterObjectAttributes attributes0
     return physx::PxFilterFlag::eDEFAULT;
 }
 
-Physics::Physics(float gravity, world::World* world, ErrorCallback::LogLevel logLevel)
+Physics::Physics(float gravity, ErrorCallback::LogLevel logLevel)
     : errorCallback(logLevel) {
     physicsObject = this;
     this->gravity = gravity;
-    this->world = world;
     this->foundation = PxCreateFoundation(PX_PHYSICS_VERSION, this->allocator, (PxErrorCallback&)this->errorCallback);
     this->physx = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, PxTolerancesScale(), true);
     this->cooking = PxCreateCooking(PX_PHYSICS_VERSION, *this->foundation, PxCookingParams(PxTolerancesScale()));
@@ -79,6 +91,10 @@ void Physics::update(float deltaTime) {
                 } else {
                     rigidBody->applyDrag(0.001225f);
                 }
+                if (rigidBody->grabbed) {
+                    glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
+                    ((physx::PxRigidBody*)actor)->setLinearVelocity(physx::PxVec3(direction.x, direction.y, direction.z));
+                }
             }
         }
 
@@ -88,10 +104,13 @@ void Physics::update(float deltaTime) {
     }
 }
 
-PxRigidBody* Physics::createRigidBody(bool isStatic, PxTransform& pose, PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution) {
+PxRigidBody* Physics::createRigidBody(bool isStatic, PxTransform& pose, PxGeometry& geometry, void* object, float staticFriction, float dynamicFriction, float restitution, bool grabbable) {
     PxMaterial* material = this->physx->createMaterial(staticFriction, dynamicFriction, restitution);
     PxRigidBody* rigidBody = isStatic ? (PxRigidBody*)this->physx->createRigidStatic(pose) : (PxRigidBody*)this->physx->createRigidDynamic(pose);
     PxShape* shape = this->physx->createShape(geometry, *material);
+    PxFilterData filterData;
+    filterData.word0 = grabbable ? RAYHITABBLE : NONRAYHITABBLE;
+    shape->setQueryFilterData(filterData);
     rigidBody->attachShape(*shape);
     rigidBody->userData = object;
     PX_RELEASE(shape);
@@ -105,7 +124,7 @@ void Physics::deleteRigidBody(PxRigidBody* rigidBody) {
     PX_RELEASE(rigidBody);
 }
 
-physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float* vertices, int verticesNumber, int* indices, int trianglesNumber) {
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float* vertices, unsigned int verticesNumber, int* indices, unsigned int trianglesNumber) {
     physx::PxTriangleMeshDesc meshDesc;
     meshDesc.points.count = verticesNumber;
     meshDesc.points.stride = sizeof(physx::PxVec3);
@@ -121,7 +140,7 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(float* vertices, i
     return triGeom;
 }
 
-physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuffer *vb, int* indices, int trianglesNumber) {
+physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuffer *vb, int* indices, unsigned int trianglesNumber) {
     physx::PxTriangleMeshDesc meshDesc;
     meshDesc.points.count = vb->getVertices();
     meshDesc.points.stride = vb->getFormat()->getGPUSize();
@@ -135,6 +154,118 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuff
     triGeom.triangleMesh = this->cooking->createTriangleMesh(meshDesc, this->physx->getPhysicsInsertionCallback());
 
     return triGeom;
+}
+
+std::pair<physx::PxVec3, physx::PxVec3> calculateRay() {
+    glm::vec4 start(0.0f, 0.0f, -1.0f, 1.0f);
+    glm::vec4 end(0.0f, 0.0f, 1.0f, 1.0f);
+
+    glm::mat4 viewInverse = glm::inverse(camera->getTransformationMatrix());
+
+    start = viewInverse * start;
+    end = viewInverse * end;
+
+    start /= start.w;
+    end /= end.w;
+
+    glm::vec4 dir = glm::normalize(end - start);
+
+    return std::make_pair(physx::PxVec3(start.x, start.y, start.z), physx::PxVec3(dir.x, dir.y, dir.z));
+}
+
+void Physics::grab() {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxVec3 position = pair.first;
+    physx::PxVec3 direction = pair.second;
+
+    PxRaycastBuffer hit;
+    PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+    filterData.data.word0 = RAYHITABBLE;
+    this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+    if (hit.hasAnyHits()) {
+        ((RigidBody*)hit.block.actor->userData)->grabbed = !((RigidBody*)hit.block.actor->userData)->grabbed;
+    }
+}
+
+void Physics::grabMultiple() {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxTransform position(pair.first);
+    physx::PxVec3 direction = pair.second;
+
+    PxSweepHit hitBuffer[30];
+    PxSweepBuffer hit(hitBuffer, 30);
+    PxSphereGeometry geometry(5.0f);
+    PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eNO_BLOCK);
+    filterData.data.word0 = RAYHITABBLE;
+    this->scene->sweep(geometry, position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+    if (hit.hasAnyHits()) {
+        unsigned int hitAmount = hit.getNbAnyHits();
+        for (unsigned int i = 0; i < hitAmount; ++i) {
+            RigidBody* rigidBody = (RigidBody*)hit.getAnyHit(i).actor->userData;
+            rigidBody->grabbed = !rigidBody->grabbed;
+        }
+    }
+}
+
+void Physics::draw(glm::mat4 mat) {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    if (controller->mouseRightClicked) {
+        if (controller->sweepMode) {
+            physx::PxTransform position(pair.first);
+            physx::PxVec3 direction = pair.second;
+
+            PxSweepHit hitBuffer[30];
+            PxSweepBuffer hit(hitBuffer, 30);
+            PxSphereGeometry geometry(5.0f);
+            PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eNO_BLOCK);
+            filterData.data.word0 = RAYHITABBLE;
+            this->scene->sweep(geometry, position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+            if (hit.hasAnyHits()) {
+                unsigned int hitAmount = hit.getNbAnyHits();
+                Glow::glow->startFB();
+                for (unsigned int i = 0; i < hitAmount; ++i) {
+                    ((RigidBody*)hit.getAnyHit(i).actor->userData)->object->drawShadow(mat);
+                }
+                Glow::glow->stopFB();
+            }
+        } else {
+            physx::PxVec3 position = pair.first;
+            physx::PxVec3 direction = pair.second;
+
+            PxRaycastBuffer hit;
+            PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+            filterData.data.word0 = RAYHITABBLE;
+            this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+            if (hit.hasAnyHits()) {
+                physx::PxRaycastHit block = hit.block;
+                Glow::glow->startFB();
+                ((RigidBody*)block.actor->userData)->object->drawShadow(mat);
+                Glow::glow->stopFB();
+            }
+        }
+    }
+
+    physx::PxU32 nbActors = this->scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+    if (nbActors > 0) {
+        std::vector<PxRigidActor*> actors(nbActors);
+        this->scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC, (PxActor**)&actors[0], nbActors);
+        for (auto actor : actors) {
+            if (!actor->userData)
+                continue;
+            physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
+            if (rigidBody->grabbed) {
+                glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
+                utils::Gizmos::line(robot->position, glm::vec3(rigidBody->getModelMatrix()[3]), glm::vec3(0.0f));
+            }
+        }
+    }
 }
 
 physics::Physics* physicsObject;
