@@ -3,12 +3,14 @@
 #include <Time/Time.hpp>
 #include <world/ChunkPositionComparator.hpp>
 #include <world/World.hpp>
+#include <utils/Gizmos.hpp>
 
 using namespace world;
 
 #define VIEW_DISTANCE 16
 
 World::World(int64_t seed) {
+    worldObject = this;
     this->seed = seed;
     this->chunkBorderDebugRenderer = new ChunkBorderDebugRenderer();
     this->crosshair = new Crosshair();
@@ -173,6 +175,22 @@ Chunk *World::getChunkAt(ChunkPosition pos) {
     return pair.second;
 }
 
+float World::getHeightAt(int32_t x, int32_t z) {
+    Chunk *c = this->getChunkAt(ChunkPosition(x >> 4, z >> 4));
+    if (!c) {
+        return NAN;
+    }
+    return c->getHeightAt(x, z);
+}
+
+float World::getHeightAt(float x, float z) {
+    Chunk *c = this->getChunkAt(ChunkPosition(glm::vec3(x, 0, z)));
+    if (!c) {
+        return NAN;
+    }
+    return c->getHeightAt(x, z);
+}
+
 void World::updateChunks() {
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
@@ -242,3 +260,5 @@ bool World::chunksLoaded(glm::vec3 pos) {
     }
     return true;
 }
+
+World *worldObject;

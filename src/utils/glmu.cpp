@@ -4,6 +4,8 @@
 #include <glm/ext.hpp>
 #include <utils/glmu.hpp>
 
+# define M_PI 3.14159265358979323846
+
 namespace utils {
 
 glm::mat4 glmu::to_mat4(const aiMatrix4x4& aAssimpMat) {
@@ -59,8 +61,33 @@ glm::vec2 glmu::circles_midpoint(glm::vec2 a, glm::vec2 b, float aRadius, float 
     }
 }
 
+glm::vec3 glmu::circles_midpoint(glm::vec3 a, glm::vec3 b, float aRadius, float bRadius, glm::vec3 up) {
+    float d = glm::distance(a, b);
+
+    if (aRadius + bRadius <= d) {
+        return (glm::normalize(a - b) * bRadius) + b;
+    }
+
+    float h = (1.0f / 2.0f) + ((aRadius * aRadius) - (bRadius * bRadius)) / (2 * d * d);
+    glm::vec3 c_i = a + (h * (b - a));
+    float r_i = sqrt((aRadius * aRadius) - (h * h * d * d));
+    glm::vec3 n_i = (b - a) / d;
+
+    glm::vec3 t_i = glm::normalize(glm::cross(up, n_i));
+    glm::vec3 b_i = glm::cross(t_i, n_i);
+
+    return c_i + r_i * (t_i * cos(M_PI + M_PI/2) + b_i * sin(M_PI + M_PI/2));
+}
+
 glm::vec3 glmu::curve(glm::vec3 a, glm::vec3 b, float t) {
-    return a + (b - a) * t;
+    t = std::min(1.0f, std::max(0.0f, t));
+    glm::vec3 resultVec = a + (b - a) * t;
+    resultVec.z += (float)sin(t * M_PI) * 0.2f;
+    return resultVec;
+}
+
+bool glmu::isEmpty(glm::vec3 vec) {
+    return vec.x == 0 && vec.y == 0 && vec.z == 0;
 }
 
 }  // namespace utils

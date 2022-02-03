@@ -7,6 +7,7 @@
 #include <vertex/VertexBuffer.hpp>
 #include <world/Chunk.hpp>
 #include <world/World.hpp>
+#include <utils/glmu.hpp>
 
 using namespace world;
 
@@ -183,6 +184,53 @@ void Chunk::update() {
     }
 }
 
+float Chunk::getHeightAt(int32_t x, int32_t z) {
+    x &= 0xF;
+    z &= 0xF;
+    return this->heightMap[z * 17 + x];
+}
+
+float Chunk::getHeightAt(float x, float z) {
+    int32_t ix = (int32_t)x;
+    int32_t iz = (int32_t)z;
+
+    // floor
+    ix = (x < (float)ix ? ix - 1 : ix);
+    iz = (z < (float)iz ? iz - 1 : iz);
+
+    float fractX = x - ix;
+    float fractZ = z - iz;
+
+    ix &= 0xF;
+    iz &= 0xF;
+
+    float h01 = this->heightMap[(iz + 1) * 17 + (ix + 0)];
+    float h10 = this->heightMap[(iz + 0) * 17 + (ix + 1)];
+
+    float fractSum = fractX + fractZ;
+
+    if (fractSum == 1.0f) {
+        // diagonal
+        return h01 + (h10 - h01) * fractX;
+    } else if (fractSum > 1.0f) {
+        // U-triangle
+        float h11 = this->heightMap[(iz + 1) * 17 + (ix + 1)];
+        float u, v, w;
+        utils::glmu::barycentric(glm::vec2(fractX, fractZ), glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(1, 1), &u, &v, &w);
+        return u * h01 + v * h10 + w * h11;
+    } else {
+        // L-triangle
+        float h00 = this->heightMap[(iz + 0) * 17 + (ix + 0)];
+        float u, v, w;
+        utils::glmu::barycentric(glm::vec2(fractX, fractZ), glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(0, 0), &u, &v, &w);
+        return u * h01 + v * h10 + w * h00;
+    }
+}
+
+void Chunk::draw(glm::mat4 mat) {
+
+}
+
 void Chunk::prepareRendering(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_chunk);
 
@@ -258,10 +306,6 @@ void Chunk::drawTerrain(glm::mat4 mat) {
     if (alpha >= 0.0 && alpha < 1.0) {
         glDisable(GL_BLEND);
     }
-}
-
-void Chunk::draw(glm::mat4 mat) {
-    // TODO fishes, stones, etc.
 }
 
 void Chunk::drawShadow(glm::mat4 mat) {
