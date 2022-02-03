@@ -63,7 +63,7 @@ class Camera {
     glm::vec3 direction = glm::normalize(position - cameraTarget);
 
     /* default view distance value */
-    float distance = 1.0f;
+    float distance = 1.4f;
 
     float angleYaw = 180;
     float anglePitch = 20;

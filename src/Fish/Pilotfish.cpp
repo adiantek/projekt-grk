@@ -2,7 +2,7 @@
 #include <ResourceLoader.hpp>
 #include <Water/Water.hpp>
 
-#define PILOTFISH_SCALE 0.25f
+#define PILOTFISH_SCALE 0.2f
 
 Pilotfish::Pilotfish(glm::vec3 position, world::World* world)
 : Fish(resourceLoaderExternal->m_pilotfish, position, world, glm::vec3(PILOTFISH_SCALE)) {}

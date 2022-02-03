@@ -3,6 +3,7 @@
 #include <vertex/VertexBuffer.hpp>
 #include <ResourceLoader.hpp>
 #include <Camera/Camera.hpp>
+#include <Fog/Fog.hpp>
 
 using namespace Glow;
 
@@ -77,7 +78,7 @@ void GlowShader::startFB() {
 }
 
 void GlowShader::stopFB() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fog->framebuffer);
     camera->useCameraViewport();
 }
 

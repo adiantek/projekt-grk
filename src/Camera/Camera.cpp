@@ -6,6 +6,7 @@
 #include <Camera/Camera.hpp>
 #include <Controller/Controller.hpp>
 #include <Robot/Robot.hpp>
+#include <Fog/Fog.hpp>
 #include <Time/Time.hpp>
 #include <Glow/GlowShader.hpp>
 
@@ -37,7 +38,11 @@ void Camera::setSize(int width, int height) {
     this->width = width;
     this->height = height;
     updatePerspective();
+    
     Glow::glow->resize(width, height);
+
+    delete fog;
+    fog = new Fog(width, height, 256.0);
 }
 
 void Camera::setFov(float fov) {
@@ -82,14 +87,14 @@ void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
 }
 
 void Camera::increaseCameraDistance() {
-    if( distance < 2.0f ) {
+    if( distance < 2.2f ) {
         distance += 0.1f;
         position -= getDirection() * 0.1f;
     }
 }
 
 void Camera::decreaseCameraDistance() {
-    if( distance > 0.5f ) {
+    if( distance > 0.8f ) {
         distance -= 0.1f;
         position += getDirection() * 0.1f;
     }

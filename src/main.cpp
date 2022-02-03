@@ -24,6 +24,17 @@
 #include <world/World.hpp>
 #include <Glow/GlowShader.hpp>
 #include <utils/Line.hpp>
+#include <Physics/Physics.hpp>
+#include <Physics/RigidBody.hpp>
+#include <Fog/Fog.hpp>
+
+#include "Render_Utils.h"
+#include "Texture.h"
+
+#include <zlib/zlib.h>
+#include <png/png.h>
+#include "PxPhysics.h"
+#include "foundation/PxMathUtils.h"
 
 #define BOIDS_AMOUNT 5
 #define BOIDS_SIZE 10
@@ -74,6 +85,8 @@ void do_frame() {
 
     w->update();
 
+    fog->useFramebuffer();
+
     glUseProgram(resourceLoader.p_shader_tex);
     glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
 
@@ -121,6 +134,8 @@ void do_frame() {
     waterObject->draw(viewMatrix);
     physicsObject->draw(viewMatrix);
 
+    fog->stopUsingFramebuffer();
+
     utils::Gizmos::draw();
     Glow::glow->draw(viewMatrix);
     scope->draw();
@@ -145,10 +160,11 @@ void init() {
 
     new Glow::GlowShader(camera->width, camera->height);
 
+	fog = new Fog(1280, 720, 256.0);
     new water::Water(192.0f, 320.0f, 65.0f, 512, 256.0f, 1000);
     new physics::Physics(9.8f);
+	w = new world::World(0);
 
-    w = new world::World(0);
     waterObject->addWorldObject((world::Object3D *)w);
 
     physicsObject->world = w;
