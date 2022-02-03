@@ -8,10 +8,9 @@
 Fish::Fish(Model* model, glm::vec3 position, world::World* world, glm::vec3 scale) {
     this->model = model;
     physx::PxTransform pose = physx::PxTransform(position.x, position.y, position.z);
-    physx::PxTriangleMeshGeometry geometry = model->createGeometry();
-    geometry.scale = physx::PxMeshScale(physx::PxVec3(scale.x, scale.y, scale.z));
+    physx::PxBoxGeometry geometry = model->createGeometryAABB(scale);
     this->rigidBody = new physics::RigidBody(false, pose, geometry, this);
-    geometry.triangleMesh->release();
+
     this->rigidBody ->setMass(1.0f);
     this->rigidBody->density = 0.997f;
     this->rigidBody->drag = false;
