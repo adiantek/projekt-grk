@@ -69,6 +69,7 @@ void Resources::initMaterials() {
 
     Resources::MATERIALS.ARMATURE_PBR
         ->setProgram(&resourceLoaderExternal->p_color_armature)
+        ->withCaustics(&resourceLoaderExternal->p_color_armature_uni_caustics)
         ->withWaterHeight(&resourceLoaderExternal->p_color_armature_uni_waterHeight)
         ->withCameraPosition(&resourceLoaderExternal->p_color_armature_uni_cameraPosition)
         ->withLightPosition(&resourceLoaderExternal->p_color_armature_uni_lightPosition)

@@ -137,9 +137,9 @@ void main() {
 
     // -- Caustics --
     float computedLightIntensity = 1.0;
-    // if (position.y < waterHeight) {
-    //     computedLightIntensity = computeCaustics(computedLightIntensity, caustics, positionLS);
-    // }
+    if (position.y < waterHeight) {
+        computedLightIntensity = computeCaustics(computedLightIntensity, caustics, positionLS);
+    }
 
     // -- PBR --
     vec3 color = PBR(
