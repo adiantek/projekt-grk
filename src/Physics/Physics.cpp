@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <utils/Gizmos.hpp>
 #include <Glow/GlowShader.hpp>
+#include <Controller/Controller.hpp>
 #include <vector>
 #include <Logger.h>
 
@@ -184,29 +185,69 @@ void Physics::grab() {
     this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
     if (hit.hasAnyHits()) {
-        LOGD("Hit");
         ((RigidBody*)hit.block.actor->userData)->grabbed = !((RigidBody*)hit.block.actor->userData)->grabbed;
-    } else {
-        LOGD("No hit");
+    }
+}
+
+void Physics::grabMultiple() {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxTransform position(pair.first);
+    physx::PxVec3 direction = pair.second;
+
+    PxSweepHit hitBuffer[30];
+    PxSweepBuffer hit(hitBuffer, 30);
+    PxSphereGeometry geometry(5.0f);
+    PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eNO_BLOCK);
+    filterData.data.word0 = RAYHITABBLE;
+    this->scene->sweep(geometry, position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+    if (hit.hasAnyHits()) {
+        unsigned int hitAmount = hit.getNbAnyHits();
+        for (unsigned int i = 0; i < hitAmount; ++i) {
+            RigidBody* rigidBody = (RigidBody*)hit.getAnyHit(i).actor->userData;
+            rigidBody->grabbed = !rigidBody->grabbed;
+        }
     }
 }
 
 void Physics::draw(glm::mat4 mat) {
     std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
 
-    physx::PxVec3 position = pair.first;
-    physx::PxVec3 direction = pair.second;
+    if (controller->sweepMode) {
+        physx::PxTransform position(pair.first);
+        physx::PxVec3 direction = pair.second;
 
-    PxRaycastBuffer hit;
-    PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
-    filterData.data.word0 = RAYHITABBLE;
-    this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+        PxSweepHit hitBuffer[30];
+        PxSweepBuffer hit(hitBuffer, 30);
+        PxSphereGeometry geometry(5.0f);
+        PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC | PxQueryFlag::eNO_BLOCK);
+        filterData.data.word0 = RAYHITABBLE;
+        this->scene->sweep(geometry, position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
-    if (hit.hasAnyHits()) {
-        physx::PxRaycastHit block = hit.block;
-        Glow::glow->startFB();
-        ((RigidBody*)block.actor->userData)->object->drawShadow(mat);
-        Glow::glow->stopFB();
+        if (hit.hasAnyHits()) {
+            unsigned int hitAmount = hit.getNbAnyHits();
+            Glow::glow->startFB();
+            for (unsigned int i = 0; i < hitAmount; ++i) {
+                ((RigidBody*)hit.getAnyHit(i).actor->userData)->object->drawShadow(mat);
+            }
+            Glow::glow->stopFB();
+        }
+    } else {
+        physx::PxVec3 position = pair.first;
+        physx::PxVec3 direction = pair.second;
+
+        PxRaycastBuffer hit;
+        PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+        filterData.data.word0 = RAYHITABBLE;
+        this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+        if (hit.hasAnyHits()) {
+            physx::PxRaycastHit block = hit.block;
+            Glow::glow->startFB();
+            ((RigidBody*)block.actor->userData)->object->drawShadow(mat);
+            Glow::glow->stopFB();
+        }
     }
 
     physx::PxU32 nbActors = this->scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);

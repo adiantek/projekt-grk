@@ -19,6 +19,7 @@ class Physics {
     physx::PxTriangleMeshGeometry createTriangleGeometry(float* vertices, unsigned int verticesNumber, int* indices, unsigned int trianglesNumber);
     physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, unsigned int trianglesNumber);
     void grab();
+    void grabMultiple();
     void draw(glm::mat4 mat);
     world::World* world = nullptr;
 

@@ -59,7 +59,14 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
             glUniform1i(resourceLoaderExternal->p_chunk_uni_modeSwitch, 1);
         }
         if (key == GLFW_KEY_F) {
-            physicsObject->grab();
+            if (controller->sweepMode) {
+                physicsObject->grabMultiple();
+            } else {
+                physicsObject->grab();
+            }
+        }
+        if (key == GLFW_KEY_R) {
+            controller->sweepMode = !controller->sweepMode;
         }
     } else if (action == 0) {
         LOGI("Released key: %d", key);
