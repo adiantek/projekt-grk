@@ -5,6 +5,7 @@
 #include <zlib/zlib.h>
 
 #include <Camera/Camera.hpp>
+#include <Camera/Scope.hpp>
 #include <Controller/Controller.hpp>
 #include <Fish/Boids.hpp>
 #include <Fish/Cubefish.hpp>
@@ -122,14 +123,7 @@ void do_frame() {
 
     utils::Gizmos::draw();
     Glow::glow->draw(viewMatrix);
-    if (controller->mouseRightClicked) {
-        glDisable(GL_DEPTH_TEST);
-        float ratio = (float) camera->width / (float) camera->height;
-        float size = 0.01f;
-        utils::Line::draw(glm::mat4(), glm::vec3(-size, -size * ratio, 1.0f), glm::vec3(size, size * ratio, 1.0f), glm::vec3(0.0f));
-        utils::Line::draw(glm::mat4(), glm::vec3(size, -size * ratio, 1.0f), glm::vec3(-size, size * ratio, 1.0f), glm::vec3(0.0f));
-        glEnable(GL_DEPTH_TEST);
-    } 
+    scope->draw();
 
     if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
         lastTitleUpdate = timeExternal->lastFrame;
@@ -146,6 +140,8 @@ void init() {
 
     // Initialize resources (textures, shaders, materials)
     Resources::init();
+
+    new Scope();
 
     new Glow::GlowShader(camera->width, camera->height);
 
