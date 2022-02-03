@@ -29,16 +29,18 @@ class Chunk : Object3D {
     float heightMap[17 * 17];
     float maxY;
     float allowFishAbove = 256;
-    Chunk(World *world, ChunkPosition pos);
+    Chunk(World *world, ChunkPosition pos, float *noise);
     virtual ~Chunk();
 
     /**
      * delete Random after use
      */
     Random *createChunkRandom();
-    void generate();
+    void generate(float *noise);
 
+    static void prepareRendering(glm::mat4 mat);
     void update() override;
+    void drawTerrain(glm::mat4 mat);
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
 };

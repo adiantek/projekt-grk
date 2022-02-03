@@ -21,7 +21,7 @@ void Pilotfish::draw(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_pilotfish);
     glUniform1i(resourceLoaderExternal->p_pilotfish_uni_colorTexture, 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_pilotfish);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_entities_pilotfish_pilotfish_albedo);
     glUniform1i(resourceLoaderExternal->p_pilotfish_uni_caustics, 1);
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());

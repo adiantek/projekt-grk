@@ -56,16 +56,13 @@ void Simulation::update() {
     glUniform1f(resourceLoaderExternal->p_water_simulation_uni_time, (float)timeExternal->lastFrame);
     glUniform2f(resourceLoaderExternal->p_water_simulation_uni_transition, camera->position.x + this->offset.x, camera->position.z + this->offset.y);
 
-    int prevViewport[4];
-    glGetIntegerv(GL_VIEWPORT, prevViewport);
-
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
     glViewport(0, 0, this->textureSize, this->textureSize);
 
     Core::DrawContext(this->geometry);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+    camera->useCameraViewport();
 }
 
 void Simulation::generateRandomWaves(long long seed) {

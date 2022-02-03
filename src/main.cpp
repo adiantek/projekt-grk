@@ -209,6 +209,11 @@ int main(int argc, char **argv) {
                 LOGE("gladLoadGL() failed");
                 return EXIT_FAILURE;
             }
+            // stupid fix for gladLoadGL()
+            for (int i = 0; i < 100; i++) {
+                if (!glGetError())
+                    break;
+            }
             LOGI("OpenGL Version %d.%d loaded", GLVersion.major, GLVersion.minor);
 #endif
 #ifdef EMSCRIPTEN

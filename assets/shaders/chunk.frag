@@ -6,12 +6,12 @@ const vec2 resolution = vec2(1024.0);
 const float bias = 0.003;
 const float PI = 3.14159265359;
 
-uniform sampler2D colorTexture;
-uniform sampler2D normalSampler;
+uniform sampler2D colorTexture[3];
+uniform sampler2D normalSampler[3];
 uniform sampler2D caustics;
-uniform sampler2D depthMap;
-uniform sampler2D aoMap;
-uniform sampler2D roughnessMap;
+uniform sampler2D depthMap[3];
+uniform sampler2D aoMap[3];
+uniform sampler2D roughnessMap[3];
 uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
 uniform float waterHeight;
@@ -23,8 +23,35 @@ in vec3 viewDirectionTS;
 in vec3 lightDirectionTS;
 in vec3 positionLS;
 in float lightIntensity;
+in vec3 worldPos;
 
 out vec4 fragColor;
+
+vec4 getColor(sampler2D tex[3], vec2 uv) {
+    const float water = 192.0;
+    const float sand = 128.0;
+    const float middle = (water + sand) / 2.0;
+
+    // `smooth` is keyword?
+    const float smooth_water = 2.0;
+    const float smooth_sand = 8.0;
+
+    if (worldPos.y > middle) {
+        vec4 a = texture(tex[1], uv);
+        vec4 b = texture(tex[0], uv);
+        float sm = worldPos.y - water + smooth_water;
+        sm = sm / (smooth_water * 2.0);
+        sm = clamp(sm, 0.0, 1.0);
+        return mix(a, b, sm);
+    } else {
+        vec4 a = texture(tex[2], uv);
+        vec4 b = texture(tex[1], uv);
+        float sm = worldPos.y - sand + smooth_sand;
+        sm = sm / (smooth_sand * 2.0);
+        sm = clamp(sm, 0.0, 1.0);
+        return mix(a, b, sm);
+    }
+}
 
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float a = roughness*roughness;
@@ -56,7 +83,7 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float heightScale) {
+vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap[3], float heightScale) {
     // Number of iterations based on angle to view direction
     float numLayers = mix(8.0, 32.0, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));
     // Size of every iteration step on depth
@@ -66,17 +93,17 @@ vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, sampler2D depthMap, float hei
     // Initial itaration values
     float currentLayerDepth = 1.0;
     vec2  currentTexCoords = texCoords;
-    float currentDepthMapValue = texture(depthMap, currentTexCoords).r;
+    float currentDepthMapValue = getColor(depthMap, currentTexCoords).r;
     // Iterate until intersect with texture
     while(currentLayerDepth > currentDepthMapValue) {
         currentTexCoords -= deltaTexCoords;
-        currentDepthMapValue = texture(depthMap, currentTexCoords).r;  
+        currentDepthMapValue = getColor(depthMap, currentTexCoords).r;  
         currentLayerDepth -= layerDepth;
     }
     // Previous coords
     vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
     // Weight for linear interpolation between before and afer intersection
-    float weight = (currentLayerDepth - currentDepthMapValue) / (layerDepth - currentDepthMapValue - texture(depthMap, prevTexCoords).r);
+    float weight = (currentLayerDepth - currentDepthMapValue) / (layerDepth - currentDepthMapValue - getColor(depthMap, prevTexCoords).r);
     // Return interpolated point of intersection with texture
     return prevTexCoords * weight + currentTexCoords * (1.0 - weight);
 }
@@ -154,8 +181,8 @@ void main() {
     vec3 viewDirection = normalize(viewDirectionTS);
     vec2 textureCoords = parallaxMapping(vec2(texturePosition.x , 1.0 - texturePosition.y), viewDirection, depthMap, 0.05);
     
-    vec3 normal = normalize(vec3(texture(normalSampler, textureCoords)) * 2.0 - 1.0);
-    vec3 objectColor = texture(colorTexture, textureCoords).xyz;
+    vec3 normal = normalize(vec3(getColor(normalSampler, textureCoords)) * 2.0 - 1.0);
+    vec3 objectColor = getColor(colorTexture, textureCoords).xyz;
 
     float computedLightIntensity = 1.0;
 
@@ -165,8 +192,8 @@ void main() {
     if (!modeSwitch) {
         vec3 color = PBR(
             normal, viewDirection, objectColor, vec3(0.0),
-            0.0, texture(roughnessMap, textureCoords).r,
-            texture(aoMap, textureCoords).r, lightDirection,
+            0.0, getColor(roughnessMap, textureCoords).r,
+            getColor(aoMap, textureCoords).r, lightDirection,
             vec3(1.0) * computedLightIntensity, 1.0, vec3(0.05)
         );
         fragColor = vec4(color, 1.0);
