@@ -2,11 +2,12 @@
 
 precision highp float;
 
-const float bias = 0.004;
+const float bias = 0.001;
 const float PI = 3.14159265359;
 
 uniform sampler2D colorTexture;
 uniform sampler2D caustics;
+uniform sampler2D envMap;
 uniform float waterHeight;
 
 in vec3 position;
@@ -67,8 +68,7 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
         //return 1.0;
     }
     float computedLightIntensity = 0.0;
-    float shadow = 0.0;
-    float causticsDepth = texture(caustics, positionLS.xy).w;
+    float causticsDepth = texture(envMap, positionLS.xy).w * 0.5 + 0.5;
 
     if (causticsDepth > positionLS.z - bias) {
         vec2 texelSize = vec2(textureSize(caustics, 0));
@@ -78,15 +78,15 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
         );
         computedLightIntensity = 0.5 + 0.2 * lightIntensity + causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
     } else {
-        vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0));
+        vec2 texelSize = 1.0 / vec2(textureSize(envMap, 0));
         for(int x = -1; x <= 1; ++x) {
             for(int y = -1; y <= 1; ++y) {
-                shadow += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(x, y) * texelSize).w ? 1.0 : 0.0;       
+                computedLightIntensity += causticsDepth - bias > texture(envMap, positionLS.xy + vec2(x, y) * texelSize).w * 0.5 + 0.5 ? 1.0 : 0.0;       
             }    
         }
-        shadow /= 9.0;
+        computedLightIntensity /= 9.0;
     }
-    return computedLightIntensity + shadow;
+    return computedLightIntensity;
 }
 
 vec3 PBR(vec3 normal, vec3 view, vec3 albedo, vec3 F0, float metallic, float roughness, float ao, vec3 lightDirection, vec3 lightColor, float lightDistance, vec3 ambientStrength) {

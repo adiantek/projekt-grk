@@ -264,6 +264,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(chunk, aoMap);
         UNIFORM(chunk, cameraPosition);
         UNIFORM(chunk, caustics);
+        UNIFORM(chunk, envMap);
         UNIFORM(chunk, colorTexture);
         UNIFORM(chunk, depthMap);
         UNIFORM(chunk, lightPosition);
@@ -289,6 +290,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(pilotfish, transformation);
         UNIFORM(pilotfish, waterHeight);
         UNIFORM(pilotfish, caustics);
+        UNIFORM(pilotfish, envMap);
         UNIFORM(pilotfish, colorTexture);
     }
     LOAD_PROGRAM(cubefish, 2, "fish/cubefish.frag", "fish/cubefish.vert") {
@@ -306,6 +308,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(cubefish, waterHeight);
         UNIFORM(cubefish, aoMap);
         UNIFORM(cubefish, caustics);
+        UNIFORM(cubefish, envMap);
         UNIFORM(cubefish, colorTexture);
         UNIFORM(cubefish, depthMap);
         UNIFORM(cubefish, normalSampler);

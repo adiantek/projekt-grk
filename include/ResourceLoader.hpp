@@ -272,6 +272,7 @@ public:
     GLint p_chunk_uni_waterHeight = -1;
     GLint p_chunk_uni_aoMap = -1;
     GLint p_chunk_uni_caustics = -1;
+    GLint p_chunk_uni_envMap = -1;
     GLint p_chunk_uni_colorTexture = -1;
     GLint p_chunk_uni_depthMap = -1;
     GLint p_chunk_uni_normalSampler = -1;
@@ -291,6 +292,7 @@ public:
     GLint p_pilotfish_uni_transformation = -1;
     GLint p_pilotfish_uni_waterHeight = -1;
     GLint p_pilotfish_uni_caustics = -1;
+    GLint p_pilotfish_uni_envMap = -1;
     GLint p_pilotfish_uni_colorTexture = -1;
     // cubefish:
     GLuint p_cubefish = 0;
@@ -308,6 +310,7 @@ public:
     GLint p_cubefish_uni_waterHeight = -1;
     GLint p_cubefish_uni_aoMap = -1;
     GLint p_cubefish_uni_caustics = -1;
+    GLint p_cubefish_uni_envMap = -1;
     GLint p_cubefish_uni_colorTexture = -1;
     GLint p_cubefish_uni_depthMap = -1;
     GLint p_cubefish_uni_normalSampler = -1;
