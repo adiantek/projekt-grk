@@ -122,6 +122,9 @@ void main() {
     vec3 lightDirection = normalize(lightDirectionTS);
     vec3 viewDirection = normalize(viewDirectionTS);
     vec2 textureCoords = vec2(texturePosition.x , 1.0 - texturePosition.y);
+
+    if (texture(colorTexture, textureCoords).w == 0.0)
+        discard;
     
     vec3 objectColor = texture(colorTexture, textureCoords).xyz;
 
