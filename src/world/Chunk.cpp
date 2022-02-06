@@ -240,10 +240,6 @@ void Chunk::prepareRendering(glm::mat4 mat) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
 
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_envMap, 16);
-    glActiveTexture(GL_TEXTURE0 + 16);
-    glBindTexture(GL_TEXTURE_2D, waterObject->getEnvironmentMap());
-
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4()));
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glUniformMatrix4fv(resourceLoaderExternal->p_chunk_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));

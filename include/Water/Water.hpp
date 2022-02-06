@@ -13,7 +13,6 @@ class Water : world::Object3D {
     void update() override;
     glm::mat4 getLightCamera();
     unsigned int getCausticsMap();
-    unsigned int getEnvironmentMap();
     void addWorldObject(world::Object3D* object);
     void removeWorldObject(world::Object3D* object);
     void clearWorldObjects();

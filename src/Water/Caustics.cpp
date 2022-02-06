@@ -91,10 +91,6 @@ namespace water {
         return this->texture;
     }
 
-    unsigned int Caustics::getEnvironmentMap() {
-        return this->environmentMap.getEnvironmentMap();
-    }
-
     glm::mat4 Caustics::getLightCamera() {
         return this->environmentMap.getLightCamera();
     }

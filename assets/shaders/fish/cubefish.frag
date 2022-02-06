@@ -8,7 +8,6 @@ const float PI = 3.14159265359;
 uniform sampler2D colorTexture;
 uniform sampler2D normalSampler;
 uniform sampler2D caustics;
-uniform sampler2D envMap;
 uniform sampler2D depthMap;
 uniform sampler2D aoMap;
 uniform sampler2D roughnessMap;
@@ -98,7 +97,7 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
         //return 1.0;
     }
     float computedLightIntensity = 0.0;
-    float causticsDepth = texture(envMap, positionLS.xy).w * 0.5 + 0.5;
+    float causticsDepth = texture(caustics, positionLS.xy).w;
 
     if (causticsDepth > positionLS.z - bias) {
         vec2 texelSize = vec2(textureSize(caustics, 0));
@@ -108,10 +107,10 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
         );
         computedLightIntensity = 0.5 + 0.2 * lightIntensity + causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
     } else {
-        vec2 texelSize = 1.0 / vec2(textureSize(envMap, 0));
+        vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0));
         for(int x = -1; x <= 1; ++x) {
             for(int y = -1; y <= 1; ++y) {
-                computedLightIntensity += causticsDepth - bias > texture(envMap, positionLS.xy + vec2(x, y) * texelSize).w * 0.5 + 0.5 ? 1.0 : 0.0;       
+                computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(x, y) * texelSize).w ? 1.0 : 0.0;       
             }    
         }
         computedLightIntensity /= 9.0;

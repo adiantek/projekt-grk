@@ -41,9 +41,6 @@ void Cubefish::draw(glm::mat4 mat) {
     glUniform1i(resourceLoaderExternal->p_cubefish_uni_aoMap, 5);
     glActiveTexture(GL_TEXTURE0 + 5);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_ao);
-    glUniform1i(resourceLoaderExternal->p_cubefish_uni_envMap, 6);
-    glActiveTexture(GL_TEXTURE0 + 6);
-    glBindTexture(GL_TEXTURE_2D, waterObject->getEnvironmentMap());
     glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
     glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));

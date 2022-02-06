@@ -25,9 +25,6 @@ void Pilotfish::draw(glm::mat4 mat) {
     glUniform1i(resourceLoaderExternal->p_pilotfish_uni_caustics, 1);
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
-    glUniform1i(resourceLoaderExternal->p_pilotfish_uni_envMap, 2);
-    glActiveTexture(GL_TEXTURE0 + 2);
-    glBindTexture(GL_TEXTURE_2D, waterObject->getEnvironmentMap());
     glUniformMatrix4fv(resourceLoaderExternal->p_pilotfish_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(resourceLoaderExternal->p_pilotfish_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
     for (auto mesh : this->model->getMeshes()) {
