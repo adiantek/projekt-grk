@@ -161,7 +161,7 @@ void init() {
     new Glow::GlowShader(camera->width, camera->height);
 
 	fog = new Fog(1280, 720, 256.0);
-    new water::Water(192.0f, 320.0f, 65.0f, 512, 256.0f, 1000);
+    new water::Water(192.0f, 320.0f, 65.0f, 400, 300.0f, 1200);
     new physics::Physics(9.8f);
 	w = new world::World(0);
 
@@ -174,7 +174,7 @@ void init() {
     Random random(0L);
 
     for (int i=0; i<BOIDS_AMOUNT;++i) {
-        Boids<Pilotfish> *boid = new Boids<Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-64.0f, 64.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-64.0f, 64.0f)), w);
+        Boids<Pilotfish> *boid = new Boids<Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids.push_back(boid);
     }

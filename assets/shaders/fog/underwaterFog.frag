@@ -36,8 +36,8 @@ void main()
   // float lighterFog = exp(-pow(depth * 100.0, 2.0));
   // float fatterFog = exp(-pow(depth * 50.0, 1.2) - 0.05) + 0.05;
 //-----------------------------------------------------------------------------------------
-  float lighterFog = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00077) + 0.1;
-  float fatterFog = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00075) + 0.4;
+  float lighterFog = ((exp((depth * depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00075) + 0.12;
+  float fatterFog = ((exp((depth * depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.000715) + 0.36;
 //-----------------------------------------------------------------------------------------
   
   lighterFog = clamp(lighterFog, 0.0, 1.0);
