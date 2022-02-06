@@ -12,8 +12,7 @@ class Caustics {
     ~Caustics();
     void update();
     unsigned int getCausticsMap();
-    unsigned int getHeightMap();
-    unsigned int getNormalMap();
+    unsigned int getEnvironmentMap();
     glm::mat4 getLightCamera();
     void addWorldObject(world::Object3D* object);
     void removeWorldObject(world::Object3D* object);

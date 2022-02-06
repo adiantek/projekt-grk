@@ -39,6 +39,10 @@ namespace water {
         return this->caustics.getCausticsMap();
     }
 
+    unsigned int Water::getEnvironmentMap() {
+        return this->caustics.getEnvironmentMap();
+    }
+
     void Water::addWorldObject(world::Object3D* object) {
         this->caustics.addWorldObject(object);
     }
