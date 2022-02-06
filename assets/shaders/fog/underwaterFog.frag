@@ -37,13 +37,13 @@ void main()
   // float fatterFog = exp(-pow(depth * 50.0, 1.2) - 0.05) + 0.05;
 //-----------------------------------------------------------------------------------------
   float lighterFog = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00077) + 0.1;
-  float fatterFog = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00077) + 0.4;
+  float fatterFog = ((exp((depth * 150.0) -143.0) + exp(depth * 5.0)) * 0.00075) + 0.4;
 //-----------------------------------------------------------------------------------------
   
   lighterFog = clamp(lighterFog, 0.0, 1.0);
   fatterFog = clamp(fatterFog, 0.0, 1.0);
   
-  float hightDistance = distanceToSurface/140.0;
+  float hightDistance = distanceToSurface/120.0;
   hightDistance = clamp(hightDistance, 0.0, 1.0);
 
   vec3 fogColor = mix(fogColorLighter, fogColorDarker, hightDistance);

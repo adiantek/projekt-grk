@@ -2,7 +2,7 @@
 
 precision highp float;
 
-const float bias = 0.001;
+const float bias = 0.003;
 const float PI = 3.14159265359;
 
 uniform sampler2D colorTexture;
