@@ -2,7 +2,7 @@
 
 precision highp float;
 
-const float causticsFactor = 0.15;
+const float causticsFactor = 0.18;
 
 uniform sampler2D environmentMap;
 

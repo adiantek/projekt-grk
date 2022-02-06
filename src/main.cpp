@@ -36,7 +36,7 @@
 #include "PxPhysics.h"
 #include "foundation/PxMathUtils.h"
 
-#define BOIDS_AMOUNT 5
+#define BOIDS_AMOUNT 10
 #define BOIDS_SIZE 10
 
 // Window
