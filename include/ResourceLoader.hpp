@@ -321,7 +321,7 @@ public:
     GLint p_glow_uni_divider = -1;
     GLint p_glow_uni_maxSample = -1;
     GLint p_glow_uni_radius = -1;
-    GLint p_glow_uni_tex = -1;
+    GLint p_glow_uni_glowTexture = -1;
     GLint p_glow_uni_texelSize = -1;
 
 private:

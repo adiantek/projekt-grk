@@ -50,7 +50,7 @@ GlowShader::GlowShader(GLuint w, GLuint h) {
     const float radius = 3.0f;
     const float quality = 1.0f;
 
-    glUniform1i(resourceLoaderExternal->p_glow_uni_tex, 0);
+    glUniform1i(resourceLoaderExternal->p_glow_uni_glowTexture, 0);
     glUniform2f(resourceLoaderExternal->p_glow_uni_texelSize, 1.0F / this->w, 1.0F / this->h);
 }
 

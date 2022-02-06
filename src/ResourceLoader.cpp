@@ -319,7 +319,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(glow, divider);
         UNIFORM(glow, maxSample);
         UNIFORM(glow, radius);
-        UNIFORM(glow, tex);
+        UNIFORM(glow, glowTexture);
         UNIFORM(glow, texelSize);
     }
 
