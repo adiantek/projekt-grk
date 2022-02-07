@@ -11,7 +11,7 @@ void main() {
     worldPosition = modelMatrix * vec4(vertexPosition, 1.0);
 
     vec4 projectedPosition = transformation * vec4(vertexPosition, 1.0);
-    worldPosition.w = projectedPosition.z;
+    worldPosition.w = projectedPosition.z * 0.5 + 0.5;
 
     gl_Position = projectedPosition;
 }

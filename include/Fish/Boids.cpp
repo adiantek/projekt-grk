@@ -118,7 +118,7 @@ void Boids<T>::matchVelocity(T* boid) {
 
 template<class T>
 void Boids<T>::limitSpeed(T* boid) {
-    if (glm::length(boid->rigidBody->getLinearVelocity()) > 20.0f) {
+    if (glm::length(boid->rigidBody->getLinearVelocity()) > this->maxSpeed) {
         boid->rigidBody->addForce(-boid->rigidBody->getLinearVelocity());
     }
 }
@@ -130,8 +130,8 @@ void Boids<T>::addRandomMovement(T* boid) {
 
 template<class T>
 void Boids<T>::updateTarget() {
-    if ((float)timeExternal->lastFrame - this->lastTargetChange > 5.0f) {
-        glm::vec3 offset = glm::vec3(this->random.nextFloat(-120.0f, 120.0f), 0.0f, this->random.nextFloat(-120.0f, 120.0f)) + robot->position;
+    if ((float)timeExternal->lastFrame - this->lastTargetChange > 2.0f) {
+        glm::vec3 offset = glm::vec3(this->random.nextFloat(-70.0f, 70.0f), 0.0f, this->random.nextFloat(-70.0f, 70.0f)) + robot->position;
         world::Chunk* chunk = this->world->getChunkAt(world::ChunkPosition(offset));
         if (chunk) {
             offset.y = (waterObject->getY() - chunk->maxY) / 2.0f + chunk->maxY;

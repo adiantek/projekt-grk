@@ -374,7 +374,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(glow, divider);
         UNIFORM(glow, maxSample);
         UNIFORM(glow, radius);
-        UNIFORM(glow, tex);
+        UNIFORM(glow, glowTexture);
         UNIFORM(glow, texelSize);
     }
 
@@ -384,7 +384,6 @@ void ResourceLoader::loadPrograms() {
 }
 
 void ResourceLoader::loadModels() {
-    loadModel("assets/models/primitives/AnimatedStick.dae", &this->m_primitives_AnimatedStick);
     loadModel("assets/models/primitives/complex_cube.dae", &this->m_primitives_complex_cube);
     loadModel("assets/models/primitives/cube.obj", &this->m_primitives_cube);
     loadModel("assets/models/primitives/cylinder.obj", &this->m_primitives_cylinder);

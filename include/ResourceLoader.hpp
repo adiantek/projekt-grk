@@ -121,7 +121,6 @@ public:
     GLuint tex_wall_roughness = 0;
 
     // models:
-    Model *m_primitives_AnimatedStick = 0;
     Model *m_primitives_complex_cube = 0;
     Model *m_primitives_cube = 0;
     Model *m_primitives_cylinder = 0;
@@ -376,7 +375,7 @@ public:
     GLint p_glow_uni_divider = -1;
     GLint p_glow_uni_maxSample = -1;
     GLint p_glow_uni_radius = -1;
-    GLint p_glow_uni_tex = -1;
+    GLint p_glow_uni_glowTexture = -1;
     GLint p_glow_uni_texelSize = -1;
 
 private:

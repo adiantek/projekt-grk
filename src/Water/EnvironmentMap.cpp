@@ -90,8 +90,6 @@ void EnvironmentMap::clearWorldObjects() {
 }
 
 void EnvironmentMap::update() {
-    // int prevViewport[4];
-    // glGetIntegerv(GL_VIEWPORT, prevViewport);
     glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
     glViewport(0, 0, this->textureSize, this->textureSize);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -100,9 +98,13 @@ void EnvironmentMap::update() {
     this->lightCameraMatrix = this->lightCameraProjectionMatrix * this->lightCameraRotationMatrix 
         * glm::translate(glm::vec3(this->lightCameraTranslation.x - camera->position.x, -this->y, this->lightCameraTranslation.y - camera->position.z));
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
     for (auto object3D : this->worldObjects) {
         object3D->drawShadow(this->lightCameraMatrix);
     }
+    glCullFace(GL_BACK);
+    glDisable(GL_CULL_FACE);
 
     glUseProgram(resourceLoaderExternal->p_environment_map);
     glm::mat4 modelMatrix = glm::translate(glm::vec3(camera->position.x, this->y - this->maxDepth + 1.0f, camera->position.z)) * glm::eulerAngleX(glm::radians(90.0f));

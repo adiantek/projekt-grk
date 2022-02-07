@@ -16,8 +16,8 @@ layout(location = 2) in vec2 texturePosition;
 
 out vec3 oldPosition;
 out vec3 newPosition;
+out vec2 currentPosition;
 out float waterDepth;
-out float depth;
 
 void main() {
     vec4 heightInfo = texture(heightMap, vec2(texturePosition.x, 1.0 - texturePosition.y));
@@ -37,7 +37,7 @@ void main() {
     float factor = 1.0 / (float(textureSize(environmentMap, 0).x) * length(refractedDirection.xy));
 
     float currentDepth = projectedWaterPosition.z;
-    vec2 currentPosition = projectedWaterPosition.xy;
+    currentPosition = projectedWaterPosition.xy;
 
     vec4 environment = texture(environmentMap, 0.5 + 0.5 * currentPosition);
 
@@ -55,10 +55,11 @@ void main() {
         environment = texture(environmentMap, 0.5 + 0.5 * currentPosition);
     }
 
+    currentPosition = 0.5 + 0.5 * currentPosition;
+
     newPosition = environment.xyz;
 
     vec4 projectedEnvPosition = transformation * vec4(newPosition, 1.0);
-    depth = 0.5 + 0.5 * projectedEnvPosition.z / projectedEnvPosition.w;
 
     gl_Position = projectedEnvPosition;
 }

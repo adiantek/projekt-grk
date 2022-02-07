@@ -2,17 +2,20 @@
 
 precision highp float;
 
-const float causticsFactor = 0.15;
+const float causticsFactor = 0.18;
+
+uniform sampler2D environmentMap;
 
 in vec3 oldPosition;
 in vec3 newPosition;
+in vec2 currentPosition;
 in float waterDepth;
-in float depth;
 
 out vec4 fragColor;
 
 void main() {
     float causticsIntensity = 0.0;
+    float depth = texture(environmentMap, currentPosition).w;
 
     if (depth >= waterDepth) {
         float oldArea = length(dFdx(oldPosition)) * length(dFdy(oldPosition));

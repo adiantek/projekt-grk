@@ -17,6 +17,15 @@ class Boids : world::Object3D {
     void drawShadow(glm::mat4 mat) override;
     void update() override;
 
+    float centeringFactor = 0.03f;
+    float avoidFactor = 0.035f;
+    float matchingFactor = 0.005f;
+    float randomFactor = 0.7f;
+    float minAvoidDistance = 3.5f;
+    float visualRange = 75.0f;
+    float lastTargetChange = -6.0f;
+    float maxSpeed = 17.0f;
+
    private:
     void swimTowardsCenter(T* boid);
     void swimTowardsTarget(T* boid);
@@ -26,13 +35,6 @@ class Boids : world::Object3D {
     void addRandomMovement(T* boid);
     void updateTarget();
 
-    float centeringFactor = 0.03f;
-    float avoidFactor = 0.04f;
-    float matchingFactor = 0.005f;
-    float randomFactor = 0.7f;
-    float minAvoidDistance = 3.5f;
-    float visualRange = 75.0f;
-    float lastTargetChange = -6.0f;
     std::vector<T*> boidList;
     glm::vec3 target;
     Random random;
