@@ -366,6 +366,17 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(cubefish, normalSampler);
         UNIFORM(cubefish, roughnessMap);
     }
+    LOAD_PROGRAM(glow, 2, "glow.frag", "glow.vert") {
+        // DUMP(glow);
+        ATTRIBUTE(glow, pos);
+        ATTRIBUTE(glow, tex);
+        UNIFORM(glow, color);
+        UNIFORM(glow, divider);
+        UNIFORM(glow, maxSample);
+        UNIFORM(glow, radius);
+        UNIFORM(glow, tex);
+        UNIFORM(glow, texelSize);
+    }
 
 #undef LOAD_PROGRAM
 #undef ATTRIBUTE

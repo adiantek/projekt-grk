@@ -367,6 +367,17 @@ public:
     GLint p_cubefish_uni_depthMap = -1;
     GLint p_cubefish_uni_normalSampler = -1;
     GLint p_cubefish_uni_roughnessMap = -1;
+    // glow:
+    GLuint p_glow = 0;
+    bool p_glow_loaded = false;
+    GLint p_glow_attr_pos = -1;
+    GLint p_glow_attr_tex = -1;
+    GLint p_glow_uni_color = -1;
+    GLint p_glow_uni_divider = -1;
+    GLint p_glow_uni_maxSample = -1;
+    GLint p_glow_uni_radius = -1;
+    GLint p_glow_uni_tex = -1;
+    GLint p_glow_uni_texelSize = -1;
 
 private:
     int totalResourcesCounter = 0;

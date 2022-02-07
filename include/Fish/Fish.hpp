@@ -7,7 +7,7 @@
 
 class Fish : world::Object3D {
    public:
-    Fish(Model* model, glm::vec3 position, world::World* world);
+    Fish(Model* model, glm::vec3 position, world::World* world, glm::vec3 scale = glm::vec3(1.0f));
     ~Fish();
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;

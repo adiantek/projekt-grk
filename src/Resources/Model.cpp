@@ -14,13 +14,14 @@
 #include <unordered_map>
 #include <utils/Gizmos.hpp>
 #include <vector>
+#include <Physics/Physics.hpp>
 
 void Model::loadModel(const char* filename) {
     LOGD("Processing model: %s", filename);
     this->file = std::string(filename);
 
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(filename, aiProcess_CalcTangentSpace | /*aiProcess_FlipUVs |  | aiProcess_GenBoundingBoxes |*/ aiProcess_PopulateArmatureData);
+    const aiScene* scene = importer.ReadFile(filename, aiProcess_CalcTangentSpace | /*aiProcess_FlipUVs | */ aiProcess_PopulateArmatureData | aiProcess_GenBoundingBoxes);
 
     if (!scene || !scene->mRootNode) {
         LOGE("ERROR::ASSIMP Could not load model: %s", importer.GetErrorString());
@@ -52,6 +53,15 @@ Mesh* Model::loadMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transforma
 
     std::string name = mesh->mName.C_Str();
     Mesh* finalMesh = new Mesh(name);
+
+    this->aabbMin.x = std::min(mesh->mAABB.mMin.x, this->aabbMin.x);
+    this->aabbMin.y = std::min(mesh->mAABB.mMin.y, this->aabbMin.y);
+    this->aabbMin.z = std::min(mesh->mAABB.mMin.z, this->aabbMin.z);
+
+    this->aabbMax.x = std::max(mesh->mAABB.mMax.x, this->aabbMax.x);
+    this->aabbMax.y = std::max(mesh->mAABB.mMax.y, this->aabbMax.y);
+    this->aabbMax.z = std::max(mesh->mAABB.mMax.z, this->aabbMax.z);
+
 
     finalMesh->calculateRenderContext(mesh, this->bonesIds);
 
@@ -240,4 +250,31 @@ Animator::Joint* Model::getJoint(std::string name) {
 /** Convert from a row-major ASSIMP matrix to a column-major GLM matrix */
 glm::mat4 Model::to_mat4(const aiMatrix4x4& aAssimpMat) {
     return glm::transpose(glm::make_mat4(&aAssimpMat.a1));
+}
+
+physx::PxTriangleMeshGeometry Model::createGeometry(glm::vec3 scale) {
+    std::vector<float> vertexBuffer;
+    std::vector<int> indicesBuffer;
+
+    int prevSize = 0;
+
+    for (auto mesh : this->meshes) {
+        for (auto vertex : mesh->vertices) {
+            vertexBuffer.push_back(vertex);
+        }
+        for(auto element : mesh->indices) {
+            indicesBuffer.push_back(element + prevSize);
+        }
+        prevSize = (int)vertexBuffer.size();
+    }
+
+    physx::PxTriangleMeshGeometry geometry = physicsObject->createTriangleGeometry(vertexBuffer.data(), (unsigned int)vertexBuffer.size() / 3, indicesBuffer.data(), (unsigned int)indicesBuffer.size() / 3);
+    geometry.scale = physx::PxMeshScale(physx::PxVec3(scale.x, scale.y, scale.z));
+
+    return geometry;
+}
+
+physx::PxBoxGeometry Model::createGeometryAABB(glm::vec3 scale) {
+    physx::PxBounds3 bounds(this->aabbMin, this->aabbMax);
+    return physx::PxBoxGeometry(bounds.getDimensions().multiply(physx::PxVec3(scale.x, scale.y, scale.z)) / 2.0f);
 }

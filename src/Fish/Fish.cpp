@@ -5,11 +5,12 @@
 #include <Robot/Robot.hpp>
 #include <Time/Time.hpp>
 
-Fish::Fish(Model* model, glm::vec3 position, world::World* world) {
+Fish::Fish(Model* model, glm::vec3 position, world::World* world, glm::vec3 scale) {
     this->model = model;
     physx::PxTransform pose = physx::PxTransform(position.x, position.y, position.z);
-    physx::PxSphereGeometry geometry = physx::PxSphereGeometry(0.5f); // TODO: create geomtery from mesh
+    physx::PxBoxGeometry geometry = model->createGeometryAABB(scale);
     this->rigidBody = new physics::RigidBody(false, pose, geometry, this);
+
     this->rigidBody ->setMass(1.0f);
     this->rigidBody->density = 0.997f;
     this->rigidBody->drag = false;

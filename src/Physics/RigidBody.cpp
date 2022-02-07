@@ -2,9 +2,13 @@
 #include <Physics/RigidBody.hpp>
 
 namespace physics {
-RigidBody::RigidBody(bool isStatic, physx::PxTransform &pose, physx::PxGeometry &geometry, world::Object3D *object, float staticFriction, float dynamicFriction, float restitution) {
+RigidBody::RigidBody(bool isStatic, physx::PxTransform &pose, physx::PxGeometry &geometry, world::Object3D *object, float staticFriction, float dynamicFriction, float restitution, bool kinematic, bool grabbable) {
     this->object = object;
-    this->inner = physicsObject->createRigidBody(isStatic, pose, geometry, this, staticFriction, dynamicFriction, restitution);
+    this->inner = physicsObject->createRigidBody(isStatic, pose, geometry, this, staticFriction, dynamicFriction, restitution, grabbable && !kinematic);
+    this->kinematic = kinematic;
+    if (kinematic) {
+        this->inner->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
+    }
 }
 
 RigidBody::~RigidBody() {
@@ -34,19 +38,32 @@ void RigidBody::setMass(float mass) {
 }
 
 void RigidBody::setLinearVelocity(glm::vec3 velocity) {
-    this->inner->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
+    if (!this->grabbed && !this->kinematic) {
+        this->inner->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));
+    }
+}
+
+void RigidBody::setKinematicTarget(glm::mat4 destinationPose) {
+    if (this->kinematic) {
+        physx::PxMat44 dest(glm::value_ptr(destinationPose));
+        ((physx::PxRigidDynamic*)this->inner)->setKinematicTarget(physx::PxTransform(dest));
+    }
 }
 
 void RigidBody::addForce(glm::vec3 force, physx::PxForceMode::Enum mode) {
-    this->inner->addForce(physx::PxVec3(force.x, force.y, force.z), mode);
+    if (!this->grabbed && !this->kinematic) {
+        this->inner->addForce(physx::PxVec3(force.x, force.y, force.z), mode);
+    }
 }
 
 void RigidBody::addTorque(glm::vec3 torque) {
-    this->inner->addTorque(physx::PxVec3(torque.x, torque.y, torque.z));
+    if (!this->grabbed && !this->kinematic) {
+        this->inner->addTorque(physx::PxVec3(torque.x, torque.y, torque.z));
+    }
 }
 
 void RigidBody::applyDrag(float density) {
-    if (this->drag) {
+    if (this->drag && !this->kinematic) {
         physx::PxVec3 velocityDirection = this->inner->getLinearVelocity();
         physx::PxVec3 velocityAngularDirection = this->inner->getAngularVelocity();
         float speed = velocityDirection.normalize();
@@ -79,10 +96,12 @@ void RigidBody::wakeUp() {
 }
 
 void RigidBody::rotateForward(glm::mat4 rot) {
-    glm::vec3 velocity = this->getLinearVelocity();
-    if (glm::length(velocity) > 0.0f) {
-        auto quat = glm::quat_cast(glm::orientation(glm::normalize(velocity), glm::vec3(0.0f, 1.0f, 0.0f)) * rot);
-        this->inner->setGlobalPose(physx::PxTransform(this->inner->getGlobalPose().p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
+    if (!this->grabbed && !this->kinematic) {
+        glm::vec3 velocity = this->getLinearVelocity();
+        if (glm::length(velocity) > 0.0f) {
+            auto quat = glm::quat_cast(glm::transpose(glm::lookAt(glm::vec3(0.0f), velocity, glm::vec3(0.0f, 1.0f, 0.0f))) * rot);
+            this->inner->setGlobalPose(physx::PxTransform(this->inner->getGlobalPose().p, physx::PxQuat(quat.x, quat.y, quat.z, quat.w)));
+        }
     }
 }
 }  // namespace physics

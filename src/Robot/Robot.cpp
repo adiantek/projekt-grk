@@ -127,9 +127,15 @@ Robot::Robot() {
             }
         });
     }
+
+    physx::PxTransform pose = physx::PxTransform(this->position.x, this->position.y, this->position.z);
+    physx::PxBoxGeometry geometry = this->gameObject->getModel()->createGeometryAABB(glm::vec3(0.3f));
+    
+    // this->rigidBody = new physics::RigidBody(false, pose, geometry, this, 0.5f, 0.5f, 0.0f, true);
 }
 
 Robot::~Robot() {
+    delete this->rigidBody;
     // TODO oczyscic robota
 }
 
@@ -262,6 +268,7 @@ void Robot::update() {
     this->updateLegs();
     
     this->updateDirections();
+    // this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
 }
 
 void Robot::draw(glm::mat4 mat) {
@@ -469,9 +476,9 @@ void Robot::updateLegs() {
             for (RobotLeg* leg : this->legs) {
                 bool isOpposite = false;
 
-                if (currentLegId == 0 && leg->id == 1) {
+                if (currentLegId == 0 && leg->id == 2) {
                     isOpposite = true;
-                } else if (currentLegId == 1 && leg->id == 2) {
+                } else if (currentLegId == 1 && leg->id == 3) {
                     isOpposite = true;
                 } else if (currentLegId == 2 && leg->id == 1) {
                     isOpposite = true;
@@ -562,15 +569,21 @@ glm::vec3 Robot::getWorldPointAt(glm::vec3 point) {
     // If robot would like to use physx, this is the place to do it
     // float maxSlope = 0.5f;
 
-    // physx::PxVec3 origin = physx::PxVec3(point.x, std::max(result.y + maxSlope, point.y + maxSlope), point.z);
-    // physx::PxVec3 unitDir = physx::PxVec3(0, -1.0f, 0);
+    // glm::vec3 d = glm::eulerAngleX(glm::radians(90.0f)) * glm::vec4(this->up, 1.0f);
+    // physx::PxVec3 unitDir = physx::PxVec3(d.x, d.y, d.z);
+    // physx::PxVec3 origin = physx::PxVec3(point.x, point.y, point.z) - (unitDir * 0.2f);
     // physx::PxReal maxDistance = 100;
     // physx::PxRaycastBuffer hit;
+    // physx::PxQueryFilterData filterData(physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC);
+    // filterData.data.word0 = 2;
     
-    // bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit);
-    // if (status) {
+    // bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit, ((physx::PxHitFlags)(physx::PxHitFlag::eDEFAULT)), filterData);
+    // if (hit.hasAnyHits()) {
     //     std::cout <<  "Raycast hit at " << hit.block.position.x << ", " << hit.block.position.y << ", " << hit.block.position.z << std::endl;
-    //     result.y = hit.block.position.y;
+    //     physx::PxVec3 physicResult = (hit.block.position - (unitDir * 0.05f));
+    //     result = glm::vec3(physicResult.x, physicResult.y, physicResult.z);
+    // } else {
+    //     std::cout << "Raycast did not hit" << std::endl;
     // }
 
     return result;

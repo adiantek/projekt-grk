@@ -5,6 +5,7 @@
 #include <Resources/GameObject.hpp>
 #include <glm/ext.hpp>
 #include <world/Object3D.hpp>
+#include <Physics/RigidBody.hpp>
 
 namespace entity {
 
@@ -120,6 +121,8 @@ class Robot : world::Object3D {
     glm::vec3 initialPosition;
     glm::vec3 up;
     glm::vec3 forward;
+
+    physics::RigidBody* rigidBody;
 };
 
 }  // namespace entity
