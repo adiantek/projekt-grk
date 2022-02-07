@@ -31,6 +31,46 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/earth2.png", &this->tex_earth2);
     loadTexture("assets/textures/earth2_normals.png", &this->tex_earth2_normals);
     loadTexture("assets/textures/entities/pilotfish/pilotfish_albedo.png", &this->tex_entities_pilotfish_pilotfish_albedo);
+    loadTexture("assets/textures/entities/robot/robot_body_Albedo.png", &this->tex_entities_robot_robot_body_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_body_AO.png", &this->tex_entities_robot_robot_body_AO);
+    loadTexture("assets/textures/entities/robot/robot_body_Metalness.png", &this->tex_entities_robot_robot_body_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_body_Normal.png", &this->tex_entities_robot_robot_body_Normal);
+    loadTexture("assets/textures/entities/robot/robot_body_Roughness.png", &this->tex_entities_robot_robot_body_Roughness);
+    loadTexture("assets/textures/entities/robot/robot_chrome_Albedo.png", &this->tex_entities_robot_robot_chrome_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_chrome_AO.png", &this->tex_entities_robot_robot_chrome_AO);
+    loadTexture("assets/textures/entities/robot/robot_chrome_Metalness.png", &this->tex_entities_robot_robot_chrome_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_chrome_Normal.png", &this->tex_entities_robot_robot_chrome_Normal);
+    loadTexture("assets/textures/entities/robot/robot_chrome_Roughness.png", &this->tex_entities_robot_robot_chrome_Roughness);
+    loadTexture("assets/textures/entities/robot/robot_glow_Albedo.png", &this->tex_entities_robot_robot_glow_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_glow_AO.png", &this->tex_entities_robot_robot_glow_AO);
+    loadTexture("assets/textures/entities/robot/robot_glow_Metalness.png", &this->tex_entities_robot_robot_glow_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_glow_Normal.png", &this->tex_entities_robot_robot_glow_Normal);
+    loadTexture("assets/textures/entities/robot/robot_glow_Roughness.png", &this->tex_entities_robot_robot_glow_Roughness);
+    loadTexture("assets/textures/entities/robot/robot_lens_Albedo.png", &this->tex_entities_robot_robot_lens_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_lens_AO.png", &this->tex_entities_robot_robot_lens_AO);
+    loadTexture("assets/textures/entities/robot/robot_lens_Metalness.png", &this->tex_entities_robot_robot_lens_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_lens_Normal.png", &this->tex_entities_robot_robot_lens_Normal);
+    loadTexture("assets/textures/entities/robot/robot_lens_Roughness.png", &this->tex_entities_robot_robot_lens_Roughness);
+    loadTexture("assets/textures/entities/robot/robot_metal_2_Albedo.png", &this->tex_entities_robot_robot_metal_2_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_metal_2_AO.png", &this->tex_entities_robot_robot_metal_2_AO);
+    loadTexture("assets/textures/entities/robot/robot_metal_2_Metalness.png", &this->tex_entities_robot_robot_metal_2_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_metal_2_Normal.png", &this->tex_entities_robot_robot_metal_2_Normal);
+    loadTexture("assets/textures/entities/robot/robot_metal_2_Roughness.png", &this->tex_entities_robot_robot_metal_2_Roughness);
+    loadTexture("assets/textures/entities/robot/robot_metal_Albedo.png", &this->tex_entities_robot_robot_metal_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_metal_AO.png", &this->tex_entities_robot_robot_metal_AO);
+    loadTexture("assets/textures/entities/robot/robot_metal_Metalness.png", &this->tex_entities_robot_robot_metal_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_metal_Normal.png", &this->tex_entities_robot_robot_metal_Normal);
+    loadTexture("assets/textures/entities/robot/robot_metal_Roughness.png", &this->tex_entities_robot_robot_metal_Roughness);
+    loadTexture("assets/textures/entities/robot/robot_propelers_Albedo.png", &this->tex_entities_robot_robot_propelers_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_propelers_AO.png", &this->tex_entities_robot_robot_propelers_AO);
+    loadTexture("assets/textures/entities/robot/robot_propelers_Metalness.png", &this->tex_entities_robot_robot_propelers_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_propelers_Normal.png", &this->tex_entities_robot_robot_propelers_Normal);
+    loadTexture("assets/textures/entities/robot/robot_propelers_Roughness.png", &this->tex_entities_robot_robot_propelers_Roughness);
+    loadTexture("assets/textures/entities/robot/robot_wire_Albedo.png", &this->tex_entities_robot_robot_wire_Albedo);
+    loadTexture("assets/textures/entities/robot/robot_wire_AO.png", &this->tex_entities_robot_robot_wire_AO);
+    loadTexture("assets/textures/entities/robot/robot_wire_Metalness.png", &this->tex_entities_robot_robot_wire_Metalness);
+    loadTexture("assets/textures/entities/robot/robot_wire_Normal.png", &this->tex_entities_robot_robot_wire_Normal);
+    loadTexture("assets/textures/entities/robot/robot_wire_Roughness.png", &this->tex_entities_robot_robot_wire_Roughness);
     loadTexture("assets/textures/foliage/seagrass/dried_grass_albedo.png", &this->tex_foliage_seagrass_dried_grass_albedo);
     loadTexture("assets/textures/foliage/seagrass/dried_grass_height.png", &this->tex_foliage_seagrass_dried_grass_height);
     loadTexture("assets/textures/foliage/seagrass/dried_grass_normal.png", &this->tex_foliage_seagrass_dried_grass_normal);
@@ -89,11 +129,26 @@ void ResourceLoader::loadPrograms() {
 
     LOAD_PROGRAM(color_armature, 2, "armature/shader_color_armature.frag", "armature/shader_color_armature.vert") {
         // DUMP(color_armature);
+        ATTRIBUTE(color_armature, vertexBitangent);
         ATTRIBUTE(color_armature, vertexJoints);
+        ATTRIBUTE(color_armature, vertexNormal);
         ATTRIBUTE(color_armature, vertexPosition);
+        ATTRIBUTE(color_armature, vertexTangent);
+        ATTRIBUTE(color_armature, vertexTexCoord);
         ATTRIBUTE(color_armature, vertexWeights);
+        UNIFORM(color_armature, albedoTexture);
+        UNIFORM(color_armature, aoTexture);
+        UNIFORM(color_armature, cameraPosition);
+        UNIFORM(color_armature, caustics);
         UNIFORM(color_armature, jointTransforms);
+        UNIFORM(color_armature, lightPosition);
+        UNIFORM(color_armature, lightTransformation);
+        UNIFORM(color_armature, metallicTexture);
+        UNIFORM(color_armature, modelMatrix);
         UNIFORM(color_armature, modelViewProjectionMatrix);
+        UNIFORM(color_armature, normalTexture);
+        UNIFORM(color_armature, roughnessTexture);
+        UNIFORM(color_armature, waterHeight);
     }
 
     LOAD_PROGRAM(simple_color_shader, 2, "debug/simple_color_shader.frag", "debug/simple_color_shader.vert") {

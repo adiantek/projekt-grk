@@ -7,23 +7,6 @@
 
 class Resources {
    public:
-    //////////////////////////////////////////////////////////////////////////
-    //---------------------------- TEXTURES --------------------------------//
-    //////////////////////////////////////////////////////////////////////////
-    static struct _TEXTURES {
-
-        // Robot textures
-        inline static GLuint ROBOT_BODY_DIFFUSE = 0;
-        inline static GLuint ROBOT_BODY_AO = 0;
-        inline static GLuint ROBOT_BODY_NORMAL = 0;
-        inline static GLuint ROBOT_BODY_ROUGHNESS = 0;
-
-        inline static GLuint ROBOT_METAL_DIFFUSE = 0;
-        inline static GLuint ROBOT_METAL_AO = 0;
-        inline static GLuint ROBOT_METAL_NORMAL = 0;
-        inline static GLuint ROBOT_METAL_ROUGHNESS = 0;
-
-    } TEXTURES;
 
     ///////////////////////////////////////////////////////////////////////////
     //---------------------------- MATERIALS --------------------------------//
@@ -44,6 +27,8 @@ class Resources {
         inline static Material* DEFAULT_ORANGE = new Material();
         inline static Material* DEFAULT_PURPLE = new Material();
 
+        inline static Material* ARMATURE_PBR = new Material();
+
         // Robot materials
         inline static Material* ROBOT_BODY = new Material();
         inline static Material* ROBOT_METAL = new Material();
@@ -52,19 +37,9 @@ class Resources {
         inline static Material* ROBOT_WIRE = new Material();
         inline static Material* ROBOT_GLOW = new Material();
         inline static Material* ROBOT_METAL_2 = new Material();
-        inline static Material* ROBOT_METAL_PAINTED = new Material();
+        inline static Material* ROBOT_PROPELERS = new Material();
 
     } MATERIALS;
-
-    ///////////////////////////////////////////////////////////////////////////
-    //----------------------------- SHADERS ---------------------------------//
-    ///////////////////////////////////////////////////////////////////////////
-    static struct _PROGRAMS {
-
-        // Default programs
-        inline static GLuint DEFAULT_PROGRAM = 0;
-
-    } PROGRAMS;
 
     ///////////////////////////////////////////////////////////////////////////
     //------------------------- END OF REGISTRY -----------------------------//
@@ -72,10 +47,5 @@ class Resources {
     static void init();
 
    private:
-    static void initTextures();
     static void initMaterials();
-    static void initShaders();
-    static void loadTexture();
-    static void loadMaterial();
-    static void loadShader();
 };

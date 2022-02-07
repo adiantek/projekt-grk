@@ -22,6 +22,7 @@ class Physics {
     void grabMultiple();
     void draw(glm::mat4 mat);
     world::World* world = nullptr;
+    physx::PxScene* scene = nullptr;
 
    private:
     physx::PxDefaultAllocator allocator;
@@ -31,7 +32,6 @@ class Physics {
     physx::PxPhysics* physx = nullptr;
     physx::PxCooking* cooking = nullptr;
     physx::PxDefaultCpuDispatcher* dispatcher = nullptr;
-    physx::PxScene* scene = nullptr;
     float timeToProccess = 0.0f;
 };
 }  // namespace physics

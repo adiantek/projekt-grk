@@ -45,6 +45,12 @@ class World : Object3D {
     World(int64_t seed);
     virtual ~World();
 
+    /**
+     * @brief equals to getHeightAt((float)x, (float)z);
+     */
+    float getHeightAt(int32_t x, int32_t z);
+    float getHeightAt(float x, float z);
+
     void update() override;
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
@@ -53,3 +59,5 @@ class World : Object3D {
 };
 
 }  // namespace world
+
+extern world::World *worldObject;
