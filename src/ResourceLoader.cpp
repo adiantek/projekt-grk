@@ -355,6 +355,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(pilotfish, waterHeight);
         UNIFORM(pilotfish, caustics);
         UNIFORM(pilotfish, colorTexture);
+        UNIFORM(pilotfish, time);
     }
     LOAD_PROGRAM(cubefish, 2, "fish/cubefish.frag", "fish/cubefish.vert") {
         // DUMP(cubefish);

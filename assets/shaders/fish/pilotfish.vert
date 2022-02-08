@@ -6,6 +6,7 @@ uniform mat4 modelMatrix;
 uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
 uniform vec3 lightDirection;
+uniform float time;
 
 layout(location = 0) in vec3 vertexPosition;
 layout(location = 1) in vec3 vertexNormal;
@@ -22,9 +23,12 @@ out vec3 normal;
 out float lightIntensity;
 
 void main() {
-    gl_Position = transformation * vec4(vertexPosition, 1.0);
+    vec3 animatedVertexPosition = vertexPosition;
+    animatedVertexPosition.x += sin(vertexPosition.y * 0.5 + (time * 5.0)) * 0.5;
 
-    position = (modelMatrix * vec4(vertexPosition, 1.0)).xyz;
+    gl_Position = transformation * vec4(animatedVertexPosition, 1.0);
+
+    position = (modelMatrix * vec4(animatedVertexPosition, 1.0)).xyz;
     texturePosition = vertexTexCoord;
 
 	vec3 tangent = (modelMatrix * vec4(vertexTangent, 0.0)).xyz;
@@ -35,7 +39,7 @@ void main() {
     viewDirectionTS = tbn * normalize(cameraPosition - position);
     lightDirectionTS = tbn * normalize(lightPosition - position);
 
-    vec4 lightRelativePosition = lightTransformation * modelMatrix * vec4(vertexPosition, 1.0);
+    vec4 lightRelativePosition = lightTransformation * modelMatrix * vec4(animatedVertexPosition, 1.0);
 
     positionLS = 0.5 + lightRelativePosition.xyz / lightRelativePosition.w * 0.5;
     lightIntensity = -dot(normalize(lightDirection), normalize(vertexNormal));

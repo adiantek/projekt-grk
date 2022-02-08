@@ -355,6 +355,7 @@ public:
     GLint p_pilotfish_uni_waterHeight = -1;
     GLint p_pilotfish_uni_caustics = -1;
     GLint p_pilotfish_uni_colorTexture = -1;
+    GLint p_pilotfish_uni_time = -1;
     // cubefish:
     GLuint p_cubefish = 0;
     bool p_cubefish_loaded = false;

@@ -1,6 +1,7 @@
 #include <Fish/Pilotfish.hpp>
 #include <ResourceLoader.hpp>
 #include <Water/Water.hpp>
+#include <Time/Time.hpp>
 
 #define PILOTFISH_SCALE 0.2f
 
@@ -19,6 +20,7 @@ void Pilotfish::draw(glm::mat4 mat) {
     glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(PILOTFISH_SCALE));
     glm::mat4 transformation = mat * model;
     glUseProgram(resourceLoaderExternal->p_pilotfish);
+    glUniform1f(resourceLoaderExternal->p_pilotfish_uni_time, (float)timeExternal->lastFrame);
     glUniform1i(resourceLoaderExternal->p_pilotfish_uni_colorTexture, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_entities_pilotfish_pilotfish_albedo);
