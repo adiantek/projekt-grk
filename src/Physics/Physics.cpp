@@ -20,7 +20,7 @@
 
 #define GRAB_DIST 100.0f
 #define GLOW_DIST 100.0f
-#define PLACE_DIST 50.0f
+#define PLACE_DIST 20.0f
 
 using namespace physics;
 
@@ -227,14 +227,15 @@ void Physics::place() {
     PxRaycastBuffer hit;
     PxQueryFilterData filterData;
     filterData.data.word0 = RAYHITABBLE;
-    this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+    this->scene->raycast(position, direction, PLACE_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
+    glm::mat4 model = glm::translate(glm::vec3(position.x, position.y, position.z) + PLACE_DIST * glm::vec3(direction.x, direction.y, direction.z));
     if (hit.hasAnyHits()) {
         glm::vec3 normal = glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z);
         glm::vec3 position = glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z) + 0.1f * normal;
-        glm::mat4 model = glm::translate(position) * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)));
-        this->blocks.push_back(new Cubefish(model, 3.0f, 3.0f, this->models[currentModel]));
+        model = glm::translate(position) * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)));
     }
+    this->blocks.push_back(new Cubefish(model, 3.0f, 3.0f, this->models[currentModel]));
 }
 
 void Physics::draw(glm::mat4 mat) {
@@ -287,41 +288,44 @@ void Physics::draw(glm::mat4 mat) {
             filterData.data.word0 = RAYHITABBLE;
             this->scene->raycast(position, direction, PLACE_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
+            glm::mat4 model = glm::translate(glm::vec3(position.x, position.y, position.z) + PLACE_DIST * glm::vec3(direction.x, direction.y, direction.z));
+
             if (hit.hasAnyHits()) {
-                glm::mat4 model = glm::translate(glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z)) * glm::transpose(glm::lookAt(glm::vec3(0.0f), glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z), glm::vec3(0.0f, 1.0f, 0.0f)));
-                glm::mat4 transformation = mat * model;
-                glEnable(GL_CULL_FACE);
-                glEnable(GL_BLEND);
-                glBlendColor(0.1f, 1.0f, 0.1f, 1.0f);
-	            glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-                glUseProgram(resourceLoaderExternal->p_cubefish);
-                glUniform1i(resourceLoaderExternal->p_cubefish_uni_colorTexture, 0);
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_dummy);
-                glUniform1i(resourceLoaderExternal->p_cubefish_uni_normalSampler, 1);
-                glActiveTexture(GL_TEXTURE0 + 1);
-                glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_normal);
-                glUniform1i(resourceLoaderExternal->p_cubefish_uni_caustics, 2);
-                glActiveTexture(GL_TEXTURE0 + 2);
-                glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
-                glUniform1i(resourceLoaderExternal->p_cubefish_uni_depthMap, 3);
-                glActiveTexture(GL_TEXTURE0 + 3);
-                glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_height);
-                glUniform1i(resourceLoaderExternal->p_cubefish_uni_roughnessMap, 4);
-                glActiveTexture(GL_TEXTURE0 + 4);
-                glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_roughness);
-                glUniform1i(resourceLoaderExternal->p_cubefish_uni_aoMap, 5);
-                glActiveTexture(GL_TEXTURE0 + 5);
-                glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_ao);
-                glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
-                glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
-                glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
-                for (auto mesh : this->models[currentModel]->getMeshes()) {
-                    Core::DrawContext(*mesh->getRenderContext());
-                }
-                glDisable(GL_CULL_FACE);
-                glDisable(GL_BLEND);
+                model = glm::translate(glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z)) * glm::transpose(glm::lookAt(glm::vec3(0.0f), glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z), glm::vec3(0.0f, 1.0f, 0.0f)));
             }
+            glm::mat4 transformation = mat * model;
+
+            glEnable(GL_CULL_FACE);
+            glEnable(GL_BLEND);
+            glBlendColor(0.1f, 1.0f, 0.1f, 1.0f);
+	        glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+            glUseProgram(resourceLoaderExternal->p_cubefish);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_colorTexture, 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_dummy);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_normalSampler, 1);
+            glActiveTexture(GL_TEXTURE0 + 1);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_normal);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_caustics, 2);
+            glActiveTexture(GL_TEXTURE0 + 2);
+            glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_depthMap, 3);
+            glActiveTexture(GL_TEXTURE0 + 3);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_height);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_roughnessMap, 4);
+            glActiveTexture(GL_TEXTURE0 + 4);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_roughness);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_aoMap, 5);
+            glActiveTexture(GL_TEXTURE0 + 5);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_ao);
+            glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
+            glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
+            for (auto mesh : this->models[currentModel]->getMeshes()) {
+                Core::DrawContext(*mesh->getRenderContext());
+            }
+            glDisable(GL_CULL_FACE);
+            glDisable(GL_BLEND);
         }
     }
 
