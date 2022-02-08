@@ -160,7 +160,7 @@ void init() {
 
     new Glow::GlowShader(camera->width, camera->height);
 
-	fog = new Fog(1280, 720, 256.0);
+	fog = new Fog(camera->width, camera->height, 256.0);
     new water::Water(192.0f, 320.0f, 65.0f, 400, 300.0f, 1200);
     new physics::Physics(9.8f);
 	w = new world::World(0);

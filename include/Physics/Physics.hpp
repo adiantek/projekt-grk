@@ -1,5 +1,6 @@
 #pragma once
 
+#include <PxConfig.h>
 #include <PxPhysicsAPI.h>
 
 #include <Physics/ErrorCallback.hpp>

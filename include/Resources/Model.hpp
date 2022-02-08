@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <PxConfig.h>
 #include <PxPhysicsAPI.h>
 
 class Model {
