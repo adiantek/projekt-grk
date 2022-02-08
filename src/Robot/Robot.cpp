@@ -269,7 +269,7 @@ void Robot::update() {
     this->updateLegs();
     
     this->updateDirections();
-    // this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
+    this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
 }
 
 void Robot::draw(glm::mat4 mat) {
