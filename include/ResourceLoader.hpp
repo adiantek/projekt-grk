@@ -157,6 +157,15 @@ public:
     GLint p_color_armature_uni_normalTexture = -1;
     GLint p_color_armature_uni_roughnessTexture = -1;
     GLint p_color_armature_uni_waterHeight = -1;
+    // armature_shadow:
+    GLuint p_armature_shadow = 0;
+    bool p_armature_shadow_loaded = false;
+    GLint p_armature_shadow_attr_vertexJoints = -1;
+    GLint p_armature_shadow_attr_vertexPosition = -1;
+    GLint p_armature_shadow_attr_vertexWeights = -1;
+    GLint p_armature_shadow_uni_jointTransforms = -1;
+    GLint p_armature_shadow_uni_modelMatrix = -1;
+    GLint p_armature_shadow_uni_modelViewProjectionMatrix = -1;
 
     GLuint p_simple_color_shader = 0;
     bool p_simple_color_shader_loaded = false;

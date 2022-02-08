@@ -151,6 +151,16 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(color_armature, waterHeight);
     }
 
+    LOAD_PROGRAM(armature_shadow, 2, "armature/shadow.frag", "armature/shadow.vert") {
+        // DUMP(armature_shadow);
+        ATTRIBUTE(armature_shadow, vertexJoints);
+        ATTRIBUTE(armature_shadow, vertexPosition);
+        ATTRIBUTE(armature_shadow, vertexWeights);
+        UNIFORM(armature_shadow, jointTransforms);
+        UNIFORM(armature_shadow, modelMatrix);
+        UNIFORM(armature_shadow, modelViewProjectionMatrix);
+    }
+
     LOAD_PROGRAM(simple_color_shader, 2, "debug/simple_color_shader.frag", "debug/simple_color_shader.vert") {
         // DUMP(simple_color_shader);
         ATTRIBUTE(simple_color_shader, vertexColor);
