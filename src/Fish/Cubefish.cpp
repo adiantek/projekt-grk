@@ -6,10 +6,21 @@
 
 Cubefish::Cubefish(glm::vec3 position, float mass, float density) {
     physx::PxTransform initPose = physx::PxTransform(position.x, position.y, position.z);
-	physx::PxBoxGeometry geometry = physx::PxBoxGeometry(1.0f, 1.0f, 1.0f);
+	physx::PxBoxGeometry geometry = resourceLoaderExternal->m_primitives_cube->createGeometryAABB();
     this->rigidBody = new physics::RigidBody(false, initPose, geometry, this, 0.5f, 0.5f, 0.001f);
     this->rigidBody->setMass(mass);
 	this->rigidBody->density = density;
+    this->model = resourceLoaderExternal->m_primitives_cube;
+}
+
+Cubefish::Cubefish(glm::mat4 modelMatrix, float mass, float density, Model* model) {
+    physx::PxMat44 pose(glm::value_ptr(modelMatrix));
+    physx::PxTransform initPose = physx::PxTransform(pose);
+	physx::PxBoxGeometry geometry = geometry = model->createGeometryAABB();
+    this->rigidBody = new physics::RigidBody(false, initPose, geometry, this, 0.5f, 0.5f, 0.001f);
+    this->rigidBody->setMass(mass);
+	this->rigidBody->density = density;
+    this->model = model;
 }
 
 Cubefish::~Cubefish() {
@@ -44,7 +55,7 @@ void Cubefish::draw(glm::mat4 mat) {
     glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
     glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
-    for (auto mesh : resourceLoaderExternal->m_primitives_cube->getMeshes()) {
+    for (auto mesh : this->model->getMeshes()) {
         Core::DrawContext(*mesh->getRenderContext());
     }
     glDisable(GL_CULL_FACE);
@@ -56,7 +67,7 @@ void Cubefish::drawShadow(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_environment_map);
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
-    for (auto mesh : resourceLoaderExternal->m_primitives_cube->getMeshes()) {
+    for (auto mesh : this->model->getMeshes()) {
         Core::DrawContext(*mesh->getRenderContext());
     }
 }
