@@ -108,11 +108,12 @@ void GameObject::drawShadow(glm::mat4 mat) {
 
         Core::RenderContext* context = mesh->getRenderContext();
 
-        glUseProgram(resourceLoaderExternal->p_environment_map);
+        glUseProgram(resourceLoaderExternal->p_armature_shadow);
 
         // Set transformation
-        glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, (float*)&(modelMatrix));
-        glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, (float*)&(modelViewProjectionMatrix));
+        glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjectionMatrix));
+        glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_jointTransforms, 20, GL_FALSE, glm::value_ptr(this->getJointTransforms()[0]));
 
         Core::DrawContext(*context);
     }
