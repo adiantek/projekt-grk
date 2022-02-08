@@ -6,7 +6,7 @@
 #include <vector>
 #include <vertex/VertexBuffer.hpp>
 #include <world/Object3D.hpp>
-#include <fish/Cubefish.hpp>
+#include <Fish/Cubefish.hpp>
 #include <world/World.hpp>
 
 namespace physics {
