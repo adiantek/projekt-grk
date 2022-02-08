@@ -9,9 +9,9 @@ W projekcie muszą się znaleźć:
 -	[x] [Pływające ryby](https://github.com/adiantek/projekt-grk/issues/6),
 -	[ ] [rośliny morskie](https://github.com/adiantek/projekt-grk/issues/7),
 -	[ ] [bąble powietrza](https://github.com/adiantek/projekt-grk/issues/5),
--	[ ] [mgła](https://github.com/adiantek/projekt-grk/issues/8),
+-	[x] [mgła](https://github.com/adiantek/projekt-grk/issues/8),
 -	[x] [Skybox](https://github.com/adiantek/projekt-grk/issues/9), 
--	[ ] [sterowana łódź podwodna lub inny sterowany obiekt](https://github.com/adiantek/projekt-grk/issues/4),
+-	[x] [sterowana łódź podwodna lub inny sterowany obiekt](https://github.com/adiantek/projekt-grk/issues/4),
 -	[x] [ukształtowanie terenu](https://github.com/adiantek/projekt-grk/issues/10),
 -	[ ] wszystkie rozwiązania grafiki zaprezentowane w trakcie zajęć. 
 
@@ -25,7 +25,7 @@ Wymagane jest zrobienie jednej prostej i jednej trudniejszej metody dodatkowej.
 -	[x] [Proceduralne generowanie terenu](https://github.com/adiantek/projekt-grk/issues/11),
 -	[x] [Water Caustics](https://github.com/adiantek/projekt-grk/issues/12),
 -	[ ] [Buoyancy driven aquamotion](https://github.com/adiantek/projekt-grk/issues/13),
--	[ ] [joint-based submarine or fish model](https://github.com/adiantek/projekt-grk/issues/14),
+-	[x] [joint-based submarine or fish model](https://github.com/adiantek/projekt-grk/issues/14),
 -	[ ] [Proceduralne generowanie geometrii roślin morskich](https://github.com/adiantek/projekt-grk/issues/15),
 -	[ ] [SSAO](https://github.com/adiantek/projekt-grk/issues/17),
 -	[x] [Shadow maps](https://github.com/adiantek/projekt-grk/issues/18),
