@@ -230,7 +230,9 @@ void Physics::place() {
     this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
     if (hit.hasAnyHits()) {
-        glm::mat4 model = glm::translate(glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z)) * glm::transpose(glm::lookAt(glm::vec3(0.0f), glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z), glm::vec3(0.0f, 1.0f, 0.0f)));
+        glm::vec3 normal = glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z);
+        glm::vec3 position = glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z) + 0.1f * normal;
+        glm::mat4 model = glm::translate(position) * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)));
         this->blocks.push_back(new Cubefish(model, 3.0f, 3.0f, this->models[currentModel]));
     }
 }
@@ -333,7 +335,7 @@ void Physics::draw(glm::mat4 mat) {
             physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
             if (rigidBody->grabbed) {
                 glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
-                utils::Gizmos::line(robot->position, glm::vec3(rigidBody->getModelMatrix()[3]), glm::vec3(0.0f));
+                utils::Gizmos::line(robot->position + glm::vec3(0.0f, 0.2f, 0.0f), glm::vec3(rigidBody->getModelMatrix()[3]), glm::vec3(0.0f));
             }
         }
     }
