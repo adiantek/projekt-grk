@@ -340,6 +340,7 @@ public:
     GLint p_simplex_attr_tex = -1;
     GLint p_simplex_uni_p = -1;
     GLint p_simplex_uni_scale = -1;
+    GLint p_simplex_uni_weight = -1;
     GLint p_simplex_uni_translation = -1;
     GLint p_simplex_uni_layer = -1;
     // environment_map:

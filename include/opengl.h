@@ -10,4 +10,6 @@
 #endif
 #include <GLFW/glfw3.h>
 
+#define CHECK_OPENGL_ERROR() { GLenum err = glGetError(); if (err) LOGE("opengl err: %d", err); }
+
 #endif

@@ -119,4 +119,4 @@ void Fog::stopUsingFramebuffer() {
     glEnable(GL_DEPTH_TEST);
 }
 
-Fog *fog;
+Fog *fog = 0;

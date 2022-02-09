@@ -323,6 +323,7 @@ void ResourceLoader::loadPrograms() {
         ATTRIBUTE(simplex, tex);
         UNIFORM(simplex, p);
         UNIFORM(simplex, scale);
+        UNIFORM(simplex, weight);
         UNIFORM(simplex, translation);
         UNIFORM(simplex, layer);
     }
@@ -770,9 +771,9 @@ bool ResourceLoader::loadProgram(const char *name, GLuint *out_program, bool *ou
 
     if (this->shadersCompiled == shadersCount)  // always true?
     {
-        LOGI("[ %3.0f%% ] Loading program: %s", this->loadedResources * 100.0 / this->totalResources, name);
         *out_loaded = true;
         *out_program = this->createProgram(name, shadersCount, this->shaders);
+        LOGI("[ %3.0f%% ] Loaded program: %s -> %u", this->loadedResources * 100.0 / this->totalResources, name, *out_program);
         this->shadersCompiled = 0;
         this->loadedResources++;
         return true;

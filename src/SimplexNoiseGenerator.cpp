@@ -58,6 +58,17 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
 
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
+    glUseProgram(res->p_simplex);
+
+    float scales[4];
+    float weights[4];
+    for (int i = 0; i < 4; i++) {
+        scales[i] = this->layers[i].scale;
+        weights[i] = this->layers[i].weight;
+    }
+    glUniform1fv(res->p_simplex_uni_scale, 4, scales);
+    glUniform1fv(res->p_simplex_uni_weight, 4, weights);
+
     this->vbo = vertices.uploadVBO();
     vertices.configurePos(res->p_simplex_attr_pos);
     vertices.configureTex(res->p_simplex_attr_tex);
@@ -72,7 +83,6 @@ SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->fbTxt, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
-    glUseProgram(res->p_simplex);
     glUniform1i(res->p_simplex_uni_p, 0);
 
     glGenBuffers(1, &this->pbo);
@@ -106,7 +116,6 @@ float *SimplexNoiseGenerator::readNoise() {
     } else if (res == GL_TIMEOUT_EXPIRED) {
         return 0;
     } else {
-        LOGD("glClientWaitSync: %d", res);
         return 0;
     }
 }
@@ -117,23 +126,19 @@ void SimplexNoiseGenerator::draw(float x, float y) {
     glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
     glBindBuffer(GL_PIXEL_PACK_BUFFER, this->pbo);
     glViewport(0, 0, 19, 19);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
-    glClear(GL_COLOR_BUFFER_BIT);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE);
     glBindVertexArray(this->vao);
     glUseProgram(res->p_simplex);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->permutationTex);
+    float translations[8];
 
     for (int l = 0; l < 4; l++) {
-        glUniform1f(res->p_simplex_uni_layer, (float)l);
-        glUniform1f(res->p_simplex_uni_scale, this->layers[l].scale);
-        glUniform2f(res->p_simplex_uni_translation, x + this->layers[l].x, y + this->layers[l].y);
-        glBlendColor(0.0f, 0.0f, 0.0f, this->layers[l].weight);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        translations[l * 2 + 0] = x + this->layers[l].x;
+        translations[l * 2 + 1] = y + this->layers[l].y;
     }
+    glUniform2fv(res->p_simplex_uni_translation, 4, translations);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     glReadPixels(0, 0, 19, 19, GL_RED, GL_FLOAT, 0);
     this->sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
@@ -145,7 +150,6 @@ void SimplexNoiseGenerator::draw(float x, float y) {
 
 void SimplexNoiseGenerator::debugNoise(float x, float y) {
     LOGD("Debug noise: [%.1f, %.1f]", x, y);
-    this->draw(x, y);
     for (int y = 0; y < 19; y++) {
         for (int x = 0; x < 19; x++) {
             printf("%.3f   ", this->noiseValues[y * 19 + x]);
