@@ -61,6 +61,8 @@ class World : Object3D {
 
     utils::MatrixTextureArray kelp;
     utils::MatrixTextureArray seagrass;
+    utils::MatrixTextureArray kelpShadow;
+    utils::MatrixTextureArray seagrassShadow;
 };
 
 }  // namespace world

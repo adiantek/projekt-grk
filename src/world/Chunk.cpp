@@ -156,6 +156,7 @@ void Chunk::generate(float *noise) {
 void Chunk::decorate1() {
     this->grass_len = 1024;
     this->grass = new size_t[this->grass_len];
+    this->grass_shadow = new size_t[this->grass_len];
     this->grass_matrices = new float[this->grass_len * 16];
     for (int32_t i = 0; i < this->grass_len; i++) {
         float xpos = this->chunkRandom->nextFloat() * 16;
@@ -176,6 +177,7 @@ void Chunk::decorate1() {
     
     this->kelps_len = 64;
     this->kelps = new size_t[this->kelps_len];
+    this->kelps_shadow = new size_t[this->kelps_len];
     this->kelps_matrices = new float[this->kelps_len * 16];
     for (int32_t i = 0; i < this->kelps_len; i++) {
         float xpos = this->chunkRandom->nextFloat() * 16;
@@ -210,13 +212,22 @@ void Chunk::onHide() {
     for (int32_t i = 0; i < this->grass_len; i++) {
         this->world->seagrass.removeMatrix(this->grass[i]);
     }
-
 }
 void Chunk::onShadowShow() {
-
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelpShadow.addMatrix(this->kelps_matrices + i * 16, this->kelps_shadow + i);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrassShadow.addMatrix(this->grass_matrices + i * 16, this->grass_shadow + i);
+    }
 }
 void Chunk::onShadowHide() {
-
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelpShadow.removeMatrix(this->kelps_shadow[i]);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrassShadow.removeMatrix(this->grass_shadow[i]);
+    }
 }
 
 void Chunk::update() {

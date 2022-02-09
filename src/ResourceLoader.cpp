@@ -423,6 +423,17 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(instanced_kelp, texAlbedo);
         UNIFORM(instanced_kelp, time);
     }
+    LOAD_PROGRAM(instanced_kelp_shadow, 2, "instanced/kelp_shadow.frag", "instanced/kelp_shadow.vert") {
+        DUMP(instanced_kelp_shadow);
+        ATTRIBUTE(instanced_kelp_shadow, vertexPosition);
+        ATTRIBUTE(instanced_kelp_shadow, vertexTex);
+        ATTRIBUTE(instanced_kelp_shadow, gl_InstanceID);
+        UNIFORM(instanced_kelp_shadow, matrices);
+        UNIFORM(instanced_kelp_shadow, texAlbedo);
+        UNIFORM(instanced_kelp_shadow, textureSize);
+        UNIFORM(instanced_kelp_shadow, time);
+        UNIFORM(instanced_kelp_shadow, transformation);
+    }
 
 #undef LOAD_PROGRAM
 #undef ATTRIBUTE
