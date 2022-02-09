@@ -64,12 +64,16 @@ void Chunk::generate(float *noise) {
     for (int i = 0; i < 19 * 19; i++) {
         noise[i] = noise[i] * 128 + 128;
     }
+    this->minY = 256;
     this->maxY = 0;
     for (int x = 0; x < 17; x++) {
         for (int y = 0; y < 17; y++) {
             this->heightMap[x * 17 + y] = noise[(x + 1) * 19 + y + 1];
             if (this->heightMap[x * 17 + y] > this->maxY) {
                 this->maxY = this->heightMap[x * 17 + y];
+            }
+            if (this->heightMap[x * 17 + y] < this->minY) {
+                this->minY = this->heightMap[x * 17 + y];
             }
         }
     }
@@ -354,8 +358,6 @@ void Chunk::prepareRendering(glm::mat4 mat) {
 }
 
 void Chunk::drawTerrain(glm::mat4 mat) {
-
-
     double alpha = (timeExternal->lastFrame - this->created) / 1.0;
     if (alpha >= 0.0 && alpha < 1.0) {
         glEnable(GL_BLEND);

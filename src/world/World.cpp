@@ -5,6 +5,7 @@
 #include <world/World.hpp>
 #include <utils/Gizmos.hpp>
 #include <ResourceLoader.hpp>
+#include <utils/Frustum.hpp>
 
 using namespace world;
 
@@ -17,6 +18,7 @@ World::World(int64_t seed) {
     this->crosshair = new Crosshair();
     this->skybox = new cam::Skybox();
     this->robot = new entity::Robot();
+    this->frustum = new utils::Frustum();
     Random r(seed);
     this->noise = new SimplexNoiseGenerator(&r, 0.2);
     this->updateChunkMap(true);
@@ -201,8 +203,17 @@ void World::updateChunks() {
 
 void World::drawChunks(glm::mat4 mat) {
     bool first = true;
+    int drawChunks = 0;
+    int totalChunks = 0;
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
+        int minX = ch->pos.coords.x << 4;
+        int minZ = ch->pos.coords.z << 4;
+        totalChunks++;
+        if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
+            continue;
+        }
+        drawChunks++;
         if (first) {
             Chunk::prepareRendering(mat);
             first = false;
@@ -211,8 +222,14 @@ void World::drawChunks(glm::mat4 mat) {
     }
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
+        int minX = ch->pos.coords.x << 4;
+        int minZ = ch->pos.coords.z << 4;
+        if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
+            continue;
+        }
         ch->draw(mat);
     }
+    LOGD("Frustum: %d / %d", drawChunks, totalChunks);
 }
 
 void World::drawShadowChunks(glm::mat4 mat) {
@@ -233,6 +250,7 @@ void World::update() {
 }
 
 void World::draw(glm::mat4 mat) {
+    this->frustum->loadPlanes(mat);
     glEnable(GL_CULL_FACE);
 
     this->skybox->draw(mat);  // na poczatku - depth offniety
@@ -294,6 +312,7 @@ void World::draw(glm::mat4 mat) {
 }
 
 void World::drawShadow(glm::mat4 mat) {
+    this->frustum->loadPlanes(mat);
     this->drawShadowChunks(mat);
     this->robot->drawShadow(mat);
 }

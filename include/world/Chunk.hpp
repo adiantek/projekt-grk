@@ -33,6 +33,7 @@ class Chunk : Object3D {
     ChunkPosition pos;
     World *world;
     float maxY;
+    float minY;
     float allowFishAbove = 256;
     Chunk(World *world, ChunkPosition pos, float *noise);
     virtual ~Chunk();
