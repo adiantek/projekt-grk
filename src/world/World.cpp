@@ -233,10 +233,20 @@ void World::drawChunks(glm::mat4 mat) {
 }
 
 void World::drawShadowChunks(glm::mat4 mat) {
+    int drawChunks = 0;
+    int totalChunks = 0;
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
+        int minX = ch->pos.coords.x << 4;
+        int minZ = ch->pos.coords.z << 4;
+        totalChunks++;
+        if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
+            continue;
+        }
+        drawChunks++;
         ch->drawShadow(mat);
     }
+    LOGD("Frustum shadow: %d / %d", drawChunks, totalChunks);
 }
 
 void World::update() {
