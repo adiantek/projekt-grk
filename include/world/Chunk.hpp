@@ -23,6 +23,7 @@ class Chunk : Object3D {
     bool minFishYCalculated = false;
     int64_t seed;
     float heightMap[17 * 17];
+    Random *chunkRandom;
     
    public:
     ChunkPosition pos;
@@ -37,6 +38,14 @@ class Chunk : Object3D {
      */
     Random *createChunkRandom();
     void generate(float *noise);
+    /**
+     * @brief step one - decorate only this chunk
+     */
+    void decorate1();
+    /**
+     * @brief step two - decorate if neighbours loaded
+     */
+    void decorate2();
 
     /**
      * @brief equals to getHeightAt((float)x, (float)z);

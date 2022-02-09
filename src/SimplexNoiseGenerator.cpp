@@ -7,8 +7,7 @@
 #include <vertex/VertexBuffer.hpp>
 #include <Fog/Fog.hpp>
 
-SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r) {
-    double scale = 0.20;  // im mniejsza wartosc tym teren lagodniejszy
+SimplexNoiseGenerator::SimplexNoiseGenerator(Random *r, double scale) {
     double weight = 1.0 / ((1 << 4) - 1);
 
     uint8_t permutationTable[4 * 256];

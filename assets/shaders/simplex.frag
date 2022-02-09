@@ -34,8 +34,9 @@ const float G_2 = (3.0 - SQRT_3) / 6.0; // alternate form to (1-1/sqrt(3))/2 fro
 const vec2 F_22 = vec2(F_2, F_2);
 const vec2 G_22 = vec2(G_2, G_2);
 
-int getPermutValue(int permutIndex, float layer) {
-    return int(texture(p, vec2(float(permutIndex) / 256.0, layer / 4.0)).r * 256.0);
+int getPermutValue(int permutIndex, int layer) {
+    ivec2 coords = ivec2(permutIndex & 255, layer);
+    return int(texelFetch(p, coords, 0).r * 256.0);
 }
 
 float processGrad(int gradIndex, vec2 xy) {
@@ -57,7 +58,7 @@ float getContrib(int gradIndex, vec2 xy, float offset) {
 }
 
 // https://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf page 11
-float getValue(vec2 v, float layer) {
+float getValue(vec2 v, int layer) {
     // Find unit grid cell containing point
     vec2 ij = floor(v + dot(v, F_22));
     float xy = dot(ij, G_22);
@@ -89,9 +90,9 @@ float getValue(vec2 v, float layer) {
 void main()
 {
     float noise =
-        getValue((fragPos + translation[0]) * scale[0], 0.0) * weight[0] +
-        getValue((fragPos + translation[1]) * scale[1], 1.0) * weight[1] +
-        getValue((fragPos + translation[2]) * scale[2], 2.0) * weight[2] +
-        getValue((fragPos + translation[3]) * scale[3], 3.0) * weight[3];
+        getValue((fragPos + translation[0]) * scale[0], 0) * weight[0] +
+        getValue((fragPos + translation[1]) * scale[1], 1) * weight[1] +
+        getValue((fragPos + translation[2]) * scale[2], 2) * weight[2] +
+        getValue((fragPos + translation[3]) * scale[3], 3) * weight[3];
     FragColor.r = noise;
 }

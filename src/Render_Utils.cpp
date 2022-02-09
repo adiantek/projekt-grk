@@ -222,5 +222,4 @@ void Core::DrawContext(Core::RenderContext& context) {
         GL_UNSIGNED_INT,  // type
         (void*)0          // element array buffer offset
     );
-    glBindVertexArray(0);
 }

@@ -9,6 +9,7 @@
 #include <world/ChunkBorderDebugRenderer.hpp>
 #include <world/Crosshair.hpp>
 #include <world/Object3D.hpp>
+#include <utils/MatrixTextureArray.hpp>
 
 namespace world {
 
@@ -37,7 +38,6 @@ class World : Object3D {
     void updateChunks();
     void drawChunks(glm::mat4 mat);
     void drawShadowChunks(glm::mat4 mat);
-
    public:
     int64_t seed;
     SimplexNoiseGenerator *noise;
@@ -56,6 +56,9 @@ class World : Object3D {
     void drawShadow(glm::mat4 mat) override;
     Chunk *getChunkAt(ChunkPosition pos);
     bool chunksLoaded(glm::vec3 pos);
+
+    utils::MatrixTextureArray kelp;
+    utils::MatrixTextureArray seagrass;
 };
 
 }  // namespace world

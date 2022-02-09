@@ -35,6 +35,7 @@
 #include <png/png.h>
 #include "PxPhysics.h"
 #include "foundation/PxMathUtils.h"
+#include <utils/MatrixTextureArray.hpp>
 
 #define BOIDS_AMOUNT 10
 #define BOIDS_SIZE 10

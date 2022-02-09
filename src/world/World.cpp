@@ -4,6 +4,7 @@
 #include <world/ChunkPositionComparator.hpp>
 #include <world/World.hpp>
 #include <utils/Gizmos.hpp>
+#include <ResourceLoader.hpp>
 
 using namespace world;
 
@@ -17,7 +18,7 @@ World::World(int64_t seed) {
     this->skybox = new cam::Skybox();
     this->robot = new entity::Robot();
     Random r(seed);
-    this->noise = new SimplexNoiseGenerator(&r);
+    this->noise = new SimplexNoiseGenerator(&r, 0.2);
     this->updateChunkMap(true);
 }
 
@@ -239,6 +240,25 @@ void World::draw(glm::mat4 mat) {
     // this->chunkBorderDebugRenderer->draw(mat);
     this->drawChunks(mat);
     this->robot->draw(mat);
+
+    ResourceLoader *res = resourceLoaderExternal;
+    
+    // kelp:
+    this->kelp.upload();
+    glUseProgram(res->p_instanced_kelp);
+    glUniformMatrix4fv(res->p_instanced_kelp_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->kelp.getTexture());
+    glUniform1i(res->p_instanced_kelp_uni_matrices, 0);
+    glUniform1i(res->p_instanced_kelp_uni_texAlbedo, 1);
+    glUniform1i(res->p_instanced_kelp_uni_textureSize, this->kelp.getTextureSize());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_kelp_kelp_albedo);
+    for (auto &mesh : res->m_foliage_kelp->getMeshes()) {
+        glBindVertexArray(mesh->getRenderContext()->vertexArray);
+        glDrawElementsInstanced(GL_TRIANGLES, mesh->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, this->kelp.getInstances());
+    }
 
     this->crosshair->draw(mat);  // na koncu - depth offniety
 

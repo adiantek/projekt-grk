@@ -414,6 +414,14 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(glow, glowTexture);
         UNIFORM(glow, texelSize);
     }
+    LOAD_PROGRAM(instanced_kelp, 2, "instanced/kelp.frag", "instanced/kelp.vert") {
+        // DUMP(instanced_kelp);
+        ATTRIBUTE(instanced_kelp, vertexPosition);
+        UNIFORM(instanced_kelp, transformation);
+        UNIFORM(instanced_kelp, matrices);
+        UNIFORM(instanced_kelp, textureSize);
+        UNIFORM(instanced_kelp, texAlbedo);
+    }
 
 #undef LOAD_PROGRAM
 #undef ATTRIBUTE

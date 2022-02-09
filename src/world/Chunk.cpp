@@ -16,18 +16,20 @@ Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
     this->world = world;
     this->pos = pos;
     this->created = timeExternal->lastFrame;
+    this->chunkRandom = createChunkRandom();
     glGenVertexArrays(1, &this->vao);
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->elements);
     // LOGD("Chunk: loading %d %d", pos.coords.x, pos.coords.z);
-    // if (pos.coords.x == 0 && pos.coords.z == 0) {
-    //     world->noise->debugNoise(0, 0);
-    // }
+    if (pos.coords.x == 0 && pos.coords.z == 0) {
+        world->noise->debugNoise(0, 0);
+    }
     this->generate(noise);
 }
 
 Chunk::~Chunk() {
     // LOGD("Chunk: unloading %d %d", pos.coords.x, pos.coords.z);
+    delete this->chunkRandom;
     glDeleteBuffers(1, &this->vbo);
     glDeleteBuffers(1, &this->elements);
     glDeleteVertexArrays(1, &this->vao);
@@ -133,6 +135,17 @@ void Chunk::generate(float *noise) {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    this->decorate1();
+}
+
+void Chunk::decorate1() {
+    size_t index;
+    float xpos = this->chunkRandom->nextFloat() * 16;
+    float zpos = this->chunkRandom->nextFloat() * 16;
+    float height = this->getHeightAt(xpos, zpos);
+    glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos));
+    this->world->kelp.addMatrix(glm::value_ptr(mat), &index);
 }
 
 void Chunk::update() {
@@ -231,7 +244,14 @@ float Chunk::getHeightAt(float x, float z) {
 }
 
 void Chunk::draw(glm::mat4 mat) {
+    ResourceLoader *res = resourceLoaderExternal;
 
+    glUseProgram(resourceLoaderExternal->p_simple_color_shader);
+    glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * glm::translate(glm::vec3(this->pos.coords.x * 16.0f, 192.0f, this->pos.coords.z * 16.0f))));
+
+    for (auto &mesh : res->m_foliage_seagrass->getMeshes()) {
+        Core::DrawContext(*mesh->getRenderContext());
+    }
 }
 
 void Chunk::prepareRendering(glm::mat4 mat) {

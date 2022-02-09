@@ -430,6 +430,15 @@ public:
     GLint p_glow_uni_radius = -1;
     GLint p_glow_uni_glowTexture = -1;
     GLint p_glow_uni_texelSize = -1;
+    // instanced_kelp:
+    GLuint p_instanced_kelp = 0;
+    bool p_instanced_kelp_loaded = false;
+    GLint p_instanced_kelp_attr_vertexPosition = -1;
+    GLint p_instanced_kelp_uni_transformation = -1;
+    GLint p_instanced_kelp_uni_matrices = -1;
+    GLint p_instanced_kelp_uni_textureSize = -1;
+    GLint p_instanced_kelp_uni_texAlbedo = -1;
+    
 
 private:
     int totalResourcesCounter = 0;
