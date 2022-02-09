@@ -270,6 +270,8 @@ void World::draw(glm::mat4 mat) {
     glUniform1i(res->p_instanced_kelp_uni_matrices, 0);
     glUniform1i(res->p_instanced_kelp_uni_texAlbedo, 1);
     glUniform1i(res->p_instanced_kelp_uni_textureSize, this->seagrass.getTextureSize());
+    glUniform1f(glGetUniformLocation(resourceLoaderExternal->p_instanced_kelp, "time"), (float)timeExternal->lastFrame);
+
 
     auto meshes = res->m_foliage_seagrass->getMeshes();
 
