@@ -403,6 +403,24 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(cubefish, normalSampler);
         UNIFORM(cubefish, roughnessMap);
     }
+    LOAD_PROGRAM(normal_fish, 2, "fish/normal_fish.frag", "fish/normal_fish.vert") {
+        // DUMP(normal_fish);
+        ATTRIBUTE(normal_fish, vertexBitangent);
+        ATTRIBUTE(normal_fish, vertexNormal);
+        ATTRIBUTE(normal_fish, vertexPosition);
+        ATTRIBUTE(normal_fish, vertexTangent);
+        ATTRIBUTE(normal_fish, vertexTexCoord);
+        UNIFORM(normal_fish, cameraPosition);
+        UNIFORM(normal_fish, lightPosition);
+        UNIFORM(normal_fish, lightTransformation);
+        UNIFORM(normal_fish, modelMatrix);
+        UNIFORM(normal_fish, time);
+        UNIFORM(normal_fish, transformation);
+        UNIFORM(normal_fish, waterHeight);
+        UNIFORM(normal_fish, caustics);
+        UNIFORM(normal_fish, colorTexture);
+        UNIFORM(normal_fish, normalTexture);
+    }
     LOAD_PROGRAM(glow, 2, "glow.frag", "glow.vert") {
         // DUMP(glow);
         ATTRIBUTE(glow, pos);
