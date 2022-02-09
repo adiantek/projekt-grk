@@ -44,3 +44,12 @@ void Pilotfish::drawShadow(glm::mat4 mat) {
         Core::DrawContext(*mesh->getRenderContext());
     }
 }
+
+glm::vec3 Pilotfish::findTarget() {
+    glm::vec3 offset = glm::vec3(this->random->nextFloat(-70.0f, 70.0f), 0.0f, this->random->nextFloat(-70.0f, 70.0f)) + robot->position;
+    world::Chunk* chunk = this->world->getChunkAt(world::ChunkPosition(offset));
+    if (chunk) {
+        offset.y = (waterObject->getY() - chunk->maxY) / 2.0f + chunk->maxY;
+    }
+    return glm::vec3(offset);
+}

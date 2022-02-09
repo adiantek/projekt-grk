@@ -13,6 +13,7 @@ class Fish : world::Object3D {
     void drawShadow(glm::mat4 mat) override;
     void update() override;
     void setTarget(glm::vec3 target);
+    virtual glm::vec3 findTarget() = 0;
 
     physics::RigidBody* rigidBody;
 
@@ -20,4 +21,5 @@ class Fish : world::Object3D {
     Model* model;
     world::World* world;
     glm::vec3 target;
+    Random* random;
 };

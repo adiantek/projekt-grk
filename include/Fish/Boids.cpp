@@ -131,12 +131,7 @@ void Boids<T>::addRandomMovement(T* boid) {
 template<class T>
 void Boids<T>::updateTarget() {
     if ((float)timeExternal->lastFrame - this->lastTargetChange > 2.0f) {
-        glm::vec3 offset = glm::vec3(this->random.nextFloat(-70.0f, 70.0f), 0.0f, this->random.nextFloat(-70.0f, 70.0f)) + robot->position;
-        world::Chunk* chunk = this->world->getChunkAt(world::ChunkPosition(offset));
-        if (chunk) {
-            offset.y = (waterObject->getY() - chunk->maxY) / 2.0f + chunk->maxY;
-        }
-        this->target = glm::vec3(offset);
+        this->target = this->boidList[0]->findTarget();
         this->lastTargetChange = (float)timeExternal->lastFrame;
     }
 }

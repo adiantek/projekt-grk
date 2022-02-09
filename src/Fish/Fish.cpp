@@ -15,10 +15,12 @@ Fish::Fish(Model* model, glm::vec3 position, world::World* world, glm::vec3 scal
     this->rigidBody->density = 0.997f;
     this->rigidBody->drag = false;
     this->world = world;
+    this->random = new Random((long long)this);
 }
 
 Fish::~Fish() {
     delete this->rigidBody;
+    delete this->random;
 }
 
 void Fish::draw(glm::mat4 mat) {
