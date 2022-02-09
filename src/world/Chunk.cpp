@@ -172,8 +172,11 @@ void Chunk::decorate1() {
         float zpos = this->chunkRandom->nextFloat() * 16;
         float height = this->getHeightAt(xpos, zpos);
         if (this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
+            glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(xpos, zpos + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(xpos + 0.0001f, zpos), 0.0f)));
+
             glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
-                * glm::rotate(glm::radians(-90.0f), glm::vec3(1,0,0))
+                * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
+                * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)))
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
                 * glm::scale(glm::vec3(this->chunkRandom->nextFloat() * 3.0f + 1.0f));
             memcpy(this->grass_matrices + i * 16, glm::value_ptr(mat), 16 * sizeof(float));
