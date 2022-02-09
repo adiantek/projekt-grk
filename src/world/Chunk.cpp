@@ -155,7 +155,10 @@ void Chunk::decorate1() {
         float zpos = this->chunkRandom->nextFloat() * 16;
         float height = this->getHeightAt(xpos, zpos) + 0.2f;
         if (this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
-            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos)) * glm::rotate(glm::radians(90.0f), glm::vec3(1,0,0));
+            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
+                * glm::rotate(glm::radians(90.0f), glm::vec3(1,0,0))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                * glm::scale(glm::vec3(this->chunkRandom->nextFloat() * 3.0f + 1.0f));
             this->world->seagrass.addMatrix(glm::value_ptr(mat), this->grass + i);
         } else {
             this->grass_len--;
@@ -163,14 +166,16 @@ void Chunk::decorate1() {
         }
     }
     
-    this->kelps_len = this->chunkRandom->nextInt(1) + 1;
+    this->kelps_len = this->chunkRandom->nextInt(4) + 4;
     this->kelps = new size_t[this->kelps_len];
     for (int32_t i = 0; i < this->kelps_len; i++) {
         float xpos = this->chunkRandom->nextFloat() * 16;
         float zpos = this->chunkRandom->nextFloat() * 16;
         float height = this->getHeightAt(xpos, zpos) + 0.2f;
-        if (this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
-            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos));
+        if (this->chunkRandom->nextFloat() * 128.0f + 32.0f > height) {
+            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                * glm::scale(glm::vec3(this->chunkRandom->nextFloat() * 7.0f + 1.0f));
             this->world->kelp.addMatrix(glm::value_ptr(mat), this->kelps + i);
         } else {
             this->kelps_len--;
