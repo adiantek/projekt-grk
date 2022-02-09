@@ -419,6 +419,31 @@ public:
     GLint p_cubefish_uni_depthMap = -1;
     GLint p_cubefish_uni_normalSampler = -1;
     GLint p_cubefish_uni_roughnessMap = -1;
+    // normal_fish:
+    GLuint p_normal_fish = 0;
+    bool p_normal_fish_loaded = false;
+    GLint p_normal_fish_attr_vertexBitangent = -1;
+    GLint p_normal_fish_attr_vertexNormal = -1;
+    GLint p_normal_fish_attr_vertexPosition = -1;
+    GLint p_normal_fish_attr_vertexTangent = -1;
+    GLint p_normal_fish_attr_vertexTexCoord = -1;
+    GLint p_normal_fish_uni_cameraPosition = -1;
+    GLint p_normal_fish_uni_lightPosition = -1;
+    GLint p_normal_fish_uni_lightTransformation = -1;
+    GLint p_normal_fish_uni_modelMatrix = -1;
+    GLint p_normal_fish_uni_time = -1;
+    GLint p_normal_fish_uni_transformation = -1;
+    GLint p_normal_fish_uni_waterHeight = -1;
+    GLint p_normal_fish_uni_caustics = -1;
+    GLint p_normal_fish_uni_colorTexture = -1;
+    GLint p_normal_fish_uni_normalTexture = -1;
+    // fish_shadow:
+    GLuint p_fish_shadow = 0;
+    bool p_fish_shadow_loaded = false;
+    GLint p_fish_shadow_attr_vertexPosition = -1;
+    GLint p_fish_shadow_uni_modelMatrix = -1;
+    GLint p_fish_shadow_uni_time = -1;
+    GLint p_fish_shadow_uni_transformation = -1;
     // glow:
     GLuint p_glow = 0;
     bool p_glow_loaded = false;
