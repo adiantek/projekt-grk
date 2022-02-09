@@ -428,7 +428,7 @@ void ResourceLoader::loadModels() {
     loadModel("assets/models/foliage/kelp.dae", &this->m_foliage_kelp);
     loadModel("assets/models/foliage/seagrass.dae", &this->m_foliage_seagrass);
     loadModel("assets/models/primitives/complex_cube.dae", &this->m_primitives_complex_cube);
-    loadModel("assets/models/primitives/cube.dae", &this->m_primitives_cube);
+    loadModel("assets/models/primitives/cube.obj", &this->m_primitives_cube);
     loadModel("assets/models/primitives/cylinder.obj", &this->m_primitives_cylinder);
     loadModel("assets/models/primitives/plane.dae", &this->m_primitives_plane);
     loadModel("assets/models/primitives/sphere.obj", &this->m_primitives_sphere);
