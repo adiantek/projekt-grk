@@ -13,13 +13,15 @@ Cubefish::Cubefish(glm::vec3 position, float mass, float density) {
     this->model = resourceLoaderExternal->m_primitives_cube;
 }
 
-Cubefish::Cubefish(glm::mat4 modelMatrix, float mass, float density, Model* model) {
+Cubefish::Cubefish(glm::mat4 modelMatrix, float mass, float density, Model* model, bool dynamic) {
     physx::PxMat44 pose(glm::value_ptr(modelMatrix));
     physx::PxTransform initPose = physx::PxTransform(pose);
 	physx::PxBoxGeometry geometry = geometry = model->createGeometryAABB();
-    this->rigidBody = new physics::RigidBody(false, initPose, geometry, this, 0.5f, 0.5f, 0.001f);
-    this->rigidBody->setMass(mass);
-	this->rigidBody->density = density;
+    this->rigidBody = new physics::RigidBody(!dynamic, initPose, geometry, this, 0.5f, 0.5f, 0.001f);
+    if (dynamic) {
+        this->rigidBody->setMass(mass);
+	    this->rigidBody->density = density;
+    }
     this->model = model;
 }
 

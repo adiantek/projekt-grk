@@ -8,7 +8,7 @@
 class Cubefish : world::Object3D {
    public:
     Cubefish(glm::vec3 position, float mass, float density);
-    Cubefish(glm::mat4 modelMatrix, float mass, float density, Model* model);
+    Cubefish(glm::mat4 modelMatrix, float mass, float density, Model* model, bool dynamic);
     ~Cubefish();
     void update() override;
     void draw(glm::mat4 mat) override;

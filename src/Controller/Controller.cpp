@@ -67,18 +67,31 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
                 physicsObject->grabMultiple();
                 break;
             case 2:
-                physicsObject->place();
+                physicsObject->place(true);
                 break;
             default:
                 break;
             }
         }
         if (key == GLFW_KEY_R) {
-            controller->scopeMode += 1;
-            controller->scopeMode %= 3;
+            if (controller->mouseRightClicked) {
+                controller->scopeMode += 1;
+                controller->scopeMode %= 3;
+            }
         }
         if (key == GLFW_KEY_G) {
-            physicsObject->nextModel();
+            if (controller->mouseRightClicked && controller->scopeMode == 2)
+                physicsObject->nextModel();
+        }
+        if (key == GLFW_KEY_E) {
+            if (controller->mouseRightClicked && controller->scopeMode == 2) {
+                physicsObject->place(false);
+            }
+        }
+        if (key == GLFW_KEY_Q) {
+            if (controller->mouseRightClicked) {
+                physicsObject->remove();
+            }
         }
     } else if (action == 0) {
         LOGI("Released key: %d", key);

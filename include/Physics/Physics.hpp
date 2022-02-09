@@ -21,7 +21,8 @@ class Physics {
     physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, unsigned int trianglesNumber);
     void grab();
     void grabMultiple();
-    void place();
+    void place(bool dynamic);
+    void remove();
     void draw(glm::mat4 mat);
     void nextModel();
     world::World* world = nullptr;

@@ -218,7 +218,7 @@ void Physics::grabMultiple() {
     }
 }
 
-void Physics::place() {
+void Physics::place(bool dynamic) {
     std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
 
     physx::PxVec3 position = pair.first;
@@ -232,10 +232,39 @@ void Physics::place() {
     glm::mat4 model = glm::translate(glm::vec3(position.x, position.y, position.z) + PLACE_DIST * glm::vec3(direction.x, direction.y, direction.z));
     if (hit.hasAnyHits()) {
         glm::vec3 normal = glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z);
-        glm::vec3 position = glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z) + 0.1f * normal;
+        glm::vec3 position = glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z) + 0.1f * (dynamic ? 1.0f : -1.0f) * normal;
         model = glm::translate(position) * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)));
     }
-    this->blocks.push_back(new Cubefish(model, 3.0f, 3.0f, this->models[currentModel]));
+    if (dynamic || hit.hasAnyHits())
+        this->blocks.push_back(new Cubefish(model, 3.0f, 3.0f, this->models[currentModel], dynamic));
+}
+
+void Physics::remove() {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxVec3 position = pair.first;
+    physx::PxVec3 direction = pair.second;
+
+    PxRaycastBuffer hit;
+    PxQueryFilterData filterData;
+    filterData.data.word0 = RAYHITABBLE;
+    this->scene->raycast(position, direction, PLACE_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+    glm::mat4 model = glm::translate(glm::vec3(position.x, position.y, position.z) + PLACE_DIST * glm::vec3(direction.x, direction.y, direction.z));
+    if (hit.hasAnyHits()) {
+        RigidBody* rigidBody = (RigidBody*)hit.block.actor->userData;
+        int index = -1;
+        for (int i = 0; i < this->blocks.size(); ++i) {
+            if ((world::Object3D*)this->blocks[i] == rigidBody->object) {
+                index = i;
+            }
+        }
+        if (index != -1) {
+            delete this->blocks[index];
+            this->blocks[index] = this->blocks[this->blocks.size() - 1];
+            this->blocks.pop_back();
+        }
+    }
 }
 
 void Physics::draw(glm::mat4 mat) {
