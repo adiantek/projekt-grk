@@ -3,7 +3,7 @@
 #include <Water/Water.hpp>
 #include <Time/Time.hpp>
 
-#define PILOTFISH_SCALE 0.2f
+#define PILOTFISH_SCALE 0.1f
 
 Pilotfish::Pilotfish(glm::vec3 position, world::World* world)
 : Fish(resourceLoaderExternal->m_entities_pilotfish, position, world, glm::vec3(PILOTFISH_SCALE)) {}
@@ -13,7 +13,7 @@ Pilotfish::~Pilotfish() {}
 void Pilotfish::update() {
     Fish::update();
     // I should be flying forward
-    this->rigidBody->rotateForward(glm::eulerAngleX(glm::radians(-90.0f)));
+    this->rigidBody->rotateForward(this->rotation);
 }
 
 void Pilotfish::draw(glm::mat4 mat) {
@@ -46,10 +46,10 @@ void Pilotfish::drawShadow(glm::mat4 mat) {
 }
 
 glm::vec3 Pilotfish::findTarget() {
-    glm::vec3 offset = glm::vec3(this->random->nextFloat(-70.0f, 70.0f), 0.0f, this->random->nextFloat(-70.0f, 70.0f)) + robot->position;
+    glm::vec3 offset = glm::vec3(this->random->nextFloat(-60.0f, 60.0f), 0.0f, this->random->nextFloat(-60.0f, 60.0f)) + robot->position;
     world::Chunk* chunk = this->world->getChunkAt(world::ChunkPosition(offset));
     if (chunk) {
-        offset.y = (waterObject->getY() - chunk->maxY) / 2.0f + chunk->maxY;
+        offset.y = (waterObject->getY() - chunk->maxY) / 4.0f + chunk->maxY;
     }
     return glm::vec3(offset);
 }
