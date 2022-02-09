@@ -8,9 +8,12 @@ out vec2 uv;
 uniform mat4 transformation;
 uniform int textureSize;
 uniform sampler2D matrices;
+uniform float time;
 
 void main()
 {
+	vec3 animatedVertexPosition = vertexPosition;
+
 	uv = vertexTex;
 	int xpos = gl_InstanceID * 4 % textureSize;
 	int ypos = gl_InstanceID * 4 / textureSize;
@@ -20,5 +23,8 @@ void main()
 		texelFetch(matrices, ivec2(xpos + 2, ypos), 0),
 		texelFetch(matrices, ivec2(xpos + 3, ypos), 0)
 	);
-	gl_Position = transformation * locTransf * vec4(vertexPosition, 1.0);
+    
+	animatedVertexPosition.x += sin(vertexPosition.z * 2.0 + (time * 1.75)) * 0.05 * vertexPosition.z;
+
+	gl_Position = transformation * locTransf * vec4(animatedVertexPosition, 1.0);
 }
