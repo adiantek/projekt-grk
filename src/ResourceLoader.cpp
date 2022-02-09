@@ -421,6 +421,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(instanced_kelp, matrices);
         UNIFORM(instanced_kelp, textureSize);
         UNIFORM(instanced_kelp, texAlbedo);
+        UNIFORM(instanced_kelp, time);
     }
 
 #undef LOAD_PROGRAM

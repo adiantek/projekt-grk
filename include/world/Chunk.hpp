@@ -24,10 +24,15 @@ class Chunk : Object3D {
     int64_t seed;
     float heightMap[17 * 17];
     Random *chunkRandom;
+    float *kelps_matrices;
     int32_t kelps_len;
     size_t *kelps;
+    size_t *kelps_shadow;
+    float *grass_matrices;
     int32_t grass_len;
     size_t *grass;
+    size_t *grass_shadow;
+    
     
    public:
     ChunkPosition pos;
@@ -35,6 +40,8 @@ class Chunk : Object3D {
     float maxY;
     float minY;
     float allowFishAbove = 256;
+    bool frustumVisible = false;
+    bool frustumShadowVisible = false;
     Chunk(World *world, ChunkPosition pos, float *noise);
     virtual ~Chunk();
 
@@ -52,6 +59,11 @@ class Chunk : Object3D {
      */
     void decorate2();
 
+    void onShow();
+    void onHide();
+    void onShadowShow();
+    void onShadowHide();
+    
     /**
      * @brief equals to getHeightAt((float)x, (float)z);
      */

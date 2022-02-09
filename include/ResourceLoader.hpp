@@ -438,6 +438,7 @@ public:
     GLint p_instanced_kelp_uni_matrices = -1;
     GLint p_instanced_kelp_uni_textureSize = -1;
     GLint p_instanced_kelp_uni_texAlbedo = -1;
+    GLint p_instanced_kelp_uni_time = -1;
     
 
 private:

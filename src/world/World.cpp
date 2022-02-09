@@ -225,11 +225,19 @@ void World::drawChunks(glm::mat4 mat) {
         int minX = ch->pos.coords.x << 4;
         int minZ = ch->pos.coords.z << 4;
         if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
+            if (ch->frustumVisible) {
+                ch->frustumVisible = false;
+                ch->onHide();
+            }
             continue;
         }
         ch->draw(mat);
+        if (!ch->frustumVisible) {
+            ch->frustumVisible = true;
+            ch->onShow();
+        }
     }
-    LOGD("Frustum: %d / %d", drawChunks, totalChunks);
+    // LOGD("Frustum: %d / %d", drawChunks, totalChunks);
 }
 
 void World::drawShadowChunks(glm::mat4 mat) {
@@ -241,12 +249,20 @@ void World::drawShadowChunks(glm::mat4 mat) {
         int minZ = ch->pos.coords.z << 4;
         totalChunks++;
         if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
+            if (ch->frustumShadowVisible) {
+                ch->frustumShadowVisible = false;
+                ch->onShadowHide();
+            }
             continue;
         }
         drawChunks++;
         ch->drawShadow(mat);
+        if (!ch->frustumShadowVisible) {
+            ch->frustumShadowVisible = true;
+            ch->onShadowShow();
+        }
     }
-    LOGD("Frustum shadow: %d / %d", drawChunks, totalChunks);
+    // LOGD("Frustum shadow: %d / %d", drawChunks, totalChunks);
 }
 
 void World::update() {
@@ -280,7 +296,7 @@ void World::draw(glm::mat4 mat) {
     glUniform1i(res->p_instanced_kelp_uni_matrices, 0);
     glUniform1i(res->p_instanced_kelp_uni_texAlbedo, 1);
     glUniform1i(res->p_instanced_kelp_uni_textureSize, this->seagrass.getTextureSize());
-    glUniform1f(glGetUniformLocation(resourceLoaderExternal->p_instanced_kelp, "time"), (float)timeExternal->lastFrame);
+    glUniform1f(res->p_instanced_kelp_uni_time, (float)timeExternal->lastFrame);
 
 
     auto meshes = res->m_foliage_seagrass->getMeshes();
