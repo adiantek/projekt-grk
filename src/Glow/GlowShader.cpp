@@ -104,4 +104,4 @@ void GlowShader::draw(glm::mat4 mat) {
     glDisable(GL_BLEND);
 }
 
-GlowShader *Glow::glow;
+GlowShader *Glow::glow = 0;

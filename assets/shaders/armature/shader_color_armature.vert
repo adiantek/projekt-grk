@@ -40,12 +40,13 @@ void main() {
     vec3 normal = (modelMatrix * vec4(vertexNormal, 0.0)).xyz;
     mat3 tbn = transpose(mat3(tangent, bitangent, normal));
 
+    position = (modelMatrix * vec4(vertexPosition, 1.0)).xyz;
+    
     viewDirectionTS = tbn * normalize(cameraPosition - position);
     lightDirectionTS = tbn * normalize(lightPosition - position);
 
     vec4 lightRelativePosition = lightTransformation * modelMatrix * localPos;
 
-    position = (modelMatrix * vec4(vertexPosition, 1.0)).xyz;
     positionLS = 0.5 + lightRelativePosition.xyz / lightRelativePosition.w * 0.5;
 
     gl_Position = modelViewProjectionMatrix * localPos;

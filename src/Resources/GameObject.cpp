@@ -80,6 +80,8 @@ void GameObject::draw(glm::mat4 mat) {
         if (material == nullptr) {
             material = Resources::MATERIALS.DEFAULT;
         }
+        
+        material->use();
 
         material
             ->setModelMatrix(modelMatrix)
@@ -89,7 +91,6 @@ void GameObject::draw(glm::mat4 mat) {
             material->setJointTransforms(this->getJointTransforms());
         }
         
-        material->use();
 
         Core::DrawContext(*context);
     }

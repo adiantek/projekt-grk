@@ -20,6 +20,9 @@ Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->elements);
     // LOGD("Chunk: loading %d %d", pos.coords.x, pos.coords.z);
+    // if (pos.coords.x == 0 && pos.coords.z == 0) {
+    //     world->noise->debugNoise(0, 0);
+    // }
     this->generate(noise);
 }
 

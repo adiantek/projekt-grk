@@ -13,5 +13,5 @@ do
 	a="${line//\//_}"
 	b="${a//assets_models_/}"
 	c="${b%.*}"
-	echo '    loadModel("'$line'", this->m_'"$c"');'
+	echo '    loadModel("'$line'", &this->m_'"$c"');'
 done

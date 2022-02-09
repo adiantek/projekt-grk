@@ -160,7 +160,7 @@ void init() {
 
     new Glow::GlowShader(camera->width, camera->height);
 
-	fog = new Fog(1280, 720, 256.0);
+	fog = new Fog(camera->width, camera->height, 256.0);
     new water::Water(192.0f, 320.0f, 65.0f, 400, 300.0f, 1200);
     new physics::Physics(9.8f);
 	w = new world::World(0);
@@ -184,6 +184,12 @@ void init() {
     waterObject->addWorldObject((world::Object3D *)cubefish[0]);
     waterObject->addWorldObject((world::Object3D *)cubefish[1]);
 }
+
+#ifndef EMSCRIPTEN
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
+    LOGE("GL CALLBACK [%u]: %s type = 0x%x, source = 0x%x, severity = 0x%x, message = %s", id, (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, source, severity, message);
+}
+#endif
 
 int main(int argc, char **argv) {
     vertex::VertexFormats_load();
@@ -227,6 +233,12 @@ int main(int argc, char **argv) {
                     break;
             }
             LOGI("OpenGL Version %d.%d loaded", GLVersion.major, GLVersion.minor);
+            glEnable(GL_DEBUG_OUTPUT);
+
+            // disable NVIDIA notification about using VIDEO memory
+            glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, 0, 0, GL_FALSE);
+
+            glDebugMessageCallback(MessageCallback, 0);
 #endif
 #ifdef EMSCRIPTEN
             emscripten_set_main_loop(do_frame, 0, 1);

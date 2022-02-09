@@ -5,10 +5,10 @@ precision highp int;
 in vec2 fragPos;
 out vec4 FragColor;
 
-uniform vec2 translation;
-uniform float scale;
+uniform vec2 translation[4];
+uniform float scale[4];
+uniform float weight[4];
 uniform sampler2D p;
-uniform float layer;
 
 const float grads[24] = float[24](
     1.0, 1.0,
@@ -34,7 +34,7 @@ const float G_2 = (3.0 - SQRT_3) / 6.0; // alternate form to (1-1/sqrt(3))/2 fro
 const vec2 F_22 = vec2(F_2, F_2);
 const vec2 G_22 = vec2(G_2, G_2);
 
-int getPermutValue(int permutIndex) {
+int getPermutValue(int permutIndex, float layer) {
     return int(texture(p, vec2(float(permutIndex) / 256.0, layer / 4.0)).r * 256.0);
 }
 
@@ -57,7 +57,7 @@ float getContrib(int gradIndex, vec2 xy, float offset) {
 }
 
 // https://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf page 11
-float getValue(vec2 v) {
+float getValue(vec2 v, float layer) {
     // Find unit grid cell containing point
     vec2 ij = floor(v + dot(v, F_22));
     float xy = dot(ij, G_22);
@@ -75,9 +75,9 @@ float getValue(vec2 v) {
     ivec2 ij2 = ivec2(ij) & 255;
     
     // Work out the hashed gradient indices of the three simplex corners
-    int gi0 = getPermutValue(ij2.x + getPermutValue(ij2.y)) % 12;
-    int gi1 = getPermutValue(ij2.x + int(kl.x) + getPermutValue(ij2.y + int(kl.y))) % 12;
-    int gi2 = getPermutValue(ij2.x + 1 + getPermutValue(ij2.y + 1)) % 12;
+    int gi0 = getPermutValue(ij2.x + getPermutValue(ij2.y, layer), layer) % 12;
+    int gi1 = getPermutValue(ij2.x + int(kl.x) + getPermutValue(ij2.y + int(kl.y), layer), layer) % 12;
+    int gi2 = getPermutValue(ij2.x + 1 + getPermutValue(ij2.y + 1, layer), layer) % 12;
 
     float d10 = getContrib(gi0, xy0, 0.5); // Calculate the contribution from the first corner
     float d11 = getContrib(gi1, xy1, 0.5); // Calculate the contribution from the second corner
@@ -85,8 +85,13 @@ float getValue(vec2 v) {
     
     return 70.0 * (d10 + d11 + d12);
 }
+
 void main()
 {
-    float noise = getValue((fragPos.xy + translation) * scale);
+    float noise =
+        getValue((fragPos + translation[0]) * scale[0], 0.0) * weight[0] +
+        getValue((fragPos + translation[1]) * scale[1], 1.0) * weight[1] +
+        getValue((fragPos + translation[2]) * scale[2], 2.0) * weight[2] +
+        getValue((fragPos + translation[3]) * scale[3], 3.0) * weight[3];
     FragColor.r = noise;
 }

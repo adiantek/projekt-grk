@@ -39,10 +39,13 @@ void Camera::setSize(int width, int height) {
     this->height = height;
     updatePerspective();
     
-    Glow::glow->resize(width, height);
-
-    delete fog;
-    fog = new Fog(width, height, 256.0);
+    if (Glow::glow) {
+        Glow::glow->resize(width, height);
+    }
+    if (fog) {
+        delete fog;
+        fog = new Fog(width, height, 256.0);
+    }
 }
 
 void Camera::setFov(float fov) {
