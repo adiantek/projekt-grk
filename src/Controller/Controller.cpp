@@ -59,14 +59,39 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
             glUniform1i(resourceLoaderExternal->p_chunk_uni_modeSwitch, 1);
         }
         if (key == GLFW_KEY_F && controller->mouseRightClicked) {
-            if (controller->sweepMode) {
-                physicsObject->grabMultiple();
-            } else {
+            switch (controller->scopeMode) {
+            case 0:
                 physicsObject->grab();
+                break;
+            case 1:
+                physicsObject->grabMultiple();
+                break;
+            case 2:
+                physicsObject->place(true);
+                break;
+            default:
+                break;
             }
         }
         if (key == GLFW_KEY_R) {
-            controller->sweepMode = !controller->sweepMode;
+            if (controller->mouseRightClicked) {
+                controller->scopeMode += 1;
+                controller->scopeMode %= 3;
+            }
+        }
+        if (key == GLFW_KEY_G) {
+            if (controller->mouseRightClicked && controller->scopeMode == 2)
+                physicsObject->nextModel();
+        }
+        if (key == GLFW_KEY_E) {
+            if (controller->mouseRightClicked && controller->scopeMode == 2) {
+                physicsObject->place(false);
+            }
+        }
+        if (key == GLFW_KEY_Q) {
+            if (controller->mouseRightClicked) {
+                physicsObject->remove();
+            }
         }
     } else if (action == 0) {
         LOGI("Released key: %d", key);

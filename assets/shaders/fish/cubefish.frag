@@ -152,8 +152,8 @@ void main() {
     vec3 viewDirection = normalize(viewDirectionTS);
     vec2 textureCoords = parallaxMapping(vec2(texturePosition.x , 1.0 - texturePosition.y), viewDirection, depthMap, 0.05);
     
-    if (textureCoords.x > 1.0 || textureCoords.x < 0.0 || textureCoords.y > 1.0 || textureCoords.y < 0.0)
-        discard;
+    // if (textureCoords.x > 1.0 || textureCoords.x < 0.0 || textureCoords.y > 1.0 || textureCoords.y < 0.0)
+    //     discard;
 
     vec3 normal = normalize(vec3(texture(normalSampler, textureCoords)) * 2.0 - 1.0);
     vec3 objectColor = texture(colorTexture, textureCoords).xyz;
