@@ -489,7 +489,7 @@ void Robot::updateLegs() {
 
                 float otherLegDistance = glm::distance2(leg->globalAttachmentPoint, leg->attachmentEstimation);
 
-                if (!isOpposite && leg->step > 0.0f && otherLegDistance < distanceSquare) {
+                if (leg->step > 0.0f && (otherLegDistance < distanceSquare || isOpposite)) {
                     isStationary = false;
                     break;
                 }
