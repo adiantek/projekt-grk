@@ -438,6 +438,18 @@ public:
     GLint p_instanced_kelp_uni_matrices = -1;
     GLint p_instanced_kelp_uni_textureSize = -1;
     GLint p_instanced_kelp_uni_texAlbedo = -1;
+    GLint p_instanced_kelp_uni_time = -1;
+    // instanced_kelp_shadow:
+    GLuint p_instanced_kelp_shadow = 0;
+    bool p_instanced_kelp_shadow_loaded = false;
+    GLint p_instanced_kelp_shadow_attr_vertexPosition = -1;
+    GLint p_instanced_kelp_shadow_attr_vertexTex = -1;
+    GLint p_instanced_kelp_shadow_attr_gl_InstanceID = -1;
+    GLint p_instanced_kelp_shadow_uni_matrices = -1;
+    GLint p_instanced_kelp_shadow_uni_texAlbedo = -1;
+    GLint p_instanced_kelp_shadow_uni_textureSize = -1;
+    GLint p_instanced_kelp_shadow_uni_time = -1;
+    GLint p_instanced_kelp_shadow_uni_transformation = -1;
     
 
 private:

@@ -38,14 +38,16 @@ Chunk::~Chunk() {
         glDeleteBuffers(1, &this->vboLines);
         glDeleteVertexArrays(1, &this->vaoLines);
     }
-    for (int32_t i = 0; i < this->kelps_len; i++) {
-        this->world->kelp.removeMatrix(this->kelps[i]);
+    if (this->frustumShadowVisible) {
+        this->onShadowHide();
+    }
+    if (this->frustumVisible) {
+        this->onHide();
     }
     delete this->kelps;
-    for (int32_t i = 0; i < this->grass_len; i++) {
-        this->world->seagrass.removeMatrix(this->grass[i]);
-    }
     delete this->grass;
+    delete this->kelps_matrices;
+    delete this->grass_matrices;
 }
 
 Random *Chunk::createChunkRandom() {
@@ -163,6 +165,8 @@ void Chunk::generate(float *noise) {
 void Chunk::decorate1() {
     this->grass_len = 1024;
     this->grass = new size_t[this->grass_len];
+    this->grass_shadow = new size_t[this->grass_len];
+    this->grass_matrices = new float[this->grass_len * 16];
     for (int32_t i = 0; i < this->grass_len; i++) {
         float xpos = this->chunkRandom->nextFloat() * 16;
         float zpos = this->chunkRandom->nextFloat() * 16;
@@ -172,7 +176,8 @@ void Chunk::decorate1() {
                 * glm::rotate(glm::radians(-90.0f), glm::vec3(1,0,0))
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
                 * glm::scale(glm::vec3(this->chunkRandom->nextFloat() * 3.0f + 1.0f));
-            this->world->seagrass.addMatrix(glm::value_ptr(mat), this->grass + i);
+            memcpy(this->grass_matrices + i * 16, glm::value_ptr(mat), 16 * sizeof(float));
+            // this->world->seagrass.addMatrix(glm::value_ptr(mat), this->grass + i);
         } else {
             this->grass_len--;
             i--;
@@ -181,6 +186,8 @@ void Chunk::decorate1() {
     
     this->kelps_len = 64;
     this->kelps = new size_t[this->kelps_len];
+    this->kelps_shadow = new size_t[this->kelps_len];
+    this->kelps_matrices = new float[this->kelps_len * 16];
     for (int32_t i = 0; i < this->kelps_len; i++) {
         float xpos = this->chunkRandom->nextFloat() * 16;
         float zpos = this->chunkRandom->nextFloat() * 16;
@@ -190,11 +197,45 @@ void Chunk::decorate1() {
                 * glm::rotate(glm::radians(-90.0f), glm::vec3(1,0,0))
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
                 * glm::scale(glm::vec3(this->chunkRandom->nextFloat() * 7.0f + 1.0f));
-            this->world->kelp.addMatrix(glm::value_ptr(mat), this->kelps + i);
+            memcpy(this->kelps_matrices + i * 16, glm::value_ptr(mat), 16 * sizeof(float));
+            // this->world->kelp.addMatrix(glm::value_ptr(mat), this->kelps + i);
         } else {
             this->kelps_len--;
             i--;
         }
+    }
+}
+
+void Chunk::onShow() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelp.addMatrix(this->kelps_matrices + i * 16, this->kelps + i);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrass.addMatrix(this->grass_matrices + i * 16, this->grass + i);
+    }
+}
+void Chunk::onHide() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelp.removeMatrix(this->kelps[i]);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrass.removeMatrix(this->grass[i]);
+    }
+}
+void Chunk::onShadowShow() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelpShadow.addMatrix(this->kelps_matrices + i * 16, this->kelps_shadow + i);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrassShadow.addMatrix(this->grass_matrices + i * 16, this->grass_shadow + i);
+    }
+}
+void Chunk::onShadowHide() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelpShadow.removeMatrix(this->kelps_shadow[i]);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrassShadow.removeMatrix(this->grass_shadow[i]);
     }
 }
 
@@ -294,14 +335,6 @@ float Chunk::getHeightAt(float x, float z) {
 }
 
 void Chunk::draw(glm::mat4 mat) {
-    // ResourceLoader *res = resourceLoaderExternal;
-
-    // glUseProgram(resourceLoaderExternal->p_simple_color_shader);
-    // glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * glm::translate(glm::vec3(this->pos.coords.x * 16.0f, 192.0f, this->pos.coords.z * 16.0f))));
-
-    // for (auto &mesh : res->m_foliage_seagrass->getMeshes()) {
-    //     Core::DrawContext(*mesh->getRenderContext());
-    // }
 }
 
 void Chunk::prepareRendering(glm::mat4 mat) {
