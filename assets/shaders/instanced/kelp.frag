@@ -10,4 +10,9 @@ out vec4 FragColor;
 void main()
 {
 	FragColor = texture(texAlbedo, uv);
+	if (FragColor.a < 0.75) {
+		gl_FragDepth = 1.0;
+	} else {
+		gl_FragDepth = gl_FragCoord.z;
+	}
 }

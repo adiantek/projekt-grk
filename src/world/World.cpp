@@ -243,26 +243,54 @@ void World::draw(glm::mat4 mat) {
 
     ResourceLoader *res = resourceLoaderExternal;
     
-    // kelp:
-    this->kelp.upload();
+    // grass:
+    this->seagrass.upload();
     glUseProgram(res->p_instanced_kelp);
     glUniformMatrix4fv(res->p_instanced_kelp_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->kelp.getTexture());
+    glBindTexture(GL_TEXTURE_2D, this->seagrass.getTexture());
     glUniform1i(res->p_instanced_kelp_uni_matrices, 0);
     glUniform1i(res->p_instanced_kelp_uni_texAlbedo, 1);
-    glUniform1i(res->p_instanced_kelp_uni_textureSize, this->kelp.getTextureSize());
+    glUniform1i(res->p_instanced_kelp_uni_textureSize, this->seagrass.getTextureSize());
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_kelp_kelp_albedo);
-    for (auto &mesh : res->m_foliage_kelp->getMeshes()) {
-        glBindVertexArray(mesh->getRenderContext()->vertexArray);
-        glDrawElementsInstanced(GL_TRIANGLES, mesh->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, this->kelp.getInstances());
-    }
-
-    this->crosshair->draw(mat);  // na koncu - depth offniety
+    auto meshes = res->m_foliage_seagrass->getMeshes();
 
     glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_seagrass_grass_blades_albedo);
+    glBindVertexArray(meshes[0]->getRenderContext()->vertexArray);
+    glDrawElementsInstanced(GL_TRIANGLES, meshes[0]->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, (GLsizei)this->seagrass.getInstances());
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_seagrass_dried_grass_albedo);
+    glBindVertexArray(meshes[1]->getRenderContext()->vertexArray);
+    glDrawElementsInstanced(GL_TRIANGLES, meshes[1]->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, (GLsizei)this->seagrass.getInstances());
+    
+    // kelp:
+    this->kelp.upload();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->kelp.getTexture());
+    glUniform1i(res->p_instanced_kelp_uni_textureSize, this->kelp.getTextureSize());
+
+    meshes = res->m_foliage_kelp->getMeshes();
+
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_kelp_kelp_albedo);
+    glBindVertexArray(meshes[0]->getRenderContext()->vertexArray);
+    glDrawElementsInstanced(GL_TRIANGLES, meshes[0]->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, (GLsizei)this->kelp.getInstances());
+    
+    glDisable(GL_BLEND);
+
+    // LOGD("kelps: %d", this->kelp.getInstances());
+
+    this->crosshair->draw(mat);  // na koncu - depth offniety
 }
 
 void World::drawShadow(glm::mat4 mat) {

@@ -21,9 +21,9 @@ Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->elements);
     // LOGD("Chunk: loading %d %d", pos.coords.x, pos.coords.z);
-    if (pos.coords.x == 0 && pos.coords.z == 0) {
-        world->noise->debugNoise(0, 0);
-    }
+    // if (pos.coords.x == 0 && pos.coords.z == 0) {
+    //     world->noise->debugNoise(0, 0);
+    // }
     this->generate(noise);
 }
 
@@ -38,6 +38,14 @@ Chunk::~Chunk() {
         glDeleteBuffers(1, &this->vboLines);
         glDeleteVertexArrays(1, &this->vaoLines);
     }
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelp.removeMatrix(this->kelps[i]);
+    }
+    delete this->kelps;
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrass.removeMatrix(this->grass[i]);
+    }
+    delete this->grass;
 }
 
 Random *Chunk::createChunkRandom() {
@@ -140,12 +148,35 @@ void Chunk::generate(float *noise) {
 }
 
 void Chunk::decorate1() {
-    size_t index;
-    float xpos = this->chunkRandom->nextFloat() * 16;
-    float zpos = this->chunkRandom->nextFloat() * 16;
-    float height = this->getHeightAt(xpos, zpos);
-    glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos));
-    this->world->kelp.addMatrix(glm::value_ptr(mat), &index);
+    this->grass_len = this->chunkRandom->nextInt(256) + 256;
+    this->grass = new size_t[this->grass_len];
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        float xpos = this->chunkRandom->nextFloat() * 16;
+        float zpos = this->chunkRandom->nextFloat() * 16;
+        float height = this->getHeightAt(xpos, zpos) + 0.2f;
+        if (this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
+            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos)) * glm::rotate(glm::radians(90.0f), glm::vec3(1,0,0));
+            this->world->seagrass.addMatrix(glm::value_ptr(mat), this->grass + i);
+        } else {
+            this->grass_len--;
+            i--;
+        }
+    }
+    
+    this->kelps_len = this->chunkRandom->nextInt(1) + 1;
+    this->kelps = new size_t[this->kelps_len];
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        float xpos = this->chunkRandom->nextFloat() * 16;
+        float zpos = this->chunkRandom->nextFloat() * 16;
+        float height = this->getHeightAt(xpos, zpos) + 0.2f;
+        if (this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
+            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos));
+            this->world->kelp.addMatrix(glm::value_ptr(mat), this->kelps + i);
+        } else {
+            this->kelps_len--;
+            i--;
+        }
+    }
 }
 
 void Chunk::update() {
@@ -244,14 +275,14 @@ float Chunk::getHeightAt(float x, float z) {
 }
 
 void Chunk::draw(glm::mat4 mat) {
-    ResourceLoader *res = resourceLoaderExternal;
+    // ResourceLoader *res = resourceLoaderExternal;
 
-    glUseProgram(resourceLoaderExternal->p_simple_color_shader);
-    glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * glm::translate(glm::vec3(this->pos.coords.x * 16.0f, 192.0f, this->pos.coords.z * 16.0f))));
+    // glUseProgram(resourceLoaderExternal->p_simple_color_shader);
+    // glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * glm::translate(glm::vec3(this->pos.coords.x * 16.0f, 192.0f, this->pos.coords.z * 16.0f))));
 
-    for (auto &mesh : res->m_foliage_seagrass->getMeshes()) {
-        Core::DrawContext(*mesh->getRenderContext());
-    }
+    // for (auto &mesh : res->m_foliage_seagrass->getMeshes()) {
+    //     Core::DrawContext(*mesh->getRenderContext());
+    // }
 }
 
 void Chunk::prepareRendering(glm::mat4 mat) {

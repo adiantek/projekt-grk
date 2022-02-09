@@ -24,6 +24,10 @@ class Chunk : Object3D {
     int64_t seed;
     float heightMap[17 * 17];
     Random *chunkRandom;
+    int32_t kelps_len;
+    size_t *kelps;
+    int32_t grass_len;
+    size_t *grass;
     
    public:
     ChunkPosition pos;
