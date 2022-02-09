@@ -19,6 +19,7 @@ class Physics {
     void deleteRigidBody(physx::PxRigidBody* rigidBody);
     physx::PxTriangleMeshGeometry createTriangleGeometry(float* vertices, unsigned int verticesNumber, int* indices, unsigned int trianglesNumber);
     physx::PxTriangleMeshGeometry createTriangleGeometry(vertex::VertexBuffer* vb, int* indices, unsigned int trianglesNumber);
+    physx::PxHeightField* createHeightField(physx::PxHeightFieldDesc &description);
     void grab();
     void grabMultiple();
     void draw(glm::mat4 mat);

@@ -79,7 +79,7 @@ void Chunk::generate(float *noise) {
     }
 
     vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX_TANGENT_BITANGENT, 17 * 17);
-    float vert[17 * 17 * 3];
+    physx::PxHeightFieldSample* samples = new physx::PxHeightFieldSample[17 * 17];
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
             glm::vec3 squares[2][2];
@@ -113,9 +113,7 @@ void Chunk::generate(float *noise) {
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
 
-            vert[3 * (x * 17 + z)] = squares[0][0].x;
-            vert[3 * (x * 17 + z) + 1] = squares[0][0].y;
-            vert[3 * (x * 17 + z) + 2] = squares[0][0].z;
+            samples[x * 17 + z].height = (physx::PxI16) (squares[0][0].y * 128.0f);
         }
     }
     int n = 0;
@@ -131,10 +129,21 @@ void Chunk::generate(float *noise) {
             indices[n++] = x * 17 + z + 1;
         }
     }
-    physx::PxTransform transform = physx::PxTransform(0.0f, 0.0f, 0.0f);
-    physx::PxTriangleMeshGeometry geometry = physicsObject->createTriangleGeometry(&vertices, indices, 2 * 16 * 16);
+    physx::PxHeightFieldDesc description;
+    description.format = physx::PxHeightFieldFormat::eS16_TM;
+    description.nbColumns = 17;
+    description.nbRows = 17;
+    description.samples.data = samples;
+    description.samples.stride = sizeof(physx::PxHeightFieldSample);
+
+    physx::PxHeightField* heightField = physicsObject->createHeightField(description);
+
+    physx::PxHeightFieldGeometry geometry(heightField, physx::PxMeshGeometryFlags(), 0.0078125f, 1.0f, 1.0f);
+    physx::PxTransform transform = physx::PxTransform((float)minX, 0.0f, (float)minZ);
+
     this->rigidBody = new physics::RigidBody(true, transform, geometry, (world::Object3D *)this, 0.5f, 0.5f, 0.0001f);
-    geometry.triangleMesh->release();
+    heightField->release();
+    delete [] samples;
 
     glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);
