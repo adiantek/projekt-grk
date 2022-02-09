@@ -26,14 +26,16 @@ void main() {
 
     for(int i=0; i<waveCount; ++i) {
         float value = dot(waves[i].D, position) * waves[i].w + waves[i].f * time;
+        float sinVal = sin(value);
+        float cosVal = cos(value);
 
-        height.x += waves[i].Q * waves[i].A * waves[i].D.x * cos(value);
-        height.y += waves[i].Q * waves[i].A * waves[i].D.y * cos(value);
-        height.z += waves[i].A * sin(value);
+        height.x += waves[i].Q * waves[i].A * waves[i].D.x * cosVal;
+        height.y += waves[i].Q * waves[i].A * waves[i].D.y * cosVal;
+        height.z += waves[i].A * sinVal;
 
-        normal.x -= waves[i].D.x * waves[i].w * waves[i].A * cos(value);
-        normal.y -= waves[i].D.y * waves[i].w * waves[i].A * cos(value);
-        normal.z -= waves[i].Q * waves[i].w * waves[i].A * sin(value);
+        normal.x -= waves[i].D.x * waves[i].w * waves[i].A * cosVal;
+        normal.y -= waves[i].D.y * waves[i].w * waves[i].A * cosVal;
+        normal.z -= waves[i].Q * waves[i].w * waves[i].A * sinVal;
     }
 
     heightMap = vec4(height, 1.0);
