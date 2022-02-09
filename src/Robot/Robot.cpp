@@ -129,10 +129,9 @@ Robot::Robot() {
     }
 
     physx::PxTransform pose = physx::PxTransform(this->position.x, this->position.y, this->position.z);
-    physx::PxTriangleMeshGeometry geometry = this->gameObject->getModel()->createGeometry(glm::vec3(0.3f));
+    physx::PxBoxGeometry geometry = this->gameObject->getModel()->createGeometryAABB(glm::vec3(0.3f));
     
     this->rigidBody = new physics::RigidBody(false, pose, geometry, this, 0.5f, 0.5f, 0.0f, true);
-    geometry.triangleMesh->release();
 }
 
 Robot::~Robot() {
@@ -269,7 +268,7 @@ void Robot::update() {
     this->updateLegs();
     
     this->updateDirections();
-    // this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
+    this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
 }
 
 void Robot::draw(glm::mat4 mat) {
