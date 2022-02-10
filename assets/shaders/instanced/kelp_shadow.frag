@@ -4,13 +4,14 @@ precision highp float;
 
 uniform sampler2D texAlbedo;
 in vec2 uv;
+in vec4 worldPosition;
 
 out vec4 FragColor;
 
 void main()
 {
-	FragColor = texture(texAlbedo, uv);
-	if (FragColor.a < 0.75) {
+	if (texture(texAlbedo, uv).a < 0.75) {
 		discard;
 	}
+	FragColor = worldPosition;
 }

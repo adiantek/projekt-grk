@@ -10,6 +10,7 @@
 #include <world/Crosshair.hpp>
 #include <world/Object3D.hpp>
 #include <utils/MatrixTextureArray.hpp>
+#include <utils/Frustum.hpp>
 
 namespace world {
 
@@ -41,6 +42,7 @@ class World : Object3D {
    public:
     int64_t seed;
     SimplexNoiseGenerator *noise;
+    utils::Frustum *frustum;
 
     World(int64_t seed);
     virtual ~World();
@@ -59,6 +61,8 @@ class World : Object3D {
 
     utils::MatrixTextureArray kelp;
     utils::MatrixTextureArray seagrass;
+    utils::MatrixTextureArray kelpShadow;
+    utils::MatrixTextureArray seagrassShadow;
 };
 
 }  // namespace world

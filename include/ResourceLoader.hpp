@@ -114,8 +114,16 @@ public:
     GLuint tex_grid_color = 0;
     GLuint tex_moon = 0;
     GLuint tex_moon_normals = 0;
+    GLuint tex_props_chest_chest_reinforcment_albedo = 0;
+    GLuint tex_props_chest_chest_reinforcment_ao = 0;
+    GLuint tex_props_chest_chest_reinforcment_metallic = 0;
     GLuint tex_props_chest_chest_reinforcment_normal = 0;
+    GLuint tex_props_chest_chest_reinforcment_roughness = 0;
+    GLuint tex_props_chest_chest_wood_albedo = 0;
+    GLuint tex_props_chest_chest_wood_ao = 0;
+    GLuint tex_props_chest_chest_wood_metallic = 0;
     GLuint tex_props_chest_chest_wood_normal = 0;
+    GLuint tex_props_chest_chest_wood_roughness = 0;
     GLuint tex_props_coin_coin_albedo = 0;
     GLuint tex_props_coin_coin_ao = 0;
     GLuint tex_props_coin_coin_height = 0;
@@ -463,6 +471,18 @@ public:
     GLint p_instanced_kelp_uni_matrices = -1;
     GLint p_instanced_kelp_uni_textureSize = -1;
     GLint p_instanced_kelp_uni_texAlbedo = -1;
+    GLint p_instanced_kelp_uni_time = -1;
+    // instanced_kelp_shadow:
+    GLuint p_instanced_kelp_shadow = 0;
+    bool p_instanced_kelp_shadow_loaded = false;
+    GLint p_instanced_kelp_shadow_attr_vertexPosition = -1;
+    GLint p_instanced_kelp_shadow_attr_vertexTex = -1;
+    GLint p_instanced_kelp_shadow_attr_gl_InstanceID = -1;
+    GLint p_instanced_kelp_shadow_uni_matrices = -1;
+    GLint p_instanced_kelp_shadow_uni_texAlbedo = -1;
+    GLint p_instanced_kelp_shadow_uni_textureSize = -1;
+    GLint p_instanced_kelp_shadow_uni_time = -1;
+    GLint p_instanced_kelp_shadow_uni_transformation = -1;
     
 
 private:

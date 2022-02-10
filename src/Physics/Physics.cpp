@@ -163,6 +163,10 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuff
     return triGeom;
 }
 
+physx::PxHeightField* Physics::createHeightField(physx::PxHeightFieldDesc &description) {
+    return this->cooking->createHeightField(description, this->physx->getPhysicsInsertionCallback());
+}
+
 std::pair<physx::PxVec3, physx::PxVec3> calculateRay() {
     glm::vec4 start(0.0f, 0.0f, -1.0f, 1.0f);
     glm::vec4 end(0.0f, 0.0f, 1.0f, 1.0f);

@@ -4,6 +4,7 @@ layout(location = 0) in vec3 vertexPosition;
 layout(location = 2) in vec2 vertexTex;
 
 out vec2 uv;
+out vec4 worldPosition;
 
 uniform mat4 transformation;
 uniform int textureSize;
@@ -25,6 +26,10 @@ void main()
 	);
     
 	animatedVertexPosition.x += sin(vertexPosition.z * 2.0 + (time * 1.75)) * 0.05 * vertexPosition.z;
+    worldPosition = modelMatrix * vec4(animatedVertexPosition, 1.0);
 
-	gl_Position = transformation * modelMatrix * vec4(animatedVertexPosition, 1.0);
+    vec4 projectedPosition = transformation * modelMatrix * vec4(animatedVertexPosition, 1.0);
+    worldPosition.w = projectedPosition.z * 0.5 + 0.5;
+
+    gl_Position = projectedPosition;
 }
