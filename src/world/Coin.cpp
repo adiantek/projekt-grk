@@ -25,29 +25,29 @@ void Coin::update() {}
 void Coin::draw(glm::mat4 mat) {
     ResourceLoader *res = resourceLoaderExternal;
     glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(1.5f));
-    glUseProgram(res->p_chunk);
-    glUniformMatrix4fv(res->p_chunk_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(res->p_chunk_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * model));
+    glUseProgram(res->p_coin);
+    glUniformMatrix4fv(res->p_coin_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(res->p_coin_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * model));
 
-    glUniform1i(resourceLoaderExternal->p_chunk_uni_caustics, 5);
+    glUniform1i(resourceLoaderExternal->p_coin_uni_caustics, 5);
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
-    glUniform1i(res->p_chunk_uni_colorTexture, 0);
+    glUniform1i(res->p_coin_uni_colorTexture, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_coin_coin_albedo);
-    glUniform1i(res->p_chunk_uni_aoMap, 1);
+    glUniform1i(res->p_coin_uni_aoMap, 1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_coin_coin_ao);
-    // glUniform1i(res->p_color_armature_uni_metallicTexture, 2);
-    // glActiveTexture(GL_TEXTURE2);
-    // glBindTexture(GL_TEXTURE_2D, res->tex_props_coin_coin_metallic);
-    glUniform1i(res->p_chunk_uni_normalSampler, 3);
+    glUniform1i(res->p_coin_uni_metallicMap, 2);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, res->tex_props_coin_coin_metallic);
+    glUniform1i(res->p_coin_uni_normalSampler, 3);
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_coin_coin_normal);
-    glUniform1i(res->p_chunk_uni_roughnessMap, 4);
+    glUniform1i(res->p_coin_uni_roughnessMap, 4);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_coin_coin_roughness);
-    glUniform1i(res->p_chunk_uni_depthMap, 6);
+    glUniform1i(res->p_coin_uni_depthMap, 6);
     glActiveTexture(GL_TEXTURE6);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_coin_coin_height);
     for (auto mesh : res->m_props_coin->getMeshes())

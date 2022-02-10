@@ -320,6 +320,27 @@ public:
     GLint p_chunk_uni_depthMap = -1;
     GLint p_chunk_uni_normalSampler = -1;
     GLint p_chunk_uni_roughnessMap = -1;
+    // coin:
+    GLuint p_coin = 0;
+    bool p_coin_loaded = false;
+    GLint p_coin_attr_vertexBitangent = -1;
+    GLint p_coin_attr_vertexNormal = -1;
+    GLint p_coin_attr_vertexPosition = -1;
+    GLint p_coin_attr_vertexTangent = -1;
+    GLint p_coin_attr_vertexTexCoord = -1;
+    GLint p_coin_uni_cameraPosition = -1;
+    GLint p_coin_uni_lightPosition = -1;
+    GLint p_coin_uni_lightTransformation = -1;
+    GLint p_coin_uni_modelMatrix = -1;
+    GLint p_coin_uni_transformation = -1;
+    GLint p_coin_uni_waterHeight = -1;
+    GLint p_coin_uni_aoMap = -1;
+    GLint p_coin_uni_caustics = -1;
+    GLint p_coin_uni_colorTexture = -1;
+    GLint p_coin_uni_depthMap = -1;
+    GLint p_coin_uni_metallicMap = -1;
+    GLint p_coin_uni_normalSampler = -1;
+    GLint p_coin_uni_roughnessMap = -1;
     // pilotfish:
     GLuint p_pilotfish = 0;
     bool p_pilotfish_loaded = false;

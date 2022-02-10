@@ -308,6 +308,28 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(chunk, waterHeight);
     }
 
+    LOAD_PROGRAM(coin, 2, "coin.frag", "chunk.vert") {
+        // DUMP(coin);
+        ATTRIBUTE(coin, vertexBitangent);
+        ATTRIBUTE(coin, vertexNormal);
+        ATTRIBUTE(coin, vertexPosition);
+        ATTRIBUTE(coin, vertexTangent);
+        ATTRIBUTE(coin, vertexTexCoord);
+        UNIFORM(coin, cameraPosition);
+        UNIFORM(coin, lightPosition);
+        UNIFORM(coin, lightTransformation);
+        UNIFORM(coin, modelMatrix);
+        UNIFORM(coin, transformation);
+        UNIFORM(coin, waterHeight);
+        UNIFORM(coin, aoMap);
+        UNIFORM(coin, caustics);
+        UNIFORM(coin, colorTexture);
+        UNIFORM(coin, depthMap);
+        UNIFORM(coin, metallicMap);
+        UNIFORM(coin, normalSampler);
+        UNIFORM(coin, roughnessMap);
+    }
+
     LOAD_PROGRAM(pilotfish, 2, "fish/pilotfish.frag", "fish/pilotfish.vert") {
         // DUMP(pilotfish);
         ATTRIBUTE(pilotfish, vertexBitangent);
