@@ -10,6 +10,7 @@
 #include <world/Chest.hpp>
 #include <world/ChunkPosition.hpp>
 #include <world/Object3D.hpp>
+#include <world/Stone.hpp>
 
 namespace world {
 
@@ -34,6 +35,7 @@ class Chunk : Object3D {
     size_t *grass;
     size_t *grass_shadow;
     Chest *chest = 0;
+    Stone *stone = 0;
 
    public:
     ChunkPosition pos;

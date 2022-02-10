@@ -169,7 +169,8 @@ void Chunk::generate(float *noise) {
 void Chunk::decorate1() {
     this->minDecoratorY = 256.0f;
     this->maxDecoratorY = 0.0f;
-    if ((this->pos.coords.x & 1) && (this->pos.coords.z & 1)) {
+    this->stone = 0;
+    if (this->chunkRandom->nextFloat() < 0.1f) {
         float height = this->getHeightAt(8, 8);
         float scale = 0.01f;
         if (this->minDecoratorY > height) {
@@ -185,7 +186,16 @@ void Chunk::decorate1() {
                     * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
                     * glm::scale(glm::vec3(scale)));
     } else {
+        float xpos = this->chunkRandom->nextFloat() * 16;
+        float zpos = this->chunkRandom->nextFloat() * 16;
         this->chest = 0;
+        float height = this->getHeightAt(xpos, zpos) + 30.0f;
+        float scale = this->chunkRandom->nextFloat() * 7.0f + 1.0f;
+        this->stone = new Stone(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
+            //  * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
+            // * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+            * glm::scale(glm::vec3(scale)),
+            1);
     }
     this->grass_len = 2048;
     this->grass = new size_t[this->grass_len];
@@ -392,6 +402,9 @@ float Chunk::getHeightAt(float x, float z) {
 void Chunk::draw(glm::mat4 mat) {
     if (this->chest) {
         this->chest->draw(mat);
+    }
+    if (this->stone) {
+        this->stone->draw(mat);
     }
 }
 
