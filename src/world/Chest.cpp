@@ -23,6 +23,9 @@ Chest::Chest(glm::mat4 model) {
     physx::PxTriangleMeshGeometry geometry = resourceLoaderExternal->m_props_chest->createGeometry(glm::vec3(0.01f));
     this->rigidBody = new physics::RigidBody(true, pose, geometry, this);
     geometry.triangleMesh->release();
+
+    for (int i = 0; i < 50; ++i)
+        this->coins.push_back(new Coin(model * glm::translate(glm::vec3(i % 10 * 0.15f - 0.6f, i % 3 == 0 ? 0.1f : -0.1f, (i / 10) * 0.07f + 0.2f))));
 }
 
 Chest::~Chest() {
@@ -77,6 +80,9 @@ void Chest::draw(glm::mat4 mat) {
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_chest_chest_wood_roughness);
     Core::DrawContext(*(res->m_props_chest->getMeshes()[1]->getRenderContext()));
+
+    for (auto coin : this->coins)
+        coin->draw(mat);
 }
 
 void Chest::drawShadow(glm::mat4 mat) {

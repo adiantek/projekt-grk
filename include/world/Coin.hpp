@@ -1,25 +1,21 @@
 #pragma once
 
 #include <world/Object3D.hpp>
-#include <world/Coin.hpp>
-#include <vector>
 #include <Physics/RigidBody.hpp>
 
 namespace world {
-class Chest : world::Object3D {
+
+class Coin : world::Object3D {
    private:
     glm::mat4 model;
-    std::vector<glm::mat4> jointTransforms = std::vector<glm::mat4>(50);
     physics::RigidBody* rigidBody;
-    std::vector<world::Coin*> coins;
 
    public:
-    Chest(glm::mat4 model);
-    ~Chest();
+    Coin(glm::mat4 model);
+    ~Coin();
 
     void update() override;
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
 };
-
 }  // namespace world
