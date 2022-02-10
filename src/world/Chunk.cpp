@@ -171,7 +171,8 @@ void Chunk::decorate1() {
         glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(8.0f, 8.0f + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(8.0f + 0.0001f, 8.0f), 0.0f)));
         this->chest = new Chest(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + 8.0f, height, this->pos.coords.z * 16.0f + 8.0f))
                     * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
-                    * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f))));
+                    * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)))
+                    * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1)));
     } else {
         this->chest = 0;
     }

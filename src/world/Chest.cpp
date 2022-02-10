@@ -34,9 +34,8 @@ void Chest::draw(glm::mat4 mat) {
     glBindTexture(GL_TEXTURE_2D, res->tex_props_chest_chest_reinforcment_albedo);
     Core::DrawContext(*(res->m_props_chest->getMeshes()[0]->getRenderContext()));
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, res->tex_uv_grid);
+    glBindTexture(GL_TEXTURE_2D, res->tex_props_chest_chest_wood_albedo);
     Core::DrawContext(*(res->m_props_chest->getMeshes()[1]->getRenderContext()));
-    
 }
 
 void Chest::drawShadow(glm::mat4 mat) {
