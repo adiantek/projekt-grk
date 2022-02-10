@@ -18,6 +18,7 @@ using namespace world;
 // [     8.465 ] D [ G:\git\emcc\projekt-grk\src\utils\Gizmos.cpp:88 ] 2: Armature_top (parent: Armature_root, matrix: 1.00 0.00 0.00 0.00 ...)
 
 Chest::Chest(glm::mat4 model) {
+    this->object3DType = 1;
     this->model = model * glm::scale(glm::vec3(0.01f));
     physx::PxTransform pose(physx::PxMat44(glm::value_ptr(model)));
     physx::PxTriangleMeshGeometry geometry = resourceLoaderExternal->m_props_chest->createGeometry(glm::vec3(0.01f));
@@ -30,6 +31,8 @@ Chest::Chest(glm::mat4 model) {
 
 Chest::~Chest() {
     delete this->rigidBody;
+    for (auto coin : this->coins)
+        delete coin;
 }
 
 void Chest::update() {
