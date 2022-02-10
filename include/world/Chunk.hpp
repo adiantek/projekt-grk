@@ -40,6 +40,8 @@ class Chunk : Object3D {
     World *world;
     float maxY;
     float minY;
+    float maxDecoratorY;
+    float minDecoratorY;
     float allowFishAbove = 256;
     bool frustumVisible = false;
     bool frustumShadowVisible = false;

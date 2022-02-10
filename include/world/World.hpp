@@ -40,6 +40,8 @@ class World : Object3D {
     void drawChunks(glm::mat4 mat);
     void drawShadowChunks(glm::mat4 mat);
    public:
+    int32_t frustumTotal, frustumDraw, frustumDrawDecorator;
+
     int64_t seed;
     SimplexNoiseGenerator *noise;
     utils::Frustum *frustum;

@@ -71,6 +71,7 @@ void Chunk::generate(float *noise) {
     }
     this->minY = 256;
     this->maxY = 0;
+    this->maxDecoratorY = 0;
     for (int x = 0; x < 17; x++) {
         for (int y = 0; y < 17; y++) {
             this->heightMap[x * 17 + y] = noise[(x + 1) * 19 + y + 1];
@@ -168,11 +169,19 @@ void Chunk::generate(float *noise) {
 void Chunk::decorate1() {
     if ((this->pos.coords.x & 1) && (this->pos.coords.z & 1)) {
         float height = this->getHeightAt(8, 8);
+        float scale = 0.01f;
+        if (this->minDecoratorY > height) {
+            this->minDecoratorY = height;
+        }
+        if (this->maxDecoratorY < height + scale * 143.33f) {
+            this->maxDecoratorY = height + scale * 143.33f;
+        }
         glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(8.0f, 8.0f + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(8.0f + 0.0001f, 8.0f), 0.0f)));
         this->chest = new Chest(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + 8.0f, height, this->pos.coords.z * 16.0f + 8.0f))
                     * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
                     * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)))
-                    * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1)));
+                    * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                    * glm::scale(glm::vec3(scale)));
     } else {
         this->chest = 0;
     }
@@ -192,12 +201,18 @@ void Chunk::decorate1() {
         }
         if (cond && this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
             glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(xpos, zpos + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(xpos + 0.0001f, zpos), 0.0f)));
-
+            float scale = this->chunkRandom->nextFloat() * 3.0f + 1.0f;
+            if (this->minDecoratorY > height + scale * -0.15f) {
+                this->minDecoratorY = height + scale * -0.15f;
+            }
+            if (this->maxDecoratorY < height + scale * 0.45f) {
+                this->maxDecoratorY = height + scale * 0.45f;
+            }
             glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
                 * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
                 * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)))
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
-                * glm::scale(glm::vec3(this->chunkRandom->nextFloat() * 3.0f + 1.0f));
+                * glm::scale(glm::vec3(scale * 2, scale * 2, scale));
             memcpy(this->grass_matrices + i * 16, glm::value_ptr(mat), 16 * sizeof(float));
             // this->world->seagrass.addMatrix(glm::value_ptr(mat), this->grass + i);
         } else {
@@ -221,10 +236,17 @@ void Chunk::decorate1() {
             cond = this->chunkRandom->nextFloat() * 128.0f < dist;
         }
         if (cond && this->chunkRandom->nextFloat() * 128.0f + 32.0f > height) {
+            float scale = this->chunkRandom->nextFloat() * 7.0f + 1.0f;
+            if (this->minDecoratorY > height) {
+                this->minDecoratorY = height;
+            }
+            if (this->maxDecoratorY < height + scale * 1.89f) {
+                this->maxDecoratorY = height + scale * 1.89f;
+            }
             glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
                 * glm::rotate(glm::radians(-90.0f), glm::vec3(1,0,0))
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
-                * glm::scale(glm::vec3(this->chunkRandom->nextFloat() * 7.0f + 1.0f));
+                * glm::scale(glm::vec3(scale));
             memcpy(this->kelps_matrices + i * 16, glm::value_ptr(mat), 16 * sizeof(float));
             // this->world->kelp.addMatrix(glm::value_ptr(mat), this->kelps + i);
         } else {
