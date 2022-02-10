@@ -3,6 +3,7 @@
 #include <Time/Time.hpp>
 #include <world/ChunkPositionComparator.hpp>
 #include <world/World.hpp>
+#include <Water/Water.hpp>
 #include <utils/Gizmos.hpp>
 #include <ResourceLoader.hpp>
 #include <utils/Frustum.hpp>
@@ -296,8 +297,13 @@ void World::draw(glm::mat4 mat) {
     glUniformMatrix4fv(res->p_instanced_kelp_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->seagrass.getTexture());
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
     glUniform1i(res->p_instanced_kelp_uni_matrices, 0);
     glUniform1i(res->p_instanced_kelp_uni_texAlbedo, 1);
+    glUniform1i(res->p_instanced_kelp_uni_caustics, 2);
+    glUniform1i(res->p_instanced_kelp_uni_aoMap, 3);
+    glUniform1i(res->p_instanced_kelp_uni_normalSampler, 4);
     glUniform1i(res->p_instanced_kelp_uni_textureSize, this->seagrass.getTextureSize());
     glUniform1f(res->p_instanced_kelp_uni_time, (float)timeExternal->lastFrame);
 
@@ -305,11 +311,17 @@ void World::draw(glm::mat4 mat) {
     
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, res->tex_foliage_seagrass_grass_blades_albedo);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_seagrass_grass_blades_ao);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_seagrass_grass_blades_normal);
     glBindVertexArray(meshes[0]->getRenderContext()->vertexArray);
     glDrawElementsInstanced(GL_TRIANGLES, meshes[0]->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, (GLsizei)this->seagrass.getInstances());
     
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, res->tex_foliage_seagrass_dried_grass_albedo);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_seagrass_dried_grass_normal);
     glBindVertexArray(meshes[1]->getRenderContext()->vertexArray);
     glDrawElementsInstanced(GL_TRIANGLES, meshes[1]->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, (GLsizei)this->seagrass.getInstances());
     
@@ -323,6 +335,10 @@ void World::draw(glm::mat4 mat) {
     
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, res->tex_foliage_kelp_kelp_albedo);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_kelp_kelp_ao);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, res->tex_foliage_kelp_kelp_normal);
     glBindVertexArray(meshes[0]->getRenderContext()->vertexArray);
     glDrawElementsInstanced(GL_TRIANGLES, meshes[0]->getRenderContext()->size, GL_UNSIGNED_INT, (void *)0, (GLsizei)this->kelp.getInstances());
     
@@ -342,7 +358,7 @@ void World::drawShadow(glm::mat4 mat) {
     // grass:
     this->seagrassShadow.upload();
     glUseProgram(res->p_instanced_kelp_shadow);
-    glUniformMatrix4fv(res->p_instanced_kelp_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
+    glUniformMatrix4fv(res->p_instanced_kelp_shadow_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->seagrassShadow.getTexture());
     glUniform1i(res->p_instanced_kelp_shadow_uni_matrices, 0);

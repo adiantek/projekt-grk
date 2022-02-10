@@ -396,12 +396,23 @@ public:
     // instanced_kelp:
     GLuint p_instanced_kelp = 0;
     bool p_instanced_kelp_loaded = false;
+    GLint p_instanced_kelp_attr_vertexBitangent = -1;
+    GLint p_instanced_kelp_attr_vertexNormal = -1;
     GLint p_instanced_kelp_attr_vertexPosition = -1;
-    GLint p_instanced_kelp_uni_transformation = -1;
-    GLint p_instanced_kelp_uni_matrices = -1;
+    GLint p_instanced_kelp_attr_vertexTangent = -1;
+    GLint p_instanced_kelp_attr_vertexTexCoord = -1;
+    GLint p_instanced_kelp_uni_cameraPosition = -1;
+    GLint p_instanced_kelp_uni_lightPosition = -1;
+    GLint p_instanced_kelp_uni_lightTransformation = -1;
     GLint p_instanced_kelp_uni_textureSize = -1;
-    GLint p_instanced_kelp_uni_texAlbedo = -1;
     GLint p_instanced_kelp_uni_time = -1;
+    GLint p_instanced_kelp_uni_transformation = -1;
+    GLint p_instanced_kelp_uni_waterHeight = -1;
+    GLint p_instanced_kelp_uni_aoMap = -1;
+    GLint p_instanced_kelp_uni_caustics = -1;
+    GLint p_instanced_kelp_uni_matrices = -1;
+    GLint p_instanced_kelp_uni_normalSampler = -1;
+    GLint p_instanced_kelp_uni_texAlbedo = -1;
     // instanced_kelp_shadow:
     GLuint p_instanced_kelp_shadow = 0;
     bool p_instanced_kelp_shadow_loaded = false;

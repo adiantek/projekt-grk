@@ -388,12 +388,23 @@ void ResourceLoader::loadPrograms() {
 
     LOAD_PROGRAM(instanced_kelp, 2, "instanced/kelp.frag", "instanced/kelp.vert") {
         // DUMP(instanced_kelp);
+        ATTRIBUTE(instanced_kelp, vertexBitangent);
+        ATTRIBUTE(instanced_kelp, vertexNormal);
         ATTRIBUTE(instanced_kelp, vertexPosition);
-        UNIFORM(instanced_kelp, transformation);
-        UNIFORM(instanced_kelp, matrices);
+        ATTRIBUTE(instanced_kelp, vertexTangent);
+        ATTRIBUTE(instanced_kelp, vertexTexCoord);
+        UNIFORM(instanced_kelp, cameraPosition);
+        UNIFORM(instanced_kelp, lightPosition);
+        UNIFORM(instanced_kelp, lightTransformation);
         UNIFORM(instanced_kelp, textureSize);
-        UNIFORM(instanced_kelp, texAlbedo);
         UNIFORM(instanced_kelp, time);
+        UNIFORM(instanced_kelp, transformation);
+        UNIFORM(instanced_kelp, waterHeight);
+        UNIFORM(instanced_kelp, aoMap);
+        UNIFORM(instanced_kelp, caustics);
+        UNIFORM(instanced_kelp, matrices);
+        UNIFORM(instanced_kelp, normalSampler);
+        UNIFORM(instanced_kelp, texAlbedo);
     }
 
     LOAD_PROGRAM(instanced_kelp_shadow, 2, "instanced/kelp_shadow.frag", "instanced/kelp_shadow.vert") {

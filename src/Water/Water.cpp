@@ -17,6 +17,8 @@ namespace water {
         glUniform1f(resourceLoaderExternal->p_pilotfish_uni_waterHeight, y);
         glUseProgram(resourceLoaderExternal->p_normal_fish);
         glUniform1f(resourceLoaderExternal->p_normal_fish_uni_waterHeight, y);
+        glUseProgram(resourceLoaderExternal->p_instanced_kelp);
+        glUniform1f(resourceLoaderExternal->p_instanced_kelp_uni_waterHeight, y);
     }
 
     Water::~Water() {}
