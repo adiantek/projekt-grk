@@ -198,7 +198,9 @@ void Physics::grab() {
         ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->open();
         for (auto coin : ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->coins) {
             coin->rigidBody->grabbed = true;
+            robot->coins.push_back(coin);
         }
+        ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->coins.clear();
     } else {
         PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
         filterData.data.word0 = RAYHITABBLE;

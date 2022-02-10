@@ -152,7 +152,8 @@ void do_frame() {
     if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
         lastTitleUpdate = timeExternal->lastFrame;
         char title[200];
-        sprintf(title, "FPS: %u, frustum: %d / %d (rosliny: %d / %d)", timeExternal->fps,
+        sprintf(title, "FPS: %u, Collected coins: %d frustum: %d / %d (rosliny: %d / %d)", timeExternal->fps,
+            robot->collectedCoins,
             w->frustumDraw, w->frustumTotal,
             w->frustumDrawDecorator, w->frustumTotal);
         glfwSetWindowTitle(window, title);
