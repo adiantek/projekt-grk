@@ -241,9 +241,7 @@ Animator::Joint* Model::getRootJoint() {
 }
 
 Animator::Joint* Model::getJoint(std::string name) {
-    LOGD("Getting joint %s", name.c_str());
     Animator::Joint* joint = this->joints[this->bonesIds[name]];
-    LOGD("Found: %d, %s", joint->index, joint->getName().c_str());
     return joint;
 }
 

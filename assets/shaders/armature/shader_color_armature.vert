@@ -1,6 +1,6 @@
 #version 300 es
 
-const int MAX_JOINTS_MER_MODEL = 20;
+const int MAX_JOINTS_MER_MODEL = 50;
 const int MAX_JOINTS_PER_VERTEX = 3;
 
 layout(location = 0) in vec3 vertexPosition;
