@@ -74,11 +74,11 @@ struct RobotPropellerArm {
 class Robot : world::Object3D {
    public:
     // SPEEDS
-    inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 4.0f;
-    inline static const float MAX_SWIMMING_SPEED_INCREASED = 8.0f * 10;
+    inline static const float DEFAULT_SWIMMING_MOVEMENT_SPEED = 5.25f;
+    inline static const float MAX_SWIMMING_SPEED_INCREASED = 8.0f * 5;
 
     inline static const float DEFAULT_WALKING_MOVEMENT_SPEED = 0.5f;
-    inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f * 10;
+    inline static const float MAX_WALKING_SPEED_INCREASED = 1.5f * 3;
 
     inline static const float ROTATION_SPEED = 15.0f;
     inline static const float LEG_STEP_SPEED = 7.0f;
@@ -121,6 +121,8 @@ class Robot : world::Object3D {
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 direction;
+
+    bool isAboveWater();
 
    private:
     glm::vec3 moveDirectionVector;
