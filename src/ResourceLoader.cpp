@@ -411,6 +411,31 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(cubefish, normalSampler);
         UNIFORM(cubefish, roughnessMap);
     }
+    LOAD_PROGRAM(normal_fish, 2, "fish/normal_fish.frag", "fish/normal_fish.vert") {
+        // DUMP(normal_fish);
+        ATTRIBUTE(normal_fish, vertexBitangent);
+        ATTRIBUTE(normal_fish, vertexNormal);
+        ATTRIBUTE(normal_fish, vertexPosition);
+        ATTRIBUTE(normal_fish, vertexTangent);
+        ATTRIBUTE(normal_fish, vertexTexCoord);
+        UNIFORM(normal_fish, cameraPosition);
+        UNIFORM(normal_fish, lightPosition);
+        UNIFORM(normal_fish, lightTransformation);
+        UNIFORM(normal_fish, modelMatrix);
+        UNIFORM(normal_fish, time);
+        UNIFORM(normal_fish, transformation);
+        UNIFORM(normal_fish, waterHeight);
+        UNIFORM(normal_fish, caustics);
+        UNIFORM(normal_fish, colorTexture);
+        UNIFORM(normal_fish, normalTexture);
+    }
+    LOAD_PROGRAM(fish_shadow, 2, "fish/shadow.frag", "fish/shadow.vert") {
+        // DUMP(fish_shadow);
+        ATTRIBUTE(fish_shadow, vertexPosition);
+        UNIFORM(fish_shadow, modelMatrix);
+        UNIFORM(fish_shadow, time);
+        UNIFORM(fish_shadow, transformation);
+    }
     LOAD_PROGRAM(glow, 2, "glow.frag", "glow.vert") {
         // DUMP(glow);
         ATTRIBUTE(glow, pos);
@@ -456,7 +481,7 @@ void ResourceLoader::loadModels() {
     loadModel("assets/models/foliage/kelp.dae", &this->m_foliage_kelp);
     loadModel("assets/models/foliage/seagrass.dae", &this->m_foliage_seagrass);
     loadModel("assets/models/primitives/complex_cube.dae", &this->m_primitives_complex_cube);
-    loadModel("assets/models/primitives/cube.dae", &this->m_primitives_cube);
+    loadModel("assets/models/primitives/cube.obj", &this->m_primitives_cube);
     loadModel("assets/models/primitives/cylinder.obj", &this->m_primitives_cylinder);
     loadModel("assets/models/primitives/plane.dae", &this->m_primitives_plane);
     loadModel("assets/models/primitives/sphere.obj", &this->m_primitives_sphere);

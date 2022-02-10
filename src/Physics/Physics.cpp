@@ -4,9 +4,11 @@
 #include <Water/Water.hpp>
 #include <Camera/Camera.hpp>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <utils/Gizmos.hpp>
 #include <Glow/GlowShader.hpp>
 #include <Controller/Controller.hpp>
+#include <ResourceLoader.hpp>
 #include <vector>
 #include <Logger.h>
 
@@ -18,6 +20,7 @@
 
 #define GRAB_DIST 100.0f
 #define GLOW_DIST 100.0f
+#define PLACE_DIST 20.0f
 
 using namespace physics;
 
@@ -59,6 +62,10 @@ Physics::Physics(float gravity, ErrorCallback::LogLevel logLevel)
     sceneDesc.simulationEventCallback = (PxSimulationEventCallback*)new SimulationEventCallback();
 
     this->scene = this->physx->createScene(sceneDesc);
+
+    this->models.push_back(resourceLoaderExternal->m_primitives_cube);
+    this->models.push_back(resourceLoaderExternal->m_primitives_cylinder);
+    this->models.push_back(resourceLoaderExternal->m_primitives_sphere);
 }
 
 Physics::~Physics() {
@@ -215,11 +222,64 @@ void Physics::grabMultiple() {
     }
 }
 
+void Physics::place(bool dynamic) {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxVec3 position = pair.first;
+    physx::PxVec3 direction = pair.second;
+
+    PxRaycastBuffer hit;
+    PxQueryFilterData filterData;
+    filterData.data.word0 = RAYHITABBLE;
+    this->scene->raycast(position, direction, PLACE_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+    glm::mat4 model = glm::translate(glm::vec3(position.x, position.y, position.z) + PLACE_DIST * glm::vec3(direction.x, direction.y, direction.z));
+    if (hit.hasAnyHits()) {
+        glm::vec3 normal = glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z);
+        glm::vec3 position = glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z) + 0.1f * (dynamic ? 1.0f : -1.0f) * normal;
+        model = glm::translate(position) * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)));
+    }
+    if (dynamic || hit.hasAnyHits())
+        this->blocks.push_back(new Cubefish(model, 3.0f, 3.0f, this->models[currentModel], dynamic));
+}
+
+void Physics::remove() {
+    std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
+
+    physx::PxVec3 position = pair.first;
+    physx::PxVec3 direction = pair.second;
+
+    PxRaycastBuffer hit;
+    PxQueryFilterData filterData;
+    filterData.data.word0 = RAYHITABBLE;
+    this->scene->raycast(position, direction, PLACE_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+    glm::mat4 model = glm::translate(glm::vec3(position.x, position.y, position.z) + PLACE_DIST * glm::vec3(direction.x, direction.y, direction.z));
+    if (hit.hasAnyHits()) {
+        RigidBody* rigidBody = (RigidBody*)hit.block.actor->userData;
+        int index = -1;
+        for (int i = 0; i < this->blocks.size(); ++i) {
+            if ((world::Object3D*)this->blocks[i] == rigidBody->object) {
+                index = i;
+            }
+        }
+        if (index != -1) {
+            delete this->blocks[index];
+            this->blocks[index] = this->blocks[this->blocks.size() - 1];
+            this->blocks.pop_back();
+        }
+    }
+}
+
 void Physics::draw(glm::mat4 mat) {
     std::pair<physx::PxVec3, physx::PxVec3> pair = calculateRay();
 
+    for (auto cube : this->blocks) {
+        cube->draw(mat);
+    }
+
     if (controller->mouseRightClicked) {
-        if (controller->sweepMode) {
+        if (controller->scopeMode == 1) {
             physx::PxTransform position(pair.first);
             physx::PxVec3 direction = pair.second;
 
@@ -238,7 +298,7 @@ void Physics::draw(glm::mat4 mat) {
                 }
                 Glow::glow->stopFB();
             }
-        } else {
+        } else if (controller->scopeMode == 0) {
             physx::PxVec3 position = pair.first;
             physx::PxVec3 direction = pair.second;
 
@@ -248,11 +308,57 @@ void Physics::draw(glm::mat4 mat) {
             this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
             if (hit.hasAnyHits()) {
-                physx::PxRaycastHit block = hit.block;
                 Glow::glow->startFB();
-                ((RigidBody*)block.actor->userData)->object->drawShadow(mat);
+                ((RigidBody*)hit.block.actor->userData)->object->drawShadow(mat);
                 Glow::glow->stopFB();
             }
+        } else {
+            physx::PxVec3 position = pair.first;
+            physx::PxVec3 direction = pair.second;
+
+            PxRaycastBuffer hit;
+            PxQueryFilterData filterData;
+            filterData.data.word0 = RAYHITABBLE;
+            this->scene->raycast(position, direction, PLACE_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+
+            glm::mat4 model = glm::translate(glm::vec3(position.x, position.y, position.z) + PLACE_DIST * glm::vec3(direction.x, direction.y, direction.z));
+
+            if (hit.hasAnyHits()) {
+                model = glm::translate(glm::vec3(hit.block.position.x, hit.block.position.y + 1.0f, hit.block.position.z)) * glm::transpose(glm::lookAt(glm::vec3(0.0f), glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z), glm::vec3(0.0f, 1.0f, 0.0f)));
+            }
+            glm::mat4 transformation = mat * model;
+
+            glEnable(GL_CULL_FACE);
+            glEnable(GL_BLEND);
+            glBlendColor(0.1f, 1.0f, 0.1f, 1.0f);
+	        glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+            glUseProgram(resourceLoaderExternal->p_cubefish);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_colorTexture, 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_dummy);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_normalSampler, 1);
+            glActiveTexture(GL_TEXTURE0 + 1);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_normal);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_caustics, 2);
+            glActiveTexture(GL_TEXTURE0 + 2);
+            glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_depthMap, 3);
+            glActiveTexture(GL_TEXTURE0 + 3);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_height);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_roughnessMap, 4);
+            glActiveTexture(GL_TEXTURE0 + 4);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_roughness);
+            glUniform1i(resourceLoaderExternal->p_cubefish_uni_aoMap, 5);
+            glActiveTexture(GL_TEXTURE0 + 5);
+            glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_wall_ao);
+            glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
+            glUniformMatrix4fv(resourceLoaderExternal->p_cubefish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
+            for (auto mesh : this->models[currentModel]->getMeshes()) {
+                Core::DrawContext(*mesh->getRenderContext());
+            }
+            glDisable(GL_CULL_FACE);
+            glDisable(GL_BLEND);
         }
     }
 
@@ -266,10 +372,15 @@ void Physics::draw(glm::mat4 mat) {
             physics::RigidBody* rigidBody = (physics::RigidBody*)actor->userData;
             if (rigidBody->grabbed) {
                 glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
-                utils::Gizmos::line(robot->position, glm::vec3(rigidBody->getModelMatrix()[3]), glm::vec3(0.0f));
+                utils::Gizmos::line(robot->position + glm::vec3(0.0f, 0.2f, 0.0f), glm::vec3(rigidBody->getModelMatrix()[3]), glm::vec3(0.0f));
             }
         }
     }
+}
+
+void Physics::nextModel() {
+    this->currentModel += 1;
+    this->currentModel %= this->models.size();
 }
 
 physics::Physics* physicsObject;

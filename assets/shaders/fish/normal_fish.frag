@@ -2,30 +2,22 @@
 
 precision highp float;
 
+const float bias = 0.003;
 const float PI = 3.14159265359;
-const float bias = 0.005;
 
-uniform sampler2D albedoTexture;
-uniform sampler2D normalTexture;
-uniform sampler2D aoTexture;
-uniform sampler2D roughnessTexture;
-uniform sampler2D metallicTexture;
+uniform sampler2D colorTexture;
 uniform sampler2D caustics;
-
+uniform sampler2D normalTexture;
 uniform float waterHeight;
 
+in vec3 position;
+in vec2 texturePosition;
 in vec3 viewDirectionTS;
 in vec3 lightDirectionTS;
-in vec3 interpNormal;
-in vec2 texCoords;
-in vec3 position;
 in vec3 positionLS;
+in float lightIntensity;
 
 out vec4 fragColor;
-
-vec3 fresnelSchlick(float cosTheta, vec3 F0) {
-    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
 
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float a = roughness*roughness;
@@ -53,6 +45,10 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
     return ggx1 * ggx2;
 }
 
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
 float blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
     vec2 off1 = vec2(1.3846153846) * direction;
     vec2 off2 = vec2(3.2307692308) * direction;
@@ -62,6 +58,34 @@ float blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
     intensity += texture(image, uv + (off2 / resolution)).x * 0.0702702703;
     intensity += texture(image, uv - (off2 / resolution)).x * 0.0702702703;
     return intensity;
+}
+
+float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS) {
+    // If someone is drawing from outside of space
+    if(positionLS.x > 1.0 || positionLS.y > 1.0 || positionLS.x < 0.0 || positionLS.y < 0.0) {
+        positionLS.z = 0.0;
+        //return 1.0;
+    }
+    float computedLightIntensity = 0.0;
+    float causticsDepth = texture(caustics, positionLS.xy).w;
+
+    if (causticsDepth > positionLS.z - bias) {
+        vec2 texelSize = vec2(textureSize(caustics, 0));
+        float causticsIntensity = 0.5 * (
+            blur(caustics, positionLS.xy, texelSize, vec2(0.0, 0.5)) +
+            blur(caustics, positionLS.xy, texelSize, vec2(0.5, 0.0))
+        );
+        computedLightIntensity = 0.5 + 0.2 * lightIntensity + causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
+    } else {
+        vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0));
+        for(int x = -1; x <= 1; ++x) {
+            for(int y = -1; y <= 1; ++y) {
+                computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(x, y) * texelSize).w ? 1.0 : 0.0;       
+            }    
+        }
+        computedLightIntensity /= 9.0;
+    }
+    return computedLightIntensity;
 }
 
 vec3 PBR(vec3 normal, vec3 view, vec3 albedo, vec3 F0, float metallic, float roughness, float ao, vec3 lightDirection, vec3 lightColor, float lightDistance, vec3 ambientStrength) {
@@ -93,61 +117,26 @@ vec3 PBR(vec3 normal, vec3 view, vec3 albedo, vec3 F0, float metallic, float rou
     return color;
 }
 
-float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS) {
-    // If someone is drawing from outside of space
-    if(positionLS.x > 1.0 || positionLS.y > 1.0 || positionLS.x < 0.0 || positionLS.y < 0.0) {
-        positionLS.z = 0.0;
-        //return 1.0;
-    }
-    float computedLightIntensity = 0.0;
-    float causticsDepth = texture(caustics, positionLS.xy).w;
-
-    if (causticsDepth > positionLS.z - bias) {
-        vec2 texelSize = vec2(textureSize(caustics, 0));
-        float causticsIntensity = 0.5 * (
-            blur(caustics, positionLS.xy, texelSize, vec2(0.0, 0.5)) +
-            blur(caustics, positionLS.xy, texelSize, vec2(0.5, 0.0))
-        );
-        computedLightIntensity = 0.5 + 0.2 * lightIntensity + causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
-    } else {
-        vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0));
-        for(int x = -1; x <= 1; ++x) {
-            for(int y = -1; y <= 1; ++y) {
-                computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(x, y) * texelSize).w ? 1.0 : 0.0;       
-            }    
-        }
-        computedLightIntensity /= 9.0;
-    }
-    return computedLightIntensity;
-}
-
 void main() {
-
-    vec2 invertedTexCoords = vec2(texCoords.x, 1.0 - texCoords.y);
     vec3 lightDirection = normalize(lightDirectionTS);
     vec3 viewDirection = normalize(viewDirectionTS);
-	vec3 normal = texture(normalTexture, invertedTexCoords).rgb;
-    vec3 albedo = texture(albedoTexture, invertedTexCoords).rgb;
-    float metallic = texture(metallicTexture, invertedTexCoords).r;
-    // float metallic = 1.0;
-    float roughness = texture(roughnessTexture, invertedTexCoords).r;
-    // float roughness = 0.0;
-    float ao = texture(aoTexture, invertedTexCoords).r;
+    vec2 textureCoords = vec2(texturePosition.x , 1.0 - texturePosition.y);
 
-    // -- Caustics --
+    if (texture(colorTexture, textureCoords).a < 0.5)
+        discard;
+    
+    vec3 objectColor = texture(colorTexture, textureCoords).xyz;
+    vec3 normal = texture(normalTexture, textureCoords).xyz;
+
     float computedLightIntensity = 1.0;
-    if (position.y < waterHeight) {
+
+    if(position.y < waterHeight) {
         computedLightIntensity = computeCaustics(computedLightIntensity, caustics, positionLS);
     }
-
-    // -- PBR --
     vec3 color = PBR(
-        normal, viewDirection, albedo, vec3(0.0),
-        metallic, roughness, ao, lightDirection,
-        vec3(1.0) * computedLightIntensity, 1.0, vec3(0.05)
+        normal, viewDirection, objectColor, vec3(0.0),
+        0.0, 0.0, 0.5, lightDirection,
+        vec3(1.0) * computedLightIntensity, 1.0, vec3(0.2)
     );
-
-    // -- Final color
     fragColor = vec4(color, 1.0);
-
 }

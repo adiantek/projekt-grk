@@ -2,10 +2,10 @@
 
 #include <Fish/Fish.hpp>
 
-class Pilotfish : public Fish {
+class Barracuda : public Fish {
    public:
-    Pilotfish(glm::vec3 position, world::World* world);
-    ~Pilotfish();
+    Barracuda(glm::vec3 position, world::World* world);
+    ~Barracuda();
     void update() override;
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;

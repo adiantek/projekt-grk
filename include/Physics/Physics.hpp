@@ -7,6 +7,7 @@
 #include <vector>
 #include <vertex/VertexBuffer.hpp>
 #include <world/Object3D.hpp>
+#include <Fish/Cubefish.hpp>
 #include <world/World.hpp>
 
 namespace physics {
@@ -22,11 +23,15 @@ class Physics {
     physx::PxHeightField* createHeightField(physx::PxHeightFieldDesc &description);
     void grab();
     void grabMultiple();
+    void place(bool dynamic);
+    void remove();
     void draw(glm::mat4 mat);
+    void nextModel();
     world::World* world = nullptr;
     physx::PxScene* scene = nullptr;
 
    private:
+    unsigned int currentModel = 0;
     physx::PxDefaultAllocator allocator;
     ErrorCallback errorCallback;
     float gravity;
@@ -35,6 +40,8 @@ class Physics {
     physx::PxCooking* cooking = nullptr;
     physx::PxDefaultCpuDispatcher* dispatcher = nullptr;
     float timeToProccess = 0.0f;
+    std::vector<Cubefish*> blocks;
+    std::vector<Model*> models;
 };
 }  // namespace physics
 
