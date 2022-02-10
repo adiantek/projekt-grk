@@ -30,6 +30,10 @@ glm::mat4 Camera::getTransformationMatrix() {
     return this->perspective * this->rotationMatrix;
 }
 
+glm::mat4 Camera::getCameraPositionMatrix() {
+    return glm::mat4(glm::inverse(glm::mat3(this->rotationMatrix)));
+}
+
 void Camera::useCameraViewport() {
     glViewport(x, y, width, height);
 }

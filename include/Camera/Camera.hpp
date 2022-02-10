@@ -11,6 +11,7 @@ class Camera {
     ~Camera();
     /* Get camera and perspective transformation matrix */
     glm::mat4 getTransformationMatrix();
+    glm::mat4 getCameraPositionMatrix();
     /* Set opengl camera viewport */
     void useCameraViewport();
     /* Set viewport size */

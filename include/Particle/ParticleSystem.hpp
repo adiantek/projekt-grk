@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <opengl.h>
 #include <Particle/Particle.hpp>
+#include <Random.hpp>
 
 #include <Logger.h>
 
@@ -25,6 +26,8 @@ class ParticleSystem {
 		int particleTail = 0;
 
 		float countTime = 0.0f;
+
+		Random* random;
 
 		float quadVao[24];
 		GLuint rectVAO, rectVBO;

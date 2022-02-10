@@ -861,6 +861,10 @@ glm::vec3 *Robot::getPropellersPositions() {
     return positions;
 }
 
+glm::mat4 Robot::getGameObjectMatrix() {
+    return this->gameObject->getModelMatrix();
+}
+
 bool Robot::isInGroundMode() {
     return this->mode == Robot::MODE_STATIONARY
         || this->mode == Robot::MODE_WALKING

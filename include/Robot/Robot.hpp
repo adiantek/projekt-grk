@@ -124,6 +124,7 @@ class Robot : world::Object3D {
     glm::vec3 direction;
 
     glm::vec3 forward;
+    glm::mat4 getGameObjectMatrix();
 
     int mode = Robot::MODE_STATIONARY;
 

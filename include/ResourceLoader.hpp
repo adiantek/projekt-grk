@@ -252,6 +252,7 @@ public:
     GLint p_bubbles_shader_uni_distanceToSurface = -1;
     GLint p_bubbles_shader_uni_particlePositionsAndLife = -1;
     GLint p_bubbles_shader_uni_cameraMatrix = -1;
+    GLint p_bubbles_shader_uni_cameraDirection = -1;
 
     GLuint p_shader_4_1 = 0;
     bool p_shader_4_1_loaded = false;

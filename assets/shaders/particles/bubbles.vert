@@ -8,6 +8,7 @@ flat out int instanceID;
 
 uniform vec4 particlePositionsAndLife[200];
 uniform mat4 cameraMatrix;
+uniform mat4 cameraDirection;
 
 void main()
 {
@@ -30,6 +31,8 @@ void main()
     // modelView[2][2] = 1.0;
 
     // gl_Position = (modelView * vec4(vertexPosition, 1.0));
+
+    // gl_Position = cameraMatrix * cameraDirection * vec4(particlePositionsAndLife[gl_InstanceID].xyz + (vertexPosition * 0.02), 1.0);
     gl_Position = cameraMatrix * vec4(particlePositionsAndLife[gl_InstanceID].xyz + (vertexPosition * 0.02), 1.0);
     instanceID = gl_InstanceID;
     TexCoords = vertexTexCoord;
