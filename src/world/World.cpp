@@ -211,7 +211,7 @@ void World::drawChunks(glm::mat4 mat) {
         int minX = ch->pos.coords.x << 4;
         int minZ = ch->pos.coords.z << 4;
         totalChunks++;
-        if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
+        if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), (float)ch->maxY, (float)(minZ + 16))) {
             continue;
         }
         drawChunks++;
