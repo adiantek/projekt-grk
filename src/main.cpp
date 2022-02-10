@@ -152,7 +152,7 @@ void do_frame() {
     if (timeExternal->lastFrame - lastTitleUpdate > 0.25) {
         lastTitleUpdate = timeExternal->lastFrame;
         char title[100];
-        sprintf(title, "FPS: %u", timeExternal->fps);
+        sprintf(title, "FPS: %u, Collected coins: %d", timeExternal->fps, robot->collectedCoins);
         glfwSetWindowTitle(window, title);
     }
     glfwSwapBuffers(window);
