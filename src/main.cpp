@@ -100,18 +100,6 @@ void do_frame() {
 
     fog->useFramebuffer();
 
-    glUseProgram(resourceLoader.p_shader_tex);
-    glUniform3f(resourceLoader.p_shader_tex_uni_lightDir, lightDir.x, lightDir.y, lightDir.z);
-
-    glUseProgram(resourceLoader.p_shader_4_tex);
-    glUniform3f(resourceLoader.p_shader_4_tex_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-    glUniform3f(resourceLoader.p_shader_4_tex_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
-
-    glUseProgram(resourceLoader.p_shader_4_tex_with_parallax);
-    glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-    glUniform3f(resourceLoader.p_shader_4_tex_with_parallax_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
-    glUniform1f(resourceLoader.p_shader_4_tex_with_parallax_uni_heightScale, 0.06f);
-
     glUseProgram(resourceLoader.p_chunk);
     glUniform3f(resourceLoader.p_chunk_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
     glUniform3f(resourceLoader.p_chunk_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
@@ -123,15 +111,12 @@ void do_frame() {
     glUseProgram(resourceLoader.p_pilotfish);
     glUniform3f(resourceLoader.p_pilotfish_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
     glUniform3f(resourceLoader.p_pilotfish_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
-    glUniform1f(resourceLoader.p_pilotfish_uni_waterHeight, waterObject->getY());
     glUniformMatrix4fv(resourceLoader.p_pilotfish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
 
-    glUseProgram(resourceLoader.p_shader_4_1);
-    glUniform3f(resourceLoader.p_shader_4_1_uni_lightPos, lightPos.x, lightPos.y, lightPos.z);
-    glUniform3f(resourceLoader.p_shader_4_1_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
-
-    glUseProgram(resourceLoader.p_shader_4_sun);
-    glUniform3f(resourceLoader.p_shader_4_sun_uni_cameraPos, camera->position.x, camera->position.y, camera->position.z);
+    glUseProgram(resourceLoader.p_normal_fish);
+    glUniform3f(resourceLoader.p_normal_fish_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
+    glUniform3f(resourceLoader.p_normal_fish_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
+    glUniformMatrix4fv(resourceLoader.p_normal_fish_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
 
     glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
