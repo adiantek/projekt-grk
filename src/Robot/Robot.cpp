@@ -129,10 +129,23 @@ Robot::Robot() {
     }
 
     physx::PxTransform pose = physx::PxTransform(this->position.x, this->position.y, this->position.z);
-    physx::PxTriangleMeshGeometry geometry = this->gameObject->getModel()->createGeometry(glm::vec3(0.3f));
+    physx::PxBoxGeometry geometry = this->gameObject->getModel()->createGeometryAABB(glm::vec3(0.3f));
     
     this->rigidBody = new physics::RigidBody(false, pose, geometry, this, 0.5f, 0.5f, 0.0f, true);
-    geometry.triangleMesh->release();
+
+    this->initBodyRelativeJoints();
+
+    this->closeHatch(this->hatches.upper);
+    this->closeHatch(this->hatches.lowerLeft);
+    this->closeHatch(this->hatches.lowerRight);
+    this->foldPropellerArm(this->propellerArms.topLeft);
+    this->foldPropellerArm(this->propellerArms.topRight);
+    this->foldPropellerArm(this->propellerArms.bottomLeft);
+    this->foldPropellerArm(this->propellerArms.bottomRight);
+    this->turnOffPropeller(this->propellers.topLeft);
+    this->turnOffPropeller(this->propellers.topRight);
+    this->turnOffPropeller(this->propellers.bottomLeft);
+    this->turnOffPropeller(this->propellers.bottomRight);
 }
 
 Robot::~Robot() {
@@ -190,6 +203,54 @@ void Robot::setMoveDirectionVector(glm::vec3 direction) {
     } else {
         this->moveDirectionVector = glm::normalize(direction);
     }
+}
+
+void Robot::initBodyRelativeJoints() {
+
+    // Hatches
+    RobotHatch *upperHatch = this->hatches.upper;
+    upperHatch->joint = this->gameObject->getModel()->getJoint("Armature_UpperHatch");
+    upperHatch->openedTransformation = glm::eulerAngleX(glm::radians(-25.0f));
+    upperHatch->closedTransformation = glm::eulerAngleX(glm::radians(5.0f));
+
+    RobotHatch *lowerRightHatch = this->hatches.lowerRight;
+    lowerRightHatch->joint = this->gameObject->getModel()->getJoint("Armature_LowerHatchRight");
+    lowerRightHatch->closedTransformation = glm::eulerAngleY(glm::radians(64.5f));
+
+    RobotHatch *lowerLeftHatch = this->hatches.lowerLeft;
+    lowerLeftHatch->joint = this->gameObject->getModel()->getJoint("Armature_LowerHatchLeft");
+    lowerLeftHatch->closedTransformation = glm::eulerAngleY(glm::radians(-64.5f));
+
+    // Propellers
+    RobotPropeller *topLeftPropeller = this->propellers.topLeft;
+    topLeftPropeller->joint = this->gameObject->getModel()->getJoint("Armature_PropellerTopLeft");
+
+    RobotPropeller *topRightPropeller = this->propellers.topRight;
+    topRightPropeller->joint = this->gameObject->getModel()->getJoint("Armature_PropellerTopRight");
+
+    RobotPropeller *bottomLeftPropeller = this->propellers.bottomLeft;
+    bottomLeftPropeller->joint = this->gameObject->getModel()->getJoint("Armature_PropellerBottomLeft");
+
+    RobotPropeller *bottomRightPropeller = this->propellers.bottomRight;
+    bottomRightPropeller->joint = this->gameObject->getModel()->getJoint("Armature_PropellerBottomRight");
+
+    // Propellers arms
+    RobotPropellerArm *topLeftPropellerArm = this->propellerArms.topLeft;
+    topLeftPropellerArm->joint = this->gameObject->getModel()->getJoint("Armature_PropellerArmTopLeft");
+    topLeftPropellerArm->foldedTransformation = glm::translate(glm::vec3(0.5f, 0.0f, -0.5f));
+
+    RobotPropellerArm *topRightPropellerArm = this->propellerArms.topRight;
+    topRightPropellerArm->joint = this->gameObject->getModel()->getJoint("Armature_PropellerArmTopRight");
+    topRightPropellerArm->foldedTransformation = glm::translate(glm::vec3(-0.5f, 0.0f, -0.5f));
+
+    RobotPropellerArm *bottomLeftPropellerArm = this->propellerArms.bottomLeft;
+    bottomLeftPropellerArm->joint = this->gameObject->getModel()->getJoint("Armature_PropellerArmBottomLeft");
+    bottomLeftPropellerArm->foldedTransformation = glm::translate(glm::vec3(0.0f, 0.0f, 0.3f));
+
+    RobotPropellerArm *bottomRightPropellerArm = this->propellerArms.bottomRight;
+    bottomRightPropellerArm->joint = this->gameObject->getModel()->getJoint("Armature_PropellerArmBottomRight");
+    bottomRightPropellerArm->foldedTransformation = glm::translate(glm::vec3(0.0f, 0.0f, 0.3f));
+
 }
 
 void Robot::update() {
@@ -265,11 +326,15 @@ void Robot::update() {
     this->gameObject->setPosition(this->position);
     this->gameObject->setRotation(this->rotation);
 
+    this->updateHatches();
+    this->updatePropellerArms();
+    this->updatePropellers();
+
     this->updateBody();
     this->updateLegs();
     
     this->updateDirections();
-    // this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
+    this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
 }
 
 void Robot::draw(glm::mat4 mat) {
@@ -279,7 +344,6 @@ void Robot::draw(glm::mat4 mat) {
 void Robot::drawShadow(glm::mat4 mat) {
     this->gameObject->drawShadow(mat);
 }
-
 
 void Robot::createBody() {
     this->body = this->gameObject->getModel()->getJoint("Armature_Body");
@@ -489,7 +553,7 @@ void Robot::updateLegs() {
 
                 float otherLegDistance = glm::distance2(leg->globalAttachmentPoint, leg->attachmentEstimation);
 
-                if (!isOpposite && leg->step > 0.0f && otherLegDistance < distanceSquare) {
+                if (leg->step > 0.0f && (otherLegDistance < distanceSquare)) {
                     isStationary = false;
                     break;
                 }
@@ -528,6 +592,19 @@ void Robot::jump() {
     this->jumpStage = 0.0f;
     this->jumpStart = glm::vec3(this->position);
     this->jumpTarget = this->gameObject->getModelMatrix() * glm::vec4(this->up * Robot::JUMP_HEIGHT, 1.0f);
+
+    this->openHatch(this->hatches.upper);
+    this->openHatch(this->hatches.lowerLeft);
+    this->openHatch(this->hatches.lowerRight);
+    this->unfoldPropellerArm(this->propellerArms.topLeft);
+    this->unfoldPropellerArm(this->propellerArms.topRight);
+    this->unfoldPropellerArm(this->propellerArms.bottomLeft);
+    this->unfoldPropellerArm(this->propellerArms.bottomRight);
+    this->turnOnPropeller(this->propellers.topLeft);
+    this->turnOnPropeller(this->propellers.topRight);
+    this->turnOnPropeller(this->propellers.bottomLeft);
+    this->turnOnPropeller(this->propellers.bottomRight);
+    // this->closeHatch(this->hatches.upper);
 }
 
 void Robot::land() {
@@ -536,6 +613,18 @@ void Robot::land() {
     this->landStage = 0.0f;
     this->landStart = glm::vec3(this->position);
     this->landTarget = this->getWorldPointAt(this->position);
+
+    this->openHatch(this->hatches.upper);
+    this->closeHatch(this->hatches.lowerLeft);
+    this->closeHatch(this->hatches.lowerRight);
+    this->foldPropellerArm(this->propellerArms.topLeft);
+    this->foldPropellerArm(this->propellerArms.topRight);
+    this->foldPropellerArm(this->propellerArms.bottomLeft);
+    this->foldPropellerArm(this->propellerArms.bottomRight);
+    this->turnOffPropeller(this->propellers.topLeft);
+    this->turnOffPropeller(this->propellers.topRight);
+    this->turnOffPropeller(this->propellers.bottomLeft);
+    this->turnOffPropeller(this->propellers.bottomRight);
 }
 
 void Robot::updateDirections() {
@@ -547,14 +636,181 @@ void Robot::updateDirections() {
     this->up = _up;
 }
 
-void Robot::applyBodyTransformation(glm::mat4 transformation) {
+void Robot::openHatch(RobotHatch *hatch) {
+    hatch->isOpen = true;
+    hatch->animationStage = 0.0f;
+    hatch->isAnimationFinished = false;
+    hatch->minStage = 0.0f;
+    hatch->previousTransformation = hatch->transformation;
+}
 
-    // This two lines works pretty well I think - body is successfully transformed
+void Robot::closeHatch(RobotHatch *hatch) {
+    hatch->isOpen = false;
+    hatch->animationStage = 1.0f;
+    hatch->isAnimationFinished = false;
+    hatch->minStage = 0.0f;
+    hatch->previousTransformation = hatch->closedTransformation;
+}
+
+void Robot::closeHatchPartially(RobotHatch *hatch) {
+    hatch->isOpen = false;
+    hatch->animationStage = 1.0f;
+    hatch->isAnimationFinished = false;
+    hatch->minStage = 0.2f;
+    hatch->previousTransformation = hatch->closedTransformation;
+}
+
+void Robot::updateHatches() {
+    int hatchId = 0;
+    for (RobotHatch *hatch : std::vector<RobotHatch*> {
+        this->hatches.upper, this->hatches.lowerRight, this->hatches.lowerLeft
+    }) {
+        if (!hatch->isAnimationFinished) {
+            if (hatch->isOpen) {
+                hatch->animationStage += Robot::HATCH_OPEN_SPEED * timeExternal->deltaTime;
+            } else {
+                hatch->animationStage -= Robot::HATCH_OPEN_SPEED * timeExternal->deltaTime;
+            }
+
+            if (hatch->animationStage >= 1.0f) {
+                hatch->transformation = hatch->openedTransformation;
+                hatch->isAnimationFinished = true;
+            } else if (hatch->animationStage <= hatch->minStage) {
+                if (hatch->minStage == 0.0f) {
+                    hatch->transformation = hatch->closedTransformation;
+                }
+                hatch->isAnimationFinished = true;
+            } else {
+                glm::mat4 posesTransformation = hatch->openedTransformation - hatch->previousTransformation;
+                // hatch->transformation.x = glm::mix(hatch->closedTransformation.x, hatch->openedTransformation.x, (glm::smoothstep(0.0f, 2.0f, hatch->animationStage * 2.0f)));
+                // hatch->transformation.y = glm::mix(hatch->closedTransformation.y, hatch->openedTransformation.y, (glm::smoothstep(0.0f, 1.0f, hatch->animationStage * 2.0f)));
+                // hatch->transformation.z = glm::mix(hatch->closedTransformation.z, hatch->openedTransformation.z, (glm::smoothstep(0.0f, 1.0f, hatch->animationStage * 2.0f)));
+
+                hatch->transformation = hatch->previousTransformation + (glm::smoothstep(0.0f, 1.0f, hatch->animationStage) * posesTransformation);
+            }
+        } else if (hatchId == 0 && hatch->isOpen) {
+            if (this->isInGroundMode()) {
+                this->closeHatch(this->hatches.upper);
+            } else {
+                this->closeHatchPartially(this->hatches.upper);
+            }
+        }
+        hatchId++;
+    }
+}
+
+void Robot::foldPropellerArm(RobotPropellerArm *arm) {
+    arm->isUnfolded = false;
+    arm->animationStage = 1.0f;
+    arm->isAnimationFinished = false;
+}
+
+void Robot::unfoldPropellerArm(RobotPropellerArm *arm) {
+    arm->isUnfolded = true;
+    arm->animationStage = 0.0f;
+    arm->isAnimationFinished = false;
+}
+
+void Robot::updatePropellerArms() {
+    for (RobotPropellerArm *propellerArm : std::vector<RobotPropellerArm*> {
+        this->propellerArms.bottomLeft, this->propellerArms.bottomRight, this->propellerArms.topLeft, this->propellerArms.topRight
+    }) {
+        if (!propellerArm->isAnimationFinished) {
+            if (propellerArm->isUnfolded) {
+                propellerArm->animationStage += Robot::HATCH_OPEN_SPEED * timeExternal->deltaTime;
+            } else {
+                propellerArm->animationStage -= Robot::HATCH_OPEN_SPEED * timeExternal->deltaTime;
+            }
+
+            if (propellerArm->animationStage >= 1.0f) {
+                propellerArm->transformation = propellerArm->unfoldedTransformation;
+                propellerArm->isAnimationFinished = true;
+            } else if (propellerArm->animationStage <= 0.0f) {
+                propellerArm->transformation = propellerArm->foldedTransformation;
+                propellerArm->isAnimationFinished = true;
+            } else {
+                glm::mat4 posesTransformation = propellerArm->unfoldedTransformation - propellerArm->foldedTransformation;
+                propellerArm->transformation = propellerArm->foldedTransformation + (glm::smoothstep(0.0f, 1.0f, propellerArm->animationStage) * posesTransformation);
+            }
+        }
+    }
+}
+
+void Robot::turnOnPropeller(RobotPropeller *propeller) {
+    propeller->isOn = true;
+    propeller->speed = 1.0f;
+}
+
+void Robot::turnOffPropeller(RobotPropeller *propeller) {
+    propeller->isOn = false;
+}
+
+void Robot::updatePropellers() {
+    for (RobotPropeller *propeller : std::vector<RobotPropeller*> {
+        this->propellers.topLeft, this->propellers.topRight, this->propellers.bottomLeft, this->propellers.bottomRight
+    }) {
+        if (propeller->isOn) {
+            propeller->speed += Robot::PROPELLER_ROTATION_ACCELERATION * timeExternal->deltaTime;
+            if (propeller->speed > 10.0f) propeller->speed = 10.0f;
+            propeller->rotation += Robot::PROPELLER_ROTATION_SPEED * propeller->speed * timeExternal->deltaTime;
+            while (propeller->rotation > 360.0f) propeller->rotation -= 360.0f;
+            propeller->transformation = glm::eulerAngleY(glm::radians(propeller->rotation));
+        } else {
+            propeller->speed -= Robot::PROPELLER_ROTATION_ACCELERATION * timeExternal->deltaTime * 3;
+            if (propeller->speed < 0.0f) propeller->speed = 0.0f;
+            propeller->rotation += Robot::PROPELLER_ROTATION_SPEED * propeller->speed * timeExternal->deltaTime;
+            while (propeller->rotation > 360.0f) propeller->rotation -= 360.0f;
+            propeller->transformation = glm::eulerAngleY(glm::radians(propeller->rotation));
+        }
+    }
+}
+
+void Robot::applyBodyTransformation(glm::mat4 transformation) {
     this->body->setTransform(transformation);
     this->eyeCover->setTransform(transformation);
 
+    // Hatches
+    for (RobotHatch *hatch : std::vector<RobotHatch*> {
+        this->hatches.upper, this->hatches.lowerRight, this->hatches.lowerLeft
+    }) {
+        hatch->joint->setTransform(
+            transformation
+            * glm::translate(hatch->joint->getOrigin())
+            * hatch->transformation
+            * glm::translate(-hatch->joint->getOrigin())
+        );
+    }
+
+    // Propeller arms
+    for (RobotPropellerArm *propellerArm : std::vector<RobotPropellerArm*> {
+        this->propellerArms.topLeft, this->propellerArms.topRight, this->propellerArms.bottomLeft, this->propellerArms.bottomRight
+    }) {
+        propellerArm->joint->setTransform(
+            transformation
+            * glm::translate(glm::vec3(propellerArm->joint->getLocalBindTransform() * glm::vec4(glm::vec3(0.0f), 1.0f)))
+            * propellerArm->transformation
+            * glm::translate(-glm::vec3(propellerArm->joint->getLocalBindTransform() * glm::vec4(glm::vec3(0.0f), 1.0f)))
+        );
+    }
+
+    // Propellers
+    int propellerIndex = 0;
+    for (RobotPropeller *propeller : std::vector<RobotPropeller*> {
+        this->propellers.topLeft, this->propellers.topRight, this->propellers.bottomLeft, this->propellers.bottomRight
+    }) {
+        propeller->joint->setTransform(
+            std::vector<RobotPropellerArm*> {
+                this->propellerArms.topLeft, this->propellerArms.topRight, this->propellerArms.bottomLeft, this->propellerArms.bottomRight
+            }[propellerIndex]->joint->getTransform()
+            * glm::translate(propeller->joint->getOrigin())
+            * propeller->transformation
+            * glm::translate(-propeller->joint->getOrigin())
+        );
+        propellerIndex++;
+    }
+
+    // Legs
     for (RobotLeg* leg : this->legs) {
-        // Upper joint origin is in the right place (object space)
         leg->upperJointOrigin = transformation * glm::vec4(leg->upperJoint->getOrigin(), 1.0f);
     }
 }

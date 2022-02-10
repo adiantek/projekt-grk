@@ -17,7 +17,7 @@ class Controller {
     bool mouseGrabbed = false;
     bool firstMouseMove = false;
     bool mouseRightClicked = false;
-    bool sweepMode = false;
+    unsigned int scopeMode = 0;
 
     void init();
     void update();

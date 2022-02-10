@@ -3,7 +3,7 @@
 precision highp float;
 
 const float PI = 3.14159265359;
-const float bias = 0.865;
+const float bias = 0.005;
 
 uniform sampler2D albedoTexture;
 uniform sampler2D normalTexture;

@@ -34,6 +34,43 @@ struct RobotLeg {
     glm::vec3 lowerJointOrigin = glm::vec3(0.0f);
 };
 
+struct RobotHatch {
+    bool isOpen = false;
+    bool isAnimationFinished = true;
+
+    float animationStage = 0.0f;
+    float minStage = 1.0f;
+
+    Animator::Joint *joint;
+
+    glm::mat4 transformation = glm::mat4(1.0f);
+
+    glm::mat4 closedTransformation = glm::mat4(1.0f);
+    glm::mat4 openedTransformation = glm::mat4(1.0f);
+    glm::mat4 previousTransformation = glm::mat4(1.0f);
+};
+
+struct RobotPropeller {
+    bool isOn = false;
+    Animator::Joint *joint;
+
+    float rotation = 0.0f;
+    float speed = 1.0f;
+    glm::mat4 transformation = glm::mat4(1.0f);
+};
+
+struct RobotPropellerArm {
+    bool isUnfolded = false;
+    bool isAnimationFinished = true;
+
+    float animationStage = 0.0f;
+    Animator::Joint *joint;
+
+    glm::mat4 transformation = glm::mat4(1.0f);
+    glm::mat4 unfoldedTransformation = glm::mat4(1.0f);
+    glm::mat4 foldedTransformation = glm::mat4(1.0f);
+};
+
 class Robot : world::Object3D {
    public:
     // SPEEDS
@@ -48,6 +85,9 @@ class Robot : world::Object3D {
     inline static const float LEG_MAX_DISTANCE_SQUARE = 0.6f;
     inline static const float JUMP_SPEED = 1.0f;
     inline static const float LANDING_SPEED = 1.5f;
+    inline static const float HATCH_OPEN_SPEED = 1.0f;
+    inline static const float PROPELLER_ROTATION_SPEED = 200.0f;
+    inline static const float PROPELLER_ROTATION_ACCELERATION = 1.0f;
 
     inline static const float JUMP_HEIGHT = 10.0f;
 
@@ -91,6 +131,7 @@ class Robot : world::Object3D {
     void createLegs();
     void updateLegs();
 
+    void initBodyRelativeJoints();
     void createBody();
     void updateBody();
     void updateDirections();
@@ -100,6 +141,19 @@ class Robot : world::Object3D {
     bool isInMovingMode();
     float getDistanceFromGround();
     glm::vec3 getWorldPointAt(glm::vec3 point);
+
+    void openHatch(RobotHatch *hatch);
+    void closeHatch(RobotHatch *hatch);
+    void closeHatchPartially(RobotHatch *hatch);
+    void updateHatches();
+
+    void foldPropellerArm(RobotPropellerArm *arm);
+    void unfoldPropellerArm(RobotPropellerArm *arm);
+    void updatePropellerArms();
+
+    void turnOnPropeller(RobotPropeller *propeller);
+    void turnOffPropeller(RobotPropeller *propeller);
+    void updatePropellers();
 
     GameObject* gameObject;
 
@@ -123,6 +177,26 @@ class Robot : world::Object3D {
     glm::vec3 forward;
 
     physics::RigidBody* rigidBody;
+
+    struct {
+        RobotHatch *upper = new RobotHatch;
+        RobotHatch *lowerLeft = new RobotHatch;
+        RobotHatch *lowerRight = new RobotHatch;
+    } hatches;
+
+    struct {
+        RobotPropeller *topLeft = new RobotPropeller;
+        RobotPropeller *topRight = new RobotPropeller;
+        RobotPropeller *bottomLeft = new RobotPropeller;
+        RobotPropeller *bottomRight = new RobotPropeller;
+    } propellers;
+
+    struct {
+        RobotPropellerArm *topLeft = new RobotPropellerArm;
+        RobotPropellerArm *topRight = new RobotPropellerArm;
+        RobotPropellerArm *bottomLeft = new RobotPropellerArm;
+        RobotPropellerArm *bottomRight = new RobotPropellerArm;
+    } propellerArms;
 };
 
 }  // namespace entity

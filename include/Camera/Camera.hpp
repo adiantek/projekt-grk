@@ -3,7 +3,7 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
-#define BASE_CAMERA_OFFSET 0.2f
+#define BASE_CAMERA_OFFSET 0.35f
 
 class Camera {
    public:
