@@ -126,7 +126,7 @@ void main() {
     vec2 invertedTexCoords = vec2(texCoords.x, 1.0 - texCoords.y);
     vec3 lightDirection = normalize(lightDirectionTS);
     vec3 viewDirection = normalize(viewDirectionTS);
-	vec3 normal = texture(normalTexture, invertedTexCoords).rgb;
+	vec3 normal = texture(normalTexture, invertedTexCoords).rgb * 2.0 - 1.0;
     vec3 albedo = texture(albedoTexture, invertedTexCoords).rgb;
     float metallic = texture(metallicTexture, invertedTexCoords).r;
     // float metallic = 1.0;
