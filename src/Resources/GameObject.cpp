@@ -114,7 +114,7 @@ void GameObject::drawShadow(glm::mat4 mat) {
         // Set transformation
         glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
         glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjectionMatrix));
-        glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_jointTransforms, 20, GL_FALSE, glm::value_ptr(this->getJointTransforms()[0]));
+        glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_jointTransforms, 50, GL_FALSE, glm::value_ptr(this->getJointTransforms()[0]));
 
         Core::DrawContext(*context);
     }
@@ -129,10 +129,10 @@ std::vector<glm::mat4> GameObject::getJointTransforms() {
     std::vector<Animator::Joint*> joints = this->model->getJoints();
 
     if (joints.size() > 0) {
-        for (int i = 0; i < std::min((int)joints.size(), 20); i++) {
+        for (int i = 0; i < std::min((int)joints.size(), 50); i++) {
             jointsArray.push_back(joints[i]->getTransform());
         }
-        for (int i = (int)joints.size(); i < 20; i++) {
+        for (int i = (int)joints.size(); i < 50; i++) {
             jointsArray.push_back(glm::mat4(1.0f));
         }
     }

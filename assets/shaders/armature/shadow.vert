@@ -1,6 +1,6 @@
 #version 300 es
 
-const int MAX_JOINTS_MER_MODEL = 20;
+const int MAX_JOINTS_MER_MODEL = 50;
 const int MAX_JOINTS_PER_VERTEX = 3;
 
 layout(location = 0) in vec3 vertexPosition;
@@ -28,7 +28,7 @@ void main() {
     worldPosition = modelMatrix * vec4(localPos.xyz, 1.0);
 
     vec4 projectedPosition = modelViewProjectionMatrix * localPos;
-    worldPosition.w = projectedPosition.z;
+    worldPosition.w = projectedPosition.z * 0.5 + 0.5;
 
     gl_Position = projectedPosition;
 }

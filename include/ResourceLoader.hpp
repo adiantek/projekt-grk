@@ -446,6 +446,13 @@ public:
     GLint p_normal_fish_uni_caustics = -1;
     GLint p_normal_fish_uni_colorTexture = -1;
     GLint p_normal_fish_uni_normalTexture = -1;
+    // fish_shadow:
+    GLuint p_fish_shadow = 0;
+    bool p_fish_shadow_loaded = false;
+    GLint p_fish_shadow_attr_vertexPosition = -1;
+    GLint p_fish_shadow_uni_modelMatrix = -1;
+    GLint p_fish_shadow_uni_time = -1;
+    GLint p_fish_shadow_uni_transformation = -1;
     // glow:
     GLuint p_glow = 0;
     bool p_glow_loaded = false;

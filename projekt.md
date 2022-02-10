@@ -35,6 +35,6 @@ Wymagane jest zrobienie jednej prostej i jednej trudniejszej metody dodatkowej.
 -	[ ] [Bloom](https://github.com/adiantek/projekt-grk/issues/20),
 -	[x] [Parallax Mapping](https://github.com/adiantek/projekt-grk/issues/21),
 -	[x] [Boids](https://github.com/adiantek/projekt-grk/issues/22),
--	[ ] [Realistic swimming motion (shader level)](https://github.com/adiantek/projekt-grk/issues/23),
+-	[x] [Realistic swimming motion (shader level)](https://github.com/adiantek/projekt-grk/issues/23),
 -	[ ] [Particle generator](https://github.com/adiantek/projekt-grk/issues/24)
 -	[ ] [Parallel transport frames](https://github.com/adiantek/projekt-grk/issues/25)

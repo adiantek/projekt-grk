@@ -40,9 +40,10 @@ void RedSnapper::draw(glm::mat4 mat) {
 void RedSnapper::drawShadow(glm::mat4 mat) {
     glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(REDSNAPPER_SCALE));
     glm::mat4 transformation = mat * model;
-    glUseProgram(resourceLoaderExternal->p_environment_map);
-    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
+    glUseProgram(resourceLoaderExternal->p_fish_shadow);
+    glUniform1f(resourceLoaderExternal->p_fish_shadow_uni_time, (float)timeExternal->lastFrame);
+    glUniformMatrix4fv(resourceLoaderExternal->p_fish_shadow_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(resourceLoaderExternal->p_fish_shadow_uni_transformation, 1, GL_FALSE, glm::value_ptr(transformation));
     for (auto mesh : this->model->getMeshes()) {
         Core::DrawContext(*mesh->getRenderContext());
     }

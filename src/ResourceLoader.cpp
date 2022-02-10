@@ -430,6 +430,13 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(normal_fish, colorTexture);
         UNIFORM(normal_fish, normalTexture);
     }
+    LOAD_PROGRAM(fish_shadow, 2, "fish/shadow.frag", "fish/shadow.vert") {
+        // DUMP(fish_shadow);
+        ATTRIBUTE(fish_shadow, vertexPosition);
+        UNIFORM(fish_shadow, modelMatrix);
+        UNIFORM(fish_shadow, time);
+        UNIFORM(fish_shadow, transformation);
+    }
     LOAD_PROGRAM(glow, 2, "glow.frag", "glow.vert") {
         // DUMP(glow);
         ATTRIBUTE(glow, pos);
