@@ -114,8 +114,16 @@ void ResourceLoader::loadTextures() {
     loadTexture("assets/textures/grid_color.png", &this->tex_grid_color);
     loadTexture("assets/textures/moon.png", &this->tex_moon);
     loadTexture("assets/textures/moon_normals.png", &this->tex_moon_normals);
+    loadTexture("assets/textures/props/chest/chest_reinforcment_albedo.png", &this->tex_props_chest_chest_reinforcment_albedo);
+    loadTexture("assets/textures/props/chest/chest_reinforcment_ao.png", &this->tex_props_chest_chest_reinforcment_ao);
+    loadTexture("assets/textures/props/chest/chest_reinforcment_metallic.png", &this->tex_props_chest_chest_reinforcment_metallic);
     loadTexture("assets/textures/props/chest/chest_reinforcment_normal.png", &this->tex_props_chest_chest_reinforcment_normal);
+    loadTexture("assets/textures/props/chest/chest_reinforcment_roughness.png", &this->tex_props_chest_chest_reinforcment_roughness);
+    loadTexture("assets/textures/props/chest/chest_wood_albedo.png", &this->tex_props_chest_chest_wood_albedo);
+    loadTexture("assets/textures/props/chest/chest_wood_ao.png", &this->tex_props_chest_chest_wood_ao);
+    loadTexture("assets/textures/props/chest/chest_wood_metallic.png", &this->tex_props_chest_chest_wood_metallic);
     loadTexture("assets/textures/props/chest/chest_wood_normal.png", &this->tex_props_chest_chest_wood_normal);
+    loadTexture("assets/textures/props/chest/chest_wood_roughness.png", &this->tex_props_chest_chest_wood_roughness);
     loadTexture("assets/textures/props/coin/coin_albedo.png", &this->tex_props_coin_coin_albedo);
     loadTexture("assets/textures/props/coin/coin_ao.png", &this->tex_props_coin_coin_ao);
     loadTexture("assets/textures/props/coin/coin_height.png", &this->tex_props_coin_coin_height);
@@ -424,7 +432,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(instanced_kelp, time);
     }
     LOAD_PROGRAM(instanced_kelp_shadow, 2, "instanced/kelp_shadow.frag", "instanced/kelp_shadow.vert") {
-        DUMP(instanced_kelp_shadow);
+        // DUMP(instanced_kelp_shadow);
         ATTRIBUTE(instanced_kelp_shadow, vertexPosition);
         ATTRIBUTE(instanced_kelp_shadow, vertexTex);
         ATTRIBUTE(instanced_kelp_shadow, gl_InstanceID);

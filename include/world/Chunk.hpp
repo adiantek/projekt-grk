@@ -4,11 +4,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <Physics/RigidBody.hpp>
 #include <Random.hpp>
 #include <SimplexNoiseGenerator.hpp>
+#include <world/Chest.hpp>
 #include <world/ChunkPosition.hpp>
 #include <world/Object3D.hpp>
-#include <Physics/RigidBody.hpp>
 
 namespace world {
 
@@ -19,7 +20,7 @@ class Chunk : Object3D {
     GLuint vao, vbo, elements;
     GLuint vaoLines, vboLines;
     double created;
-    physics::RigidBody* rigidBody;
+    physics::RigidBody *rigidBody;
     bool minFishYCalculated = false;
     int64_t seed;
     float heightMap[17 * 17];
@@ -32,8 +33,8 @@ class Chunk : Object3D {
     int32_t grass_len;
     size_t *grass;
     size_t *grass_shadow;
-    
-    
+    Chest *chest = 0;
+
    public:
     ChunkPosition pos;
     World *world;
@@ -63,7 +64,7 @@ class Chunk : Object3D {
     void onHide();
     void onShadowShow();
     void onShadowHide();
-    
+
     /**
      * @brief equals to getHeightAt((float)x, (float)z);
      */

@@ -21,11 +21,11 @@ void Frustum::loadPlanes(glm::mat4 mat) {
 
 bool Frustum::isBoxInFrustum(float sx, float sy, float sz, float ex, float ey, float ez) {
     for (int i = 0; i < 6; i++) {
-        glm::vec4 afloat = this->frustum[i];
-        float x = afloat[0];
-        float y = afloat[1];
-        float z = afloat[2];
-        float w = afloat[3];
+        glm::vec4 vec = this->frustum[i];
+        float x = vec[0];
+        float y = vec[1];
+        float z = vec[2];
+        float w = vec[3];
 
         if (x * sx + y * sy + z * sz + w <= 0.0F &&
             x * ex + y * sy + z * sz + w <= 0.0F &&

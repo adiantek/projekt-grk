@@ -114,8 +114,16 @@ public:
     GLuint tex_grid_color = 0;
     GLuint tex_moon = 0;
     GLuint tex_moon_normals = 0;
+    GLuint tex_props_chest_chest_reinforcment_albedo = 0;
+    GLuint tex_props_chest_chest_reinforcment_ao = 0;
+    GLuint tex_props_chest_chest_reinforcment_metallic = 0;
     GLuint tex_props_chest_chest_reinforcment_normal = 0;
+    GLuint tex_props_chest_chest_reinforcment_roughness = 0;
+    GLuint tex_props_chest_chest_wood_albedo = 0;
+    GLuint tex_props_chest_chest_wood_ao = 0;
+    GLuint tex_props_chest_chest_wood_metallic = 0;
     GLuint tex_props_chest_chest_wood_normal = 0;
+    GLuint tex_props_chest_chest_wood_roughness = 0;
     GLuint tex_props_coin_coin_albedo = 0;
     GLuint tex_props_coin_coin_ao = 0;
     GLuint tex_props_coin_coin_height = 0;

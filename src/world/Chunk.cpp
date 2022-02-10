@@ -48,6 +48,9 @@ Chunk::~Chunk() {
     delete this->grass;
     delete this->kelps_matrices;
     delete this->grass_matrices;
+    if (this->chest) {
+        delete this->chest;
+    }
 }
 
 Random *Chunk::createChunkRandom() {
@@ -163,7 +166,16 @@ void Chunk::generate(float *noise) {
 }
 
 void Chunk::decorate1() {
-    this->grass_len = 1024;
+    if ((this->pos.coords.x & 1) && (this->pos.coords.z & 1)) {
+        float height = this->getHeightAt(8, 8);
+        glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(8.0f, 8.0f + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(8.0f + 0.0001f, 8.0f), 0.0f)));
+        this->chest = new Chest(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + 8.0f, height, this->pos.coords.z * 16.0f + 8.0f))
+                    * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
+                    * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f))));
+    } else {
+        this->chest = 0;
+    }
+    this->grass_len = 2048;
     this->grass = new size_t[this->grass_len];
     this->grass_shadow = new size_t[this->grass_len];
     this->grass_matrices = new float[this->grass_len * 16];
@@ -171,7 +183,13 @@ void Chunk::decorate1() {
         float xpos = this->chunkRandom->nextFloat() * 16;
         float zpos = this->chunkRandom->nextFloat() * 16;
         float height = this->getHeightAt(xpos, zpos);
-        if (this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
+        bool cond = true;
+        if (this->chest) {
+            float dist = (xpos - 8.0f) * (xpos - 8.0f) + (zpos - 8.0f) * (zpos - 8.0f);
+            // dist is from 0 to 128
+            cond = this->chunkRandom->nextFloat() * 128.0f < dist;
+        }
+        if (cond && this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
             glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(xpos, zpos + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(xpos + 0.0001f, zpos), 0.0f)));
 
             glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
@@ -187,7 +205,7 @@ void Chunk::decorate1() {
         }
     }
     
-    this->kelps_len = 64;
+    this->kelps_len = 32;
     this->kelps = new size_t[this->kelps_len];
     this->kelps_shadow = new size_t[this->kelps_len];
     this->kelps_matrices = new float[this->kelps_len * 16];
@@ -195,7 +213,13 @@ void Chunk::decorate1() {
         float xpos = this->chunkRandom->nextFloat() * 16;
         float zpos = this->chunkRandom->nextFloat() * 16;
         float height = this->getHeightAt(xpos, zpos);
-        if (this->chunkRandom->nextFloat() * 128.0f + 32.0f > height) {
+        bool cond = true;
+        if (this->chest) {
+            float dist = (xpos - 8.0f) * (xpos - 8.0f) + (zpos - 8.0f) * (zpos - 8.0f);
+            // dist is from 0 to 128
+            cond = this->chunkRandom->nextFloat() * 128.0f < dist;
+        }
+        if (cond && this->chunkRandom->nextFloat() * 128.0f + 32.0f > height) {
             glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
                 * glm::rotate(glm::radians(-90.0f), glm::vec3(1,0,0))
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
@@ -338,6 +362,9 @@ float Chunk::getHeightAt(float x, float z) {
 }
 
 void Chunk::draw(glm::mat4 mat) {
+    if (this->chest) {
+        this->chest->draw(mat);
+    }
 }
 
 void Chunk::prepareRendering(glm::mat4 mat) {
@@ -423,4 +450,7 @@ void Chunk::drawShadow(glm::mat4 mat) {
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
+    if (this->chest) {
+        this->chest->drawShadow(mat);
+    }
 }
