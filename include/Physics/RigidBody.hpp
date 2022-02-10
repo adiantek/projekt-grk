@@ -18,8 +18,10 @@ class RigidBody {
     ~RigidBody();
     glm::mat4 getModelMatrix();
     float getMass();
+    bool isKinematic();
     glm::vec3 getLinearVelocity();
     void setMass(float mass);
+    void setKinematic(bool flag);
     void setLinearVelocity(glm::vec3 velocity);
     void setKinematicTarget(glm::mat4 destinationPose);
     void addForce(glm::vec3 force, physx::PxForceMode::Enum mode = physx::PxForceMode::eFORCE);

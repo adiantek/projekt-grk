@@ -98,7 +98,7 @@ void Physics::update(float deltaTime) {
                 } else {
                     rigidBody->applyDrag(0.001225f);
                 }
-                if (rigidBody->grabbed) {
+                if (rigidBody->grabbed &&  !rigidBody->isKinematic()) {
                     glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
                     ((physx::PxRigidBody*)actor)->setLinearVelocity(physx::PxVec3(direction.x, direction.y, direction.z));
                 }

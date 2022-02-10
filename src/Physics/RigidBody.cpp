@@ -37,6 +37,15 @@ void RigidBody::setMass(float mass) {
     this->inner->setMass(mass);
 }
 
+void RigidBody::setKinematic(bool flag) {
+    this->kinematic = flag;
+    this->inner->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, flag);
+}
+
+bool RigidBody::isKinematic() {
+    return this->kinematic;
+}
+
 void RigidBody::setLinearVelocity(glm::vec3 velocity) {
     if (!this->grabbed && !this->kinematic) {
         this->inner->setLinearVelocity(physx::PxVec3(velocity.x, velocity.y, velocity.z));

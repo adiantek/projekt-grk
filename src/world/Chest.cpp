@@ -49,12 +49,14 @@ void Chest::update() {
             openingAnimationStage = 1.0f;
 
         float rotationStage = glm::smoothstep(0.0f, 1.0f, openingAnimationStage);
-        float rotation = -60.0f * rotationStage;
+        float rotation = -80.0f * rotationStage;
         this->jointTransforms[2] =
             glm::translate(this->coverJoint->getOrigin() * 100.0f)
             * glm::eulerAngleX(glm::radians(rotation))
             * glm::translate(-this->coverJoint->getOrigin() * 100.0f);
     }
+    for (auto coin : this->coins)
+        coin->update();
 }
 
 void Chest::draw(glm::mat4 mat) {

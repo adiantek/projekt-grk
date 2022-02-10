@@ -20,7 +20,19 @@ Coin::~Coin() {
     delete this->rigidBody;
 }
 
-void Coin::update() {}
+void Coin::update() {
+    if (this->openingAnimationStage < 4.0f) {
+        this->rigidBody->setKinematic(true);
+        this->openingAnimationStage += timeExternal->deltaTime;
+
+        glm::mat4 model = this->rigidBody->getModelMatrix();
+        model[3].y += 1.69f * timeExternal->deltaTime;
+
+        this->rigidBody->setKinematicTarget(model);
+    } else {
+        this->rigidBody->setKinematic(false);
+    }
+}
 
 void Coin::draw(glm::mat4 mat) {
     ResourceLoader *res = resourceLoaderExternal;
