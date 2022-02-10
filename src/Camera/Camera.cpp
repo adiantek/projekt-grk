@@ -103,7 +103,7 @@ void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
     glm::vec3 cameraTransformation = position - (robot->position + glm::vec3(0.0f, 0.5f, 0.0f));
     glm::vec3 invertedDirection = glm::normalize(cameraTransformation);
 
-    glm::vec3 raycastOrigin = (robot->position + glm::vec3(0.0f, 0.5f, 0.0f) + invertedDirection * 0.5f);
+    glm::vec3 raycastOrigin = (robot->position + glm::vec3(0.0f, 0.5f, 0.0f) + invertedDirection * 0.1f);
 
     physx::PxVec3 origin = physx::PxVec3(raycastOrigin.x, raycastOrigin.y, raycastOrigin.z);
     physx::PxReal maxDistance = distance;
@@ -114,10 +114,15 @@ void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
     
     bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit, ((physx::PxHitFlags)(physx::PxHitFlag::eDEFAULT)), filterData);
     if (hit.hasAnyHits()) {
-        position = glm::vec3(hit.block.position.x, hit.block.position.y, hit.block.position.z) + glm::vec3(0.0f, 0.1f, 0.0f);
+        position = glm::vec3(hit.block.position.x, hit.block.position.y, hit.block.position.z)
+        + glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z) * 0.1f;
     } 
 
     float worldY = worldObject->getHeightAt(position.x, position.z);
+
+    if (position.y > 192.0f && position.y < 192.2f) {
+        position.y = 192.2f;
+    }
 
     if (position.y < worldY) {
         position.y = worldY;
