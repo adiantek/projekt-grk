@@ -25,11 +25,15 @@ Chest::Chest(glm::mat4 model) {
     this->rigidBody = new physics::RigidBody(true, pose, geometry, this);
     geometry.triangleMesh->release();
 
-    for (int i = 0; i < 6; ++i)
-        this->coins.push_back(new Coin(model * glm::translate(glm::vec3(i % 2 * 0.6f - 0.6f, i % 3 == 0 ? 0.1f : -0.1f, (i / 2) * 0.28f + 0.2f))));
-
     ResourceLoader *res = resourceLoaderExternal;
     this->coverJoint = res->m_props_chest->getJoint("Armature_top");
+}
+
+void Chest::open() {
+    if (!this->isOpen)
+        for (int i = 0; i < 6; ++i)
+            this->coins.push_back(new Coin(model * glm::translate(glm::vec3(i % 2 * 0.6f - 0.6f, i % 3 == 0 ? 0.1f : -0.1f, (i / 2) * 0.28f + 0.2f))));
+    this->isOpen = true;
 }
 
 Chest::~Chest() {
@@ -39,10 +43,6 @@ Chest::~Chest() {
 }
 
 void Chest::update() {
-    if (timeExternal->lastFrame > 15.0) {
-        this->isOpen = true;
-    }
-
     if (isOpen && openingAnimationStage < 1.0f) {
         openingAnimationStage += 0.5f * timeExternal->deltaTime;
         if (openingAnimationStage > 1.0f)

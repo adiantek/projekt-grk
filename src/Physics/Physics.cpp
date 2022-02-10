@@ -195,10 +195,10 @@ void Physics::grab() {
     this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
     if (hit.hasAnyHits() && ((RigidBody*)hit.block.actor->userData)->object->object3DType == 1) {
-        // ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->open();
-        // for (auto coin : ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->coins) {
-        //     coin->rigidBody->grabbed = true;
-        // }
+        ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->open();
+        for (auto coin : ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->coins) {
+            coin->rigidBody->grabbed = true;
+        }
     } else {
         PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
         filterData.data.word0 = RAYHITABBLE;

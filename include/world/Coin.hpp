@@ -8,7 +8,6 @@ namespace world {
 class Coin : world::Object3D {
    private:
     glm::mat4 model;
-    physics::RigidBody* rigidBody;
 
    public:
     Coin(glm::mat4 model);
@@ -17,5 +16,7 @@ class Coin : world::Object3D {
     void update() override;
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
+    
+    physics::RigidBody* rigidBody;
 };
 }  // namespace world

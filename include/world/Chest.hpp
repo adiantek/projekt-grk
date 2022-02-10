@@ -14,7 +14,6 @@ class Chest : world::Object3D {
     std::vector<glm::mat4> jointTransforms = std::vector<glm::mat4>(50);
     physics::RigidBody* rigidBody;
     Animator::Joint *coverJoint;
-    std::vector<world::Coin*> coins;
     float openingAnimationStage = 0.0f;
     bool isOpen = false;
 
@@ -22,9 +21,12 @@ class Chest : world::Object3D {
     Chest(glm::mat4 model);
     ~Chest();
 
+    void open();
     void update() override;
     void draw(glm::mat4 mat) override;
     void drawShadow(glm::mat4 mat) override;
+    
+    std::vector<world::Coin*> coins;
 };
 
 }  // namespace world
