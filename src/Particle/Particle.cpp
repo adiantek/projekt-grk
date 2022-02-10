@@ -16,7 +16,7 @@ Particle::Particle(glm::vec3 position, glm::vec3 velocity, float gravityEffect, 
 }
 
 Particle::Particle() {
-    this->position = glm::vec3(robot->position.x + 1.0f, robot->position.y + 1.0f, robot->position.z);
+    this->position = glm::vec3(robot->position.x, robot->position.y, robot->position.z);
     this->velocity = glm::vec3(0.1f);
 }
 

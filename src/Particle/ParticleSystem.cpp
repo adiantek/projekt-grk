@@ -3,6 +3,7 @@
 #include <Particle/ParticleSystem.hpp>
 #include <Particle/Particle.hpp>
 #include <Water/Water.hpp>
+#include <Robot/Robot.hpp>
 #include <Time/time.hpp>
 #include <glm/ext.hpp>
 
@@ -39,18 +40,26 @@ void ParticleSystem::render() {
 	if(particleTail == MAX_PARTICLES) {
 		particleTail = 0;
 	}
-	this->countTime += timeExternal->deltaTime;
-	if(countTime >= 0.25f) {
-		if(particlesCount < MAX_PARTICLES) {
-			particlesList[particleTail] = Particle();
-			this->particlesCount += 1;
-			this->particleTail += 1;
+
+	if(robot->mode == 3 || robot->mode == 1) {
+		this->countTime += timeExternal->deltaTime;
+		if(countTime >= 0.15f) {
+			if(particlesCount < MAX_PARTICLES - 4) {
+				glm::vec3* newPositions = robot->getPropellersPositions();
+				for(int i = 0; i < 4; i++) {
+					particlesList[particleTail] = Particle();
+					particlesList[particleTail].position = newPositions[i];
+					this->particlesCount += 1;
+					this->particleTail += 1;
+				}
+			}
+			countTime = 0.0f;
 		}
-		countTime = 0.0f;
 	}
 
 	glm::vec4 particlePositionsAndLife[MAX_PARTICLES];
-
+	glm::vec3 robotForward = robot->forward;
+	//  + glm::vec3(-robotForward);
 	int count = 0;
 	if(particleTail >= particleHead) {
 		for(int i = particleHead; i < particleTail; i++) {

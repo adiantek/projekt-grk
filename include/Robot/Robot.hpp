@@ -117,15 +117,19 @@ class Robot : world::Object3D {
 
     void jump();
     void land();
+    glm::vec3 *getPropellersPositions();
 
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 direction;
 
+    glm::vec3 forward;
+
+    int mode = Robot::MODE_STATIONARY;
+
    private:
     glm::vec3 moveDirectionVector;
 
-    int mode = Robot::MODE_STATIONARY;
     float movementSpeed;
     float movementVector;
     void createLegs();
@@ -174,7 +178,6 @@ class Robot : world::Object3D {
     glm::mat4 initialModelMatrix;
     glm::vec3 initialPosition;
     glm::vec3 up;
-    glm::vec3 forward;
 
     physics::RigidBody* rigidBody;
 

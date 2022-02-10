@@ -9,9 +9,9 @@
 
 class ParticleSystem {
 	public:
-		static const int MAX_PARTICLES = 100;
-		Particle particlesList[100];
-		float g_particle_position_size_data[400];
+		static const int MAX_PARTICLES = 200;
+		Particle particlesList[200];
+		float g_particle_position_size_data[800];
 
 		ParticleSystem();
 		~ParticleSystem();

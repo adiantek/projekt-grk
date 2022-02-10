@@ -11,7 +11,7 @@ class Particle {
 
 	public:
         float lifeRemaining = 0.0f;
-        float scale = 1.0f;
+        float scale = 0.20f;
         float gravityEffect = 1.0f;
         glm::vec3 position;
         glm::vec3 velocity;
