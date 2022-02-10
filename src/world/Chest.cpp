@@ -2,6 +2,7 @@
 
 #include <world/Chest.hpp>
 #include <ResourceLoader.hpp>
+#include <Water/Water.hpp>
 
 using namespace world;
 
@@ -31,6 +32,10 @@ void Chest::draw(glm::mat4 mat) {
     glUniformMatrix4fv(res->p_color_armature_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(this->model));
     glUniformMatrix4fv(res->p_color_armature_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(mat * this->model));
     std::vector<glm::mat4> test(50);
+
+    glUniform1i(resourceLoaderExternal->p_color_armature_uni_caustics, 5);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
     glUniformMatrix4fv(res->p_color_armature_uni_jointTransforms, 50, GL_FALSE, glm::value_ptr(test[0]));
     glUniform1i(res->p_color_armature_uni_albedoTexture, 0);
     glActiveTexture(GL_TEXTURE0);
