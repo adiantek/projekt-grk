@@ -24,8 +24,8 @@ Chest::Chest(glm::mat4 model) {
     this->rigidBody = new physics::RigidBody(true, pose, geometry, this);
     geometry.triangleMesh->release();
 
-    for (int i = 0; i < 50; ++i)
-        this->coins.push_back(new Coin(model * glm::translate(glm::vec3(i % 10 * 0.15f - 0.6f, i % 3 == 0 ? 0.1f : -0.1f, (i / 10) * 0.07f + 0.2f))));
+    for (int i = 0; i < 10; ++i)
+        this->coins.push_back(new Coin(model * glm::translate(glm::vec3(i % 2 * 0.6f - 0.6f, i % 3 == 0 ? 0.1f : -0.1f, (i / 2) * 0.28f + 0.2f))));
 }
 
 Chest::~Chest() {

@@ -8,9 +8,9 @@
 using namespace world;
 
 Coin::Coin(glm::mat4 model) {
-    this->model = model * glm::scale(glm::vec3(0.5f));
+    this->model = model * glm::scale(glm::vec3(1.5f));
     physx::PxTransform pose(physx::PxMat44(glm::value_ptr(model)));
-    physx::PxBoxGeometry geometry = resourceLoaderExternal->m_props_coin->createGeometryAABB(glm::vec3(0.5f));
+    physx::PxBoxGeometry geometry = resourceLoaderExternal->m_props_coin->createGeometryAABB(glm::vec3(1.5f));
     this->rigidBody = new physics::RigidBody(false, pose, geometry, this);
     this->rigidBody->density = 2.0f;
     this->rigidBody->setMass(3.0f);
@@ -24,7 +24,7 @@ void Coin::update() {}
 
 void Coin::draw(glm::mat4 mat) {
     ResourceLoader *res = resourceLoaderExternal;
-    glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(0.5f));
+    glm::mat4 model = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(1.5f));
     glUseProgram(res->p_chunk);
     glUniformMatrix4fv(res->p_chunk_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(res->p_chunk_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * model));
@@ -56,7 +56,7 @@ void Coin::draw(glm::mat4 mat) {
 
 void Coin::drawShadow(glm::mat4 mat) {
     glm::mat4 viewMatrix = mat;
-    glm::mat4 modelMatrix = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(0.5f));
+    glm::mat4 modelMatrix = this->rigidBody->getModelMatrix() * glm::scale(glm::vec3(1.5f));
     ResourceLoader *res = resourceLoaderExternal;
     std::vector<Mesh *> meshes = res->m_props_coin->getMeshes();
 
