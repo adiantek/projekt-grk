@@ -3,6 +3,7 @@
 #include <world/Chest.hpp>
 #include <ResourceLoader.hpp>
 #include <Water/Water.hpp>
+#include <Time/Time.hpp>
 
 using namespace world;
 
@@ -24,6 +25,9 @@ Chest::~Chest() {
 }
 
 void Chest::update() {
+    if (timeExternal->lastFrame > 10.0) {
+        this->jointTransforms[2] = glm::eulerAngleX(glm::radians(-60.0f));
+    }
 }
 
 void Chest::draw(glm::mat4 mat) {
@@ -31,12 +35,11 @@ void Chest::draw(glm::mat4 mat) {
     glUseProgram(res->p_color_armature);
     glUniformMatrix4fv(res->p_color_armature_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(this->model));
     glUniformMatrix4fv(res->p_color_armature_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(mat * this->model));
-    std::vector<glm::mat4> test(50);
 
     glUniform1i(resourceLoaderExternal->p_color_armature_uni_caustics, 5);
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
-    glUniformMatrix4fv(res->p_color_armature_uni_jointTransforms, 50, GL_FALSE, glm::value_ptr(test[0]));
+    glUniformMatrix4fv(res->p_color_armature_uni_jointTransforms, 50, GL_FALSE, glm::value_ptr(this->jointTransforms[0]));
     glUniform1i(res->p_color_armature_uni_albedoTexture, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_chest_chest_reinforcment_albedo);
@@ -92,7 +95,7 @@ void Chest::drawShadow(glm::mat4 mat) {
         // Set transformation
         glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
         glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_modelViewProjectionMatrix, 1, GL_FALSE, glm::value_ptr(modelViewProjectionMatrix));
-        glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_jointTransforms, 50, GL_FALSE, glm::value_ptr(test[0]));
+        glUniformMatrix4fv(resourceLoaderExternal->p_armature_shadow_uni_jointTransforms, 50, GL_FALSE, glm::value_ptr(this->jointTransforms[0]));
 
         Core::DrawContext(*context);
     }

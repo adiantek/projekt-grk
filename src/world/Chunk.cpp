@@ -317,6 +317,9 @@ void Chunk::update() {
             vb.configurePos(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition);
         }
     }
+    if (this->chest) {
+        this->chest->update();
+    }
 }
 
 float Chunk::getHeightAt(int32_t x, int32_t z) {
