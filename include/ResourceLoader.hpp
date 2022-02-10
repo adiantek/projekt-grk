@@ -244,6 +244,15 @@ public:
     GLint p_underwater_fog_shader_uni_depthTexture = -1;
     GLint p_underwater_fog_shader_uni_screenTexture = -1;
 
+    // bubble_particle_shader:
+    GLuint p_bubbles_shader = 0;
+    bool p_bubbles_shader_loaded = false;
+    GLint p_bubbles_shader_attr_vertexTexCoord = -1;
+    GLint p_bubbles_shader_attr_vertexPosition = -1;
+    GLint p_bubbles_shader_uni_distanceToSurface = -1;
+    GLint p_bubbles_shader_uni_particlePositionsAndLife = -1;
+    GLint p_bubbles_shader_uni_cameraMatrix = -1;
+
     GLuint p_shader_4_1 = 0;
     bool p_shader_4_1_loaded = false;
     GLint p_shader_4_1_attr_vertexNormal = -1;

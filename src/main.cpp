@@ -30,6 +30,7 @@
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
 #include <Fog/Fog.hpp>
+#include <Particle/ParticleSystem.hpp>
 
 #include "Render_Utils.h"
 #include "Texture.h"
@@ -82,6 +83,8 @@ void do_frame() {
     controller->update();
     robot->update();
     camera->update();
+    particleSystem->update();
+    
     for (auto boid : boids)
         boid->update();
     for (auto boid : boids2)
@@ -152,6 +155,8 @@ void do_frame() {
     waterObject->draw(viewMatrix);
     physicsObject->draw(viewMatrix);
 
+    particleSystem->render();
+
     fog->stopUsingFramebuffer();
 
     utils::Gizmos::draw();
@@ -182,6 +187,8 @@ void init() {
     new water::Water(192.0f, 320.0f, 65.0f, 400, 300.0f, 1200);
     new physics::Physics(9.8f);
 	w = new world::World(0);
+
+    new ParticleSystem();
 
     waterObject->addWorldObject((world::Object3D *)w);
 

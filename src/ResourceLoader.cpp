@@ -224,6 +224,15 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(underwater_fog_shader, screenTexture);
     }
 
+    LOAD_PROGRAM(bubbles_shader, 2, "particles/bubbles.frag", "particles/bubbles.vert") {
+        // DUMP(underwater_fog_shader);
+        ATTRIBUTE(bubbles_shader, vertexPosition);
+        ATTRIBUTE(bubbles_shader, vertexTexCoord);
+        UNIFORM(bubbles_shader, distanceToSurface);
+        UNIFORM(bubbles_shader, particlePositionsAndLife);
+        UNIFORM(bubbles_shader, cameraMatrix);
+    }
+
     LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
         // DUMP(shader_4_1);
         ATTRIBUTE(shader_4_1, vertexNormal);
