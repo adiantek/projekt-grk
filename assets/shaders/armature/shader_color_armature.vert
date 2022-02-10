@@ -40,7 +40,7 @@ void main() {
     vec3 normal = (modelMatrix * vec4(vertexNormal, 0.0)).xyz;
     mat3 tbn = transpose(mat3(tangent, bitangent, normal));
 
-    position = (modelMatrix * vec4(vec3(localPos), 1.0)).xyz;
+    position = (modelMatrix * vec4(localPos.xyz, 1.0)).xyz;
     
     viewDirectionTS = tbn * normalize(cameraPosition - position);
     lightDirectionTS = tbn * normalize(lightPosition - position);
