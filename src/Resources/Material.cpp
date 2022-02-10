@@ -182,7 +182,7 @@ Material* Material::setModelViewProjectionMatrix(glm::mat4 modelViewProjectionMa
 }
 
 Material* Material::setJointTransforms(std::vector<glm::mat4> jointTransforms) {
-    glUniformMatrix4fv(*this->jointTransformsLocation, 20, GL_FALSE, glm::value_ptr(jointTransforms[0]));
+    glUniformMatrix4fv(*this->jointTransformsLocation, 50, GL_FALSE, glm::value_ptr(jointTransforms[0]));
     return this;
 }
 

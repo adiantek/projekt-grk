@@ -1,6 +1,6 @@
 #version 300 es
 
-const int MAX_JOINTS_MER_MODEL = 20;
+const int MAX_JOINTS_MER_MODEL = 50;
 const int MAX_JOINTS_PER_VERTEX = 3;
 
 layout(location = 0) in vec3 vertexPosition;
@@ -40,7 +40,7 @@ void main() {
     vec3 normal = (modelMatrix * vec4(vertexNormal, 0.0)).xyz;
     mat3 tbn = transpose(mat3(tangent, bitangent, normal));
 
-    position = (modelMatrix * vec4(vertexPosition, 1.0)).xyz;
+    position = (modelMatrix * vec4(vec3(localPos), 1.0)).xyz;
     
     viewDirectionTS = tbn * normalize(cameraPosition - position);
     lightDirectionTS = tbn * normalize(lightPosition - position);
