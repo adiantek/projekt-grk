@@ -126,7 +126,7 @@ void main() {
         discard;
     
     vec3 objectColor = texture(colorTexture, textureCoords).xyz;
-    vec3 normal = texture(normalTexture, textureCoords).xyz;
+    vec3 normal = texture(normalTexture, textureCoords).xyz * 2.0 - 1.0;
 
     float computedLightIntensity = 1.0;
 
