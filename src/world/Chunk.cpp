@@ -167,6 +167,8 @@ void Chunk::generate(float *noise) {
 }
 
 void Chunk::decorate1() {
+    this->minDecoratorY = 256.0f;
+    this->maxDecoratorY = 0.0f;
     if ((this->pos.coords.x & 1) && (this->pos.coords.z & 1)) {
         float height = this->getHeightAt(8, 8);
         float scale = 0.01f;
