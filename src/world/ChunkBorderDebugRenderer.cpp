@@ -130,6 +130,6 @@ void ChunkBorderDebugRenderer::draw(glm::mat4 mat) {
     glBindVertexArray(this->vao);
     glLineWidth(1.0F);
     glDrawArrays(GL_LINES, 0, this->sizeOne);
-    glLineWidth(2.0F);
+    glLineWidth(1.0F);
     glDrawArrays(GL_LINES, this->sizeOne, this->vb->getVertices() - this->sizeOne);
 }
