@@ -9,7 +9,7 @@
 
 class ParticleSystem {
 	public:
-		const int MAX_PARTICLES = 100;
+		static const int MAX_PARTICLES = 100;
 		Particle particlesList[100];
 		float g_particle_position_size_data[400];
 
@@ -24,7 +24,9 @@ class ParticleSystem {
 		int particleHead = 0;
 		int particleTail = 0;
 
-		float quadVao[12];
+		float countTime = 0.0f;
+
+		float quadVao[24];
 		GLuint rectVAO, rectVBO;
 
 		void newParticles(int newParticlesCount);

@@ -36,10 +36,5 @@ float Particle::getRotation() {
 }
 
 bool Particle::isAlive() {
-    // velocity.y += GRAVITY * this->gravityEffect * timeExternal->deltaTime;
-    // glm::vec3 change = glm::vec3(velocity);
-    // //scale change
-    // this->position += change;
-    // lifeRemaining += timeExternal->deltaTime;
     return lifeRemaining < lifeLength;
 }

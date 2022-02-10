@@ -225,7 +225,7 @@ void ResourceLoader::loadPrograms() {
     }
 
     LOAD_PROGRAM(bubbles_shader, 2, "particles/bubbles.frag", "particles/bubbles.vert") {
-        // DUMP(underwater_fog_shader);
+        // DUMP(bubbles_shade);
         ATTRIBUTE(bubbles_shader, vertexPosition);
         ATTRIBUTE(bubbles_shader, vertexTexCoord);
         UNIFORM(bubbles_shader, distanceToSurface);

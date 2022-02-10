@@ -9,10 +9,13 @@
 ParticleSystem::ParticleSystem() {
 	particleSystem = this;
     float quadVao[] ={
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f,
-		0.5f, 0.5f, 0.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f,
+
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f,
     };
 
 	glGenVertexArrays(1, &this->rectVAO);
@@ -20,9 +23,10 @@ ParticleSystem::ParticleSystem() {
     glBindVertexArray(this->rectVAO);
     glBindBuffer(GL_ARRAY_BUFFER, this->rectVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVao), &quadVao, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
-	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
 ParticleSystem::~ParticleSystem() {
@@ -32,23 +36,24 @@ ParticleSystem::~ParticleSystem() {
 
 void ParticleSystem::render() {
 	glm::mat4 cameraMatrix = camera->getTransformationMatrix();
-	
 	if(particleTail == MAX_PARTICLES) {
 		particleTail = 0;
 	}
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DODANIE POWINNO BYC ZALEZNE OD CZASU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// if(particlesCount < MAX_PARTICLES) {
-	// 	particlesList[particleTail] = Particle();
-	// 	this->particlesCount += 1;
-	// 	this->particleTail += 1;
-	// }
+	this->countTime += timeExternal->deltaTime;
+	if(countTime >= 0.25f) {
+		if(particlesCount < MAX_PARTICLES) {
+			particlesList[particleTail] = Particle();
+			this->particlesCount += 1;
+			this->particleTail += 1;
+		}
+		countTime = 0.0f;
+	}
 
-	glm::vec4* particlePositionsAndLife = new glm::vec4[particlesCount];
+	glm::vec4 particlePositionsAndLife[MAX_PARTICLES];
 
 	int count = 0;
 	if(particleTail >= particleHead) {
 		for(int i = particleHead; i < particleTail; i++) {
-			//!!!!!!!!!!!!!!!!!!!!!modyfikacja na podstawie life remaining!!!!!!!!!!!!!!!!!!!!!!
 			particlesList[i].position.y += timeExternal->deltaTime;
 			particlesList[i].lifeRemaining += timeExternal->deltaTime;
 			particlePositionsAndLife[count] = glm::vec4(glm::vec3(particlesList[i].position), particlesList[i].lifeRemaining);
@@ -70,16 +75,15 @@ void ParticleSystem::render() {
 	}
 	glUseProgram(resourceLoaderExternal->p_bubbles_shader);
     glUniform1f(resourceLoaderExternal->p_bubbles_shader_uni_distanceToSurface, waterObject->getY() - camera->position.y);
-
     glUniform4fv(resourceLoaderExternal->p_bubbles_shader_uni_particlePositionsAndLife, MAX_PARTICLES, glm::value_ptr(particlePositionsAndLife[0]));
-
     glUniformMatrix4fv(resourceLoaderExternal->p_bubbles_shader_uni_cameraMatrix, 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 
     // glActiveTexture(GL_TEXTURE0);
     // glBindTexture(GL_TEXTURE_2D, this->texture);
     // glUniform1i(resourceLoaderExternal->p_bubbles_shader_uni_texture, 0);
 	glEnable(GL_DEPTH_TEST);
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particlesCount);
+	glBindVertexArray(this->rectVAO);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, 6, particlesCount);
 }
 
 void ParticleSystem::findDeadParticle(){
@@ -114,22 +118,6 @@ void ParticleSystem::findDeadParticle(){
 			}
 		}
 	}
-}
-
-void ParticleSystem::newParticles(int newParticlesCount) {
-	// particlesCount = 0;
-	// for(int i = 0; i < MAX_PARTICLES; i++){
-
-	// 	Particle& p = particlesList[i]; // shortcut
-
-	// 	if(p.isAlive()){
-
-	// 		// Decrease life
-	// 		p.lifeRemaining += timeExternal->deltaTime;
-	// 		if (p.isAlive()){
-	// 		particlesCount++;
-	// 	}
-	// }
 }
 
 void ParticleSystem::update() {
