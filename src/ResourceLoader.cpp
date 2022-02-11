@@ -23,8 +23,8 @@ ResourceLoader::~ResourceLoader() {
 
 void ResourceLoader::loadTextures() {
     loadTextureCubeMap(&this->tex_skybox);
-
     loadTexture("assets/textures/dummy.png", &this->tex_dummy);
+    loadTexture("assets/textures/bubble.png", &this->tex_bubbleTexture);
     loadTexture("assets/textures/entities/barracuda/barracuda_albedo.png", &this->tex_entities_barracuda_barracuda_albedo);
     loadTexture("assets/textures/entities/barracuda/barracuda_normal.png", &this->tex_entities_barracuda_barracuda_normal);
     loadTexture("assets/textures/entities/pilotfish/pilotfish_albedo.png", &this->tex_entities_pilotfish_pilotfish_albedo);
@@ -223,6 +223,17 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(underwater_fog_shader, screenTexture);
     }
 
+    LOAD_PROGRAM(bubbles_shader, 2, "particles/bubbles.frag", "particles/bubbles.vert") {
+        // DUMP(bubbles_shade);
+        ATTRIBUTE(bubbles_shader, vertexPosition);
+        ATTRIBUTE(bubbles_shader, vertexTexCoord);
+        UNIFORM(bubbles_shader, distanceToSurface);
+        UNIFORM(bubbles_shader, particlePositionsAndLife);
+        UNIFORM(bubbles_shader, cameraMatrix);
+        UNIFORM(bubbles_shader, cameraDirection);
+        UNIFORM(bubbles_shader, cameraUp);
+        UNIFORM(bubbles_shader, bubbleTexture);
+    }
     LOAD_PROGRAM(shader_color, 2, "shader_color.frag", "shader_color.vert") {
         // DUMP(shader_color);
         ATTRIBUTE(shader_color, vertexNormal);

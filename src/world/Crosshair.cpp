@@ -42,7 +42,7 @@ void Crosshair::draw(glm::mat4 mat) {
     glUseProgram(resourceLoaderExternal->p_simple_color_shader);
     glUniformMatrix4fv(resourceLoaderExternal->p_simple_color_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glBindVertexArray(this->vao);
-    glLineWidth(2.0F);
+    glLineWidth(1.0F);
     glDrawArrays(GL_LINES, 0, 6);
     glEnable(GL_DEPTH_TEST);
 }

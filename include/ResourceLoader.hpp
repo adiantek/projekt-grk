@@ -25,6 +25,7 @@ public:
     // textures
     GLuint tex_skybox = 0;
     GLuint tex_dummy = 0;
+    GLuint tex_bubbleTexture = 0;
     GLuint tex_entities_barracuda_barracuda_albedo = 0;
     GLuint tex_entities_barracuda_barracuda_normal = 0;
     GLuint tex_entities_pilotfish_pilotfish_albedo = 0;
@@ -249,6 +250,18 @@ public:
     GLint p_underwater_fog_shader_uni_depthTexture = -1;
     GLint p_underwater_fog_shader_uni_screenTexture = -1;
 
+    // bubble_particle_shader:
+    GLuint p_bubbles_shader = 0;
+    bool p_bubbles_shader_loaded = false;
+    GLint p_bubbles_shader_attr_vertexTexCoord = -1;
+    GLint p_bubbles_shader_attr_vertexPosition = -1;
+    GLint p_bubbles_shader_uni_distanceToSurface = -1;
+    GLint p_bubbles_shader_uni_particlePositionsAndLife = -1;
+    GLint p_bubbles_shader_uni_cameraMatrix = -1;
+    GLint p_bubbles_shader_uni_cameraDirection = -1;
+    GLint p_bubbles_shader_uni_cameraUp = -1;
+    GLint p_bubbles_shader_uni_bubbleTexture = -1;
+    
     GLuint p_shader_color = 0;
     bool p_shader_color_loaded = false;
     GLint p_shader_color_attr_vertexNormal = -1;

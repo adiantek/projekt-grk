@@ -878,6 +878,25 @@ glm::vec3 Robot::getWorldPointAt(glm::vec3 point) {
     return result;
 }
 
+glm::vec3 *Robot::getPropellersPositions() {
+    glm::vec3* positions = new glm::vec3[4];
+    glm::mat4 modelMatrix = this->gameObject->getModelMatrix();
+
+    int index = 0;
+    for (RobotPropeller *propeller : std::vector<RobotPropeller*> {
+        this->propellers.topLeft, this->propellers.topRight, this->propellers.bottomLeft, this->propellers.bottomRight
+    }) {
+        positions[index] = modelMatrix * glm::vec4(propeller->joint->getOrigin(), 1.0f);
+        index++;
+    }
+
+    return positions;
+}
+
+glm::mat4 Robot::getGameObjectMatrix() {
+    return this->gameObject->getModelMatrix();
+}
+
 bool Robot::isInGroundMode() {
     return this->mode == Robot::MODE_STATIONARY
         || this->mode == Robot::MODE_WALKING

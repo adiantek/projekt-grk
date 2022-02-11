@@ -58,7 +58,7 @@ Fog::Fog(unsigned int width, unsigned int height, float maxDepth) {
 
     float quadVao[] ={
         1.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f,0.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f,
         -1.0f, 1.0f, 0.0f, 1.0f,
 
         1.0f, 1.0f, 1.0f, 1.0f,
