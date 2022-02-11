@@ -6,7 +6,7 @@ in vec2 TexCoords;
 flat in int instanceID;
 out vec4 color;
 
-// uniform sampler2D sprite;
+uniform sampler2D bubbleTexture;
 uniform float distanceToSurface;
 uniform vec4 particlePositionsAndLife[200];
 
@@ -17,10 +17,13 @@ void main()
 {
     float life = particlePositionsAndLife[instanceID].w/5.0;
     life = clamp(life, 0.0, 1.0);
-    // color = (texture(sprite, TexCoords) * colorBegin);
+    // color = (texture(bubbleTexture, TexCoords) * colorBegin);
 
-    if (distanceToSurface > 0.1) {
-        color = mix(colorBegin, colorEnd, life);
+    vec4 tex = texture(bubbleTexture, TexCoords);
+
+    if (distanceToSurface > 0.1 && tex.a > 0.5) {
+        color = tex;
+        // color = mix(colorBegin, colorEnd, life);
     } else {
         discard;
     }

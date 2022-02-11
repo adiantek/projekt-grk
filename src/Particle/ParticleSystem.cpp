@@ -131,9 +131,10 @@ void ParticleSystem::render() {
     glUniform4fv(resourceLoaderExternal->p_bubbles_shader_uni_particlePositionsAndLife, MAX_PARTICLES, glm::value_ptr(particlePositionsAndLife[0]));
     glUniformMatrix4fv(resourceLoaderExternal->p_bubbles_shader_uni_cameraMatrix, 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, this->texture);
-    // glUniform1i(resourceLoaderExternal->p_bubbles_shader_uni_texture, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, resourceLoaderExternal->tex_bubbleTexture);
+    glUniform1i(resourceLoaderExternal->p_bubbles_shader_uni_bubbleTexture, 0);
+
 	glEnable(GL_DEPTH_TEST);
 	glBindVertexArray(this->rectVAO);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 6, particlesCount);

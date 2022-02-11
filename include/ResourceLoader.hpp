@@ -25,6 +25,7 @@ public:
     // textures
     GLuint tex_skybox = 0;
     GLuint tex_dummy = 0;
+    GLuint tex_bubbleTexture = 0;
     GLuint tex_entities_barracuda_barracuda_albedo = 0;
     GLuint tex_entities_barracuda_barracuda_normal = 0;
     GLuint tex_entities_pilotfish_pilotfish_albedo = 0;
@@ -259,6 +260,7 @@ public:
     GLint p_bubbles_shader_uni_cameraMatrix = -1;
     GLint p_bubbles_shader_uni_cameraDirection = -1;
     GLint p_bubbles_shader_uni_cameraUp = -1;
+    GLint p_bubbles_shader_uni_bubbleTexture = -1;
     
     GLuint p_shader_color = 0;
     bool p_shader_color_loaded = false;
