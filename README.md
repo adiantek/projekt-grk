@@ -32,6 +32,10 @@ Budowanie dla osób nie mających życia:
 - Przycisk `E` - stawianie elementu statycznego
 - Przycisk `Q` - usuwanie elementu (w trybie stawiania elementu)
 - Przycisk `C` - otworzenie lub zamknięcie najbliższej skrzynki (max odległość: 8 jednostek)
+- Przyciski `W`/`A`/`S`/`D` - przemieszczanie się robotem
+- Przycisk `LEWY SHIFT` - szybciej porusza się robot
+- Przycisk `SPACJA` - w górę porusza się robot
+- Przycisk `LEWY ALT` - w dół porusza się robot
 
 ## Rozwiązywanie problemów
 
