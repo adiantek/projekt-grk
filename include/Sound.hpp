@@ -18,6 +18,7 @@ class Sound {
     void start();
     void openChest(float x, float y, float z);
     void closeChest(float x, float y, float z);
+    void pickCoin(float x, float y, float z);
 };
 
 extern Sound *sound;

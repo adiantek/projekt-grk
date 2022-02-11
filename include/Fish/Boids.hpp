@@ -1,14 +1,17 @@
 #pragma once
 
-#include <world/Object3D.hpp>
-#include <glm/glm.hpp>
-#include <Physics/RigidBody.hpp>
-#include <world/World.hpp>
 #include <Render_Utils.h>
-#include <vector>
-#include <algorithm>
 
-template<class T>
+#include <Physics/RigidBody.hpp>
+#include <algorithm>
+#include <glm/glm.hpp>
+#include <vector>
+#include <world/Object3D.hpp>
+#include <world/World.hpp>
+
+namespace fish {
+
+template <class T>
 class Boids : world::Object3D {
    public:
     Boids(unsigned int amount, glm::vec3 position, world::World* w);
@@ -41,4 +44,6 @@ class Boids : world::Object3D {
     world::World* world;
 };
 
-#include <Fish/Boids.cpp>
+}  // namespace fish
+
+#include <Fish/Boids.inl>

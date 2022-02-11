@@ -3,6 +3,7 @@
 #include <Render_Utils.h>
 #include <ResourceLoader.hpp>
 
+using namespace fish;
 
 Cubefish::Cubefish(glm::vec3 position, float mass, float density) {
     physx::PxTransform initPose = physx::PxTransform(position.x, position.y, position.z);

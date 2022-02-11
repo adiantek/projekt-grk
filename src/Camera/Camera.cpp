@@ -2,6 +2,7 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <iostream>
 
 #include <Sound.hpp>
 #include <Camera/Camera.hpp>
@@ -10,6 +11,8 @@
 #include <Fog/Fog.hpp>
 #include <Time/Time.hpp>
 #include <Glow/GlowShader.hpp>
+#include <Physics/Physics.hpp>
+#include <world/World.hpp>
 
 Camera::Camera(int width, int height, float fov, float near, float far, int x, int y) {
     camera = this;
@@ -63,7 +66,7 @@ void Camera::mouseMove(double deltaX, double deltaY) {
 
     // in SWIMMING MODE FROM (-70;70), in WALKING MODE FROM (0;70) !!!!!!
     
-    if(anglePitch + anglePitchChange <= 70 && anglePitch + anglePitchChange >= -70) {
+    if(anglePitch + anglePitchChange <= 70 && anglePitch + anglePitchChange >= -40) {
         anglePitch += anglePitchChange;
     }
 
@@ -92,6 +95,36 @@ void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
     position.x = robot->position.x - offsetX;
     position.z = robot->position.z - offsetZ;
     position.y = robot->position.y + this->offset + verticalD;
+
+    glm::vec3 cameraTransformation = position - (robot->position + glm::vec3(0.0f, 0.5f, 0.0f));
+    glm::vec3 invertedDirection = glm::normalize(cameraTransformation);
+
+    glm::vec3 raycastOrigin = (robot->position + glm::vec3(0.0f, 0.5f, 0.0f) + invertedDirection * 0.1f);
+
+    physx::PxVec3 origin = physx::PxVec3(raycastOrigin.x, raycastOrigin.y, raycastOrigin.z);
+    physx::PxReal maxDistance = distance;
+    physx::PxRaycastBuffer hit;
+    physx::PxQueryFilterData filterData(physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC);
+    filterData.data.word0 = 2;
+    physx::PxVec3 unitDir = physx::PxVec3(invertedDirection.x, invertedDirection.y, invertedDirection.z);
+    
+    bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit, ((physx::PxHitFlags)(physx::PxHitFlag::eDEFAULT)), filterData);
+    if (hit.hasAnyHits()) {
+        if (glm::fastDistance(position, cameraTarget) > 1.0f) {
+            position = glm::vec3(hit.block.position.x, hit.block.position.y, hit.block.position.z)
+            + glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z) * 0.1f;
+        }
+    } 
+
+    float worldY = worldObject->getHeightAt(position.x, position.z);
+
+    if (position.y > 192.0f && position.y < 192.2f) {
+        position.y = 192.2f;
+    }
+
+    if (position.y < worldY) {
+        position.y = worldY;
+    }
 }
 
 void Camera::increaseCameraDistance() {

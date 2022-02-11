@@ -340,6 +340,26 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(coin, roughnessMap);
     }
 
+    LOAD_PROGRAM(rock, 2, "rock.frag", "chunk.vert") {
+        // DUMP(rock);
+        ATTRIBUTE(rock, vertexBitangent);
+        ATTRIBUTE(rock, vertexNormal);
+        ATTRIBUTE(rock, vertexPosition);
+        ATTRIBUTE(rock, vertexTangent);
+        ATTRIBUTE(rock, vertexTexCoord);
+        UNIFORM(rock, cameraPosition);
+        UNIFORM(rock, lightPosition);
+        UNIFORM(rock, lightTransformation);
+        UNIFORM(rock, modelMatrix);
+        UNIFORM(rock, transformation);
+        UNIFORM(rock, waterHeight);
+        UNIFORM(rock, aoMap);
+        UNIFORM(rock, caustics);
+        UNIFORM(rock, colorTexture);
+        UNIFORM(rock, depthMap);
+        UNIFORM(rock, normalSampler);
+    }
+
     LOAD_PROGRAM(pilotfish, 2, "fish/pilotfish.frag", "fish/pilotfish.vert") {
         // DUMP(pilotfish);
         ATTRIBUTE(pilotfish, vertexBitangent);
@@ -486,6 +506,7 @@ void ResourceLoader::loadSounds() {
     loadSound("assets/sound/chestopen.raw", AL_FORMAT_MONO16, 44100, &this->sound_chestopen);
     loadSound("assets/sound/chestclosed.raw", AL_FORMAT_MONO16, 44100, &this->sound_chestclosed);
     loadSound("assets/sound/bg.raw", AL_FORMAT_STEREO16, 48000, &this->sound_bg);
+    loadSound("assets/sound/coin.raw", AL_FORMAT_STEREO16, 48000, &this->sound_coin);
 }
 
 bool ResourceLoader::loadResources() {

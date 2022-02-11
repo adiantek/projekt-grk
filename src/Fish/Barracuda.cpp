@@ -5,6 +5,8 @@
 
 #define BARRACUDA_SCALE 0.5f
 
+using namespace fish;
+
 Barracuda::Barracuda(glm::vec3 position, world::World* world)
 : Fish(resourceLoaderExternal->m_entities_barracuda, position, world, glm::vec3(BARRACUDA_SCALE)) {}
 

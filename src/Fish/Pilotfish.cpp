@@ -5,6 +5,8 @@
 
 #define PILOTFISH_SCALE 0.1f
 
+using namespace fish;
+
 Pilotfish::Pilotfish(glm::vec3 position, world::World* world)
 : Fish(resourceLoaderExternal->m_entities_pilotfish, position, world, glm::vec3(PILOTFISH_SCALE)) {}
 
