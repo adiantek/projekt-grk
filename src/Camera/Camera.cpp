@@ -13,9 +13,6 @@
 #include <Glow/GlowShader.hpp>
 #include <Physics/Physics.hpp>
 #include <world/World.hpp>
-#include <utils/Gizmos.hpp>
-
-using namespace utils;
 
 Camera::Camera(int width, int height, float fov, float near, float far, int x, int y) {
     camera = this;
@@ -29,12 +26,6 @@ Camera::Camera(int width, int height, float fov, float near, float far, int x, i
     this->y = y;
 
     updatePerspective();
-
-    Gizmos::onDraw([this]() {
-
-        Gizmos::line(robot->position, this->position, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-
-    });
 }
 
 Camera::~Camera() {}
@@ -115,8 +106,10 @@ void Camera::calculateCameraPosition(float horizontalD, float verticalD) {
     
     bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit, ((physx::PxHitFlags)(physx::PxHitFlag::eDEFAULT)), filterData);
     if (hit.hasAnyHits()) {
-        position = glm::vec3(hit.block.position.x, hit.block.position.y, hit.block.position.z)
-        + glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z) * 0.1f;
+        if (glm::fastDistance(position, cameraTarget) > 1.0f) {
+            position = glm::vec3(hit.block.position.x, hit.block.position.y, hit.block.position.z)
+            + glm::vec3(hit.block.normal.x, hit.block.normal.y, hit.block.normal.z) * 0.1f;
+        }
     } 
 
     float worldY = worldObject->getHeightAt(position.x, position.z);
