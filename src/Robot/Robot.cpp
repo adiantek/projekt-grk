@@ -349,6 +349,8 @@ void Robot::update() {
         this->coins[i]->update();
         glm::mat4 model = this->coins[i]->rigidBody->getModelMatrix();
         if (glm::distance(glm::vec3(model[3]), this->position) < 1.0f) {
+            glm::vec3 pos = glm::vec3(model[3]);
+            sound->pickCoin(pos.x, pos.y, pos.z);
             delete this->coins[i];
             if (i != this->coins.size() - 1) {
                 this->coins[i] = this->coins[this->coins.size() - 1];

@@ -143,3 +143,12 @@ void Sound::closeChest(float x, float y, float z) {
     alSource3f(resourceLoaderExternal->sound_chestclosed, AL_POSITION, x, y, z);
     alSourcePlay(resourceLoaderExternal->sound_chestclosed);
 }
+
+void Sound::pickCoin(float x, float y, float z) {
+    if (!this->loaded) {
+        return;
+    }
+    alSourcei(resourceLoaderExternal->sound_coin, AL_SOURCE_RELATIVE, AL_FALSE);
+    alSource3f(resourceLoaderExternal->sound_coin, AL_POSITION, x, y, z);
+    alSourcePlay(resourceLoaderExternal->sound_coin);
+}

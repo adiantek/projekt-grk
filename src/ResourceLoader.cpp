@@ -496,6 +496,7 @@ void ResourceLoader::loadSounds() {
     loadSound("assets/sound/chestopen.raw", AL_FORMAT_MONO16, 44100, &this->sound_chestopen);
     loadSound("assets/sound/chestclosed.raw", AL_FORMAT_MONO16, 44100, &this->sound_chestclosed);
     loadSound("assets/sound/bg.raw", AL_FORMAT_STEREO16, 48000, &this->sound_bg);
+    loadSound("assets/sound/coin.raw", AL_FORMAT_STEREO16, 48000, &this->sound_coin);
 }
 
 bool ResourceLoader::loadResources() {
