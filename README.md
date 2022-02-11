@@ -42,6 +42,15 @@ Budowanie dla osób nie mających życia:
 - Krzyżyk - kamera wchodzi w interakcję z grupą obiektów wskazywaną wokół kursora,
 - Budowanie - budowanie elementów w miejscu wskazanym przez kamerę.
 
+## Wykorzystane biblioteki
+- https://github.com/madler/zlib
+- https://github.com/glennrp/libpng
+- https://github.com/assimp/assimp
+- https://github.com/glfw/glfw
+- https://github.com/NVIDIAGameWorks/PhysX
+- https://github.com/kcat/openal-soft
+- https://emscripten.org/ (wersja przeglądarkowa tylko)
+
 ## Rozwiązywanie problemów
 
 > Nie odnaleziono pliku `ucrtbased.dll`
