@@ -45,8 +45,9 @@ class World : Object3D {
     int64_t seed;
     SimplexNoiseGenerator *noise;
     utils::Frustum *frustum;
+    void (*onChunkLoad)(Random *random, world::ChunkPosition pos);
 
-    World(int64_t seed);
+    World(int64_t seed, void (*onChunkLoad)(Random *random, world::ChunkPosition pos));
     virtual ~World();
 
     /**
