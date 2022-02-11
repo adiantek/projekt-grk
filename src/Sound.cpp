@@ -120,7 +120,7 @@ void Sound::start() {
         return;
     }
     alSourcei(resourceLoaderExternal->sound_bg, AL_LOOPING, AL_TRUE);
-    alSourcef(resourceLoaderExternal->sound_bg, AL_GAIN, 0.1f); // volume
+    alSourcef(resourceLoaderExternal->sound_bg, AL_GAIN, 0.5f); // volume
     alSourcei(resourceLoaderExternal->sound_bg, AL_SOURCE_RELATIVE, AL_TRUE);
     alSource3f(resourceLoaderExternal->sound_bg, AL_POSITION, 0, 0, 0);
     alSourcePlay(resourceLoaderExternal->sound_bg);
