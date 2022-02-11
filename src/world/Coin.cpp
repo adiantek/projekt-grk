@@ -1,13 +1,19 @@
-#include <world/Coin.hpp>
 #include <opengl.h>
-#include <ResourceLoader.hpp>
-#include <Water/Water.hpp>
-#include <Time/Time.hpp>
 
+#include <Random.hpp>
+#include <ResourceLoader.hpp>
+#include <Time/Time.hpp>
+#include <Water/Water.hpp>
+#include <world/Coin.hpp>
 
 using namespace world;
 
 Coin::Coin(glm::mat4 model) {
+    float x = random->nextFloat(-0.004f, 0.004f);
+    float z = random->nextFloat(-0.004f, 0.004f);
+
+    this->randomOffset = glm::translate(glm::vec3(x, 0.0f, z));
+
     this->model = model * glm::scale(glm::vec3(1.5f));
     physx::PxTransform pose(physx::PxMat44(glm::value_ptr(model)));
     physx::PxBoxGeometry geometry = resourceLoaderExternal->m_props_coin->createGeometryAABB(glm::vec3(1.5f));
@@ -18,15 +24,16 @@ Coin::Coin(glm::mat4 model) {
 
 Coin::~Coin() {
     delete this->rigidBody;
+    delete this->random;
 }
 
 void Coin::update() {
-    if (this->openingAnimationStage < 4.0f) {
+    if (this->openingAnimationStage < 2.0f) {
         this->rigidBody->setKinematic(true);
         this->openingAnimationStage += timeExternal->deltaTime;
 
-        glm::mat4 model = this->rigidBody->getModelMatrix();
-        model[3].y += 1.69f * timeExternal->deltaTime;
+        glm::mat4 model = this->rigidBody->getModelMatrix() * this->randomOffset;
+        model[3].y += 3.0f * timeExternal->deltaTime;
 
         this->rigidBody->setKinematicTarget(model);
     } else {
@@ -74,12 +81,11 @@ void Coin::drawShadow(glm::mat4 mat) {
 
     glm::mat4 modelViewProjectionMatrix = viewMatrix * modelMatrix;
 
-
     // Iterate over meshes
     for (int i = 0; i < meshes.size(); i++) {
-        Mesh* mesh = meshes[i];
+        Mesh *mesh = meshes[i];
 
-        Core::RenderContext* context = mesh->getRenderContext();
+        Core::RenderContext *context = mesh->getRenderContext();
 
         glUseProgram(resourceLoaderExternal->p_environment_map);
         glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
