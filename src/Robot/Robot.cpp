@@ -856,22 +856,22 @@ glm::vec3 Robot::getWorldPointAt(glm::vec3 point) {
     // If robot would like to use physx, this is the place to do it
     // float maxSlope = 0.5f;
 
-    // glm::vec3 d = glm::eulerAngleX(glm::radians(90.0f)) * glm::vec4(this->up, 1.0f);
-    // physx::PxVec3 unitDir = physx::PxVec3(d.x, d.y, d.z);
-    // physx::PxVec3 origin = physx::PxVec3(point.x, point.y, point.z) - (unitDir * 0.2f);
-    // physx::PxReal maxDistance = 100;
-    // physx::PxRaycastBuffer hit;
-    // physx::PxQueryFilterData filterData(physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC);
-    // filterData.data.word0 = 2;
-    
-    // bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit, ((physx::PxHitFlags)(physx::PxHitFlag::eDEFAULT)), filterData);
-    // if (hit.hasAnyHits()) {
-    //     std::cout <<  "Raycast hit at " << hit.block.position.x << ", " << hit.block.position.y << ", " << hit.block.position.z << std::endl;
-    //     physx::PxVec3 physicResult = (hit.block.position - (unitDir * 0.05f));
-    //     result = glm::vec3(physicResult.x, physicResult.y, physicResult.z);
-    // } else {
-    //     std::cout << "Raycast did not hit" << std::endl;
-    // }
+    glm::vec3 d = glm::normalize(robot->position - glm::vec3(this->gameObject->getModelMatrix() * glm::vec4(robot->up, 1.0f)));
+    physx::PxVec3 unitDir = physx::PxVec3(d.x, d.y, d.z);
+    physx::PxVec3 origin = physx::PxVec3(point.x, point.y, point.z) - (unitDir * 0.1f);
+    physx::PxReal maxDistance = 100;
+    physx::PxRaycastBuffer hit;
+    physx::PxQueryFilterData filterData(physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC);
+    filterData.data.word0 = 2;
+
+    bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit, ((physx::PxHitFlags)(physx::PxHitFlag::eDEFAULT)), filterData);
+    if (hit.hasAnyHits()) {
+        std::cout << "Raycast hit at " << hit.block.position.x << ", " << hit.block.position.y << ", " << hit.block.position.z << std::endl;
+        physx::PxVec3 physicResult = (hit.block.position - (unitDir * 0.05f));
+        result = glm::vec3(physicResult.x, physicResult.y, physicResult.z);
+    } else {
+        std::cout << "Raycast did not hit" << std::endl;
+    }
 
     return result;
 }
