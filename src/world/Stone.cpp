@@ -28,11 +28,11 @@ void Stone::draw(glm::mat4 mat) {
             Core::DrawContext(*(res->m_rocks_rock_big1->getMeshes()[0]->getRenderContext()));
             break;
         case 1:
-            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small2_rock_small2_albedo);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small1_rock_small1_albedo);
             Core::DrawContext(*(res->m_rocks_rock_small1->getMeshes()[0]->getRenderContext()));
             break;
         case 2:
-            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small1_rock_small1_albedo);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small2_rock_small2_albedo);
             Core::DrawContext(*(res->m_rocks_rock_small2->getMeshes()[0]->getRenderContext()));
             break;
     }

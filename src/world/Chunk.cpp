@@ -186,16 +186,30 @@ void Chunk::decorate1() {
                     * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
                     * glm::scale(glm::vec3(scale)));
     } else {
-        float xpos = this->chunkRandom->nextFloat() * 16;
-        float zpos = this->chunkRandom->nextFloat() * 16;
+        // max rozmiar kamienia od srodka: 4,84
+        // origin mam na środku
+        // 8.0 -> 8.0 + 4.84 = 12.84
+        // 8.0 + 3.16
+        // 8.0 - 3.16
+        float xpos = 4.84f + this->chunkRandom->nextFloat() * 6.32f;
+        float zpos = 4.84f + this->chunkRandom->nextFloat() * 6.32f;
         this->chest = 0;
-        float height = this->getHeightAt(xpos, zpos) + 30.0f;
-        float scale = this->chunkRandom->nextFloat() * 7.0f + 1.0f;
-        this->stone = new Stone(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
-            //  * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
-            // * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
-            * glm::scale(glm::vec3(scale)),
-            1);
+        float height = this->getHeightAt(xpos, zpos);
+        if (this->chunkRandom->nextFloat() * 192 > height) {
+            float scale = this->chunkRandom->nextFloat() * 1.5f + 0.5f;
+            if (this->minDecoratorY > height) {
+                this->minDecoratorY = height;
+            }
+            if (this->maxDecoratorY < height + scale * 2.43f) {
+                this->maxDecoratorY = height + scale * 2.43f;
+            }
+            this->stone = new Stone(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(1,0,0))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,1,0))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                * glm::scale(glm::vec3(scale)),
+                this->chunkRandom->nextInt(3));
+        }
     }
     this->grass_len = 2048;
     this->grass = new size_t[this->grass_len];
