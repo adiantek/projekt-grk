@@ -4,7 +4,7 @@ Projekt z grafiki komputerowej
 Wersja online: https://adiantek.github.io/projekt-grk/ \
 Wersja do pobrania: https://github.com/adiantek/projekt-grk/releases/download/1.0/GrafikaKomputerowa.zip \
 Wymagania projektu ze specyfikacji: https://github.com/adiantek/projekt-grk/blob/main/projekt.md \
-Podsumowanie projektu: https://github.com/adiantek/projekt-grk/wiki/Podsumowanie-projektu \
+Podsumowanie projektu: https://github.com/adiantek/projekt-grk/wiki/Podsumowanie-projektu
 
 Wymagane:
 - [CMake](https://cmake.org/download/)
