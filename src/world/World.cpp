@@ -204,17 +204,18 @@ void World::updateChunks() {
 
 void World::drawChunks(glm::mat4 mat) {
     bool first = true;
-    int drawChunks = 0;
-    int totalChunks = 0;
+    this->frustumTotal = 0;
+    this->frustumDraw = 0;
+    this->frustumDrawDecorator = 0;
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
         int minX = ch->pos.coords.x << 4;
         int minZ = ch->pos.coords.z << 4;
-        totalChunks++;
+        this->frustumTotal++;
         if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), (float)ch->maxY, (float)(minZ + 16))) {
             continue;
         }
-        drawChunks++;
+        this->frustumDraw++;
         if (first) {
             Chunk::prepareRendering(mat);
             first = false;
@@ -225,30 +226,27 @@ void World::drawChunks(glm::mat4 mat) {
         Chunk *ch = it.second;
         int minX = ch->pos.coords.x << 4;
         int minZ = ch->pos.coords.z << 4;
-        if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
+        if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minDecoratorY, (float)minZ, (float)(minX + 16), (float)ch->maxDecoratorY, (float)(minZ + 16))) {
             if (ch->frustumVisible) {
                 ch->frustumVisible = false;
                 ch->onHide();
             }
             continue;
         }
+        this->frustumDrawDecorator++;
         ch->draw(mat);
         if (!ch->frustumVisible) {
             ch->frustumVisible = true;
             ch->onShow();
         }
     }
-    // LOGD("Frustum: %d / %d", drawChunks, totalChunks);
 }
 
 void World::drawShadowChunks(glm::mat4 mat) {
-    int drawChunks = 0;
-    int totalChunks = 0;
     for (auto &it : this->chunks) {
         Chunk *ch = it.second;
         int minX = ch->pos.coords.x << 4;
         int minZ = ch->pos.coords.z << 4;
-        totalChunks++;
         if (!this->frustum->isBoxInFrustum((float)minX, (float)ch->minY, (float)minZ, (float)(minX + 16), 256.0f, (float)(minZ + 16))) {
             if (ch->frustumShadowVisible) {
                 ch->frustumShadowVisible = false;
@@ -256,7 +254,6 @@ void World::drawShadowChunks(glm::mat4 mat) {
             }
             continue;
         }
-        drawChunks++;
         ch->drawShadow(mat);
         if (!ch->frustumShadowVisible) {
             ch->frustumShadowVisible = true;

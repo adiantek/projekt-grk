@@ -335,10 +335,23 @@ void Robot::update() {
     
     this->updateDirections();
     this->rigidBody->setKinematicTarget(this->gameObject->getModelMatrix());
+
+    for (int i = (int)this->coins.size() - 1; i > -1; --i) {
+        this->coins[i]->update();
+        glm::mat4 model = this->coins[i]->rigidBody->getModelMatrix();
+        if (glm::distance(glm::vec3(model[3]), this->position) < 1.0f) {
+            delete this->coins[i];
+            this->coins[i] = this->coins[this->coins.size() - 1];
+            this->coins.pop_back();
+            this->collectedCoins++;
+        }
+    }
 }
 
 void Robot::draw(glm::mat4 mat) {
     this->gameObject->draw(mat);
+    for (auto coin : this->coins)
+        coin->draw(mat);
 }
 
 void Robot::drawShadow(glm::mat4 mat) {

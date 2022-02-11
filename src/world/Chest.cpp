@@ -19,7 +19,7 @@ using namespace world;
 
 Chest::Chest(glm::mat4 model) {
     this->object3DType = 1;
-    this->model = model * glm::scale(glm::vec3(0.01f));
+    this->model = model;
     physx::PxTransform pose(physx::PxMat44(glm::value_ptr(model)));
     physx::PxTriangleMeshGeometry geometry = resourceLoaderExternal->m_props_chest->createGeometry(glm::vec3(0.01f));
     this->rigidBody = new physics::RigidBody(true, pose, geometry, this);

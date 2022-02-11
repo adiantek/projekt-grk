@@ -6,6 +6,7 @@
 #include <glm/ext.hpp>
 #include <world/Object3D.hpp>
 #include <Physics/RigidBody.hpp>
+#include <world/Coin.hpp>
 
 namespace entity {
 
@@ -121,6 +122,9 @@ class Robot : world::Object3D {
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 direction;
+
+    std::vector<world::Coin*> coins;
+    unsigned int collectedCoins = 0;
 
    private:
     glm::vec3 moveDirectionVector;
