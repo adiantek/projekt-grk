@@ -10,7 +10,7 @@
 long long static seeder = 0L;
 
 template<class T>
-Boids<T>::Boids(unsigned int amount, glm::vec3 position, world::World* w) : random(seeder) {;
+fish::Boids<T>::Boids(unsigned int amount, glm::vec3 position, world::World* w) : random(seeder) {;
     seeder++;
     for (unsigned int i = 0; i < amount; ++i) {
         float x = this->random.nextFloat(-(float)amount / 3.0f, (float)amount / 3.0f);
@@ -23,28 +23,28 @@ Boids<T>::Boids(unsigned int amount, glm::vec3 position, world::World* w) : rand
 }
 
 template<class T>
-Boids<T>::~Boids() {
+fish::Boids<T>::~Boids() {
     for (auto boid : this->boidList) {
         delete boid;
     }
 }
 
 template<class T>
-void Boids<T>::draw(glm::mat4 mat) {
+void fish::Boids<T>::draw(glm::mat4 mat) {
     for (auto boid : this->boidList) {
         boid->draw(mat);
     }
 }
 
 template<class T>
-void Boids<T>::drawShadow(glm::mat4 mat) {
+void fish::Boids<T>::drawShadow(glm::mat4 mat) {
     for (auto boid : this->boidList) {
         boid->drawShadow(mat);
     }
 }
 
 template<class T>
-void Boids<T>::update() {
+void fish::Boids<T>::update() {
     this->updateTarget();
     for (auto boid : this->boidList) {
         this->swimTowardsCenter(boid);
@@ -57,7 +57,7 @@ void Boids<T>::update() {
 }
 
 template<class T>
-void Boids<T>::swimTowardsCenter(T* boid) {
+void fish::Boids<T>::swimTowardsCenter(T* boid) {
     int numNeighbors = 0;
     glm::vec3 center(0.0f);
     glm::vec3 position = glm::vec3(boid->rigidBody->getModelMatrix()[3]);
@@ -77,12 +77,12 @@ void Boids<T>::swimTowardsCenter(T* boid) {
 }
 
 template<class T>
-void Boids<T>::swimTowardsTarget(T* boid) {
+void fish::Boids<T>::swimTowardsTarget(T* boid) {
     boid->setTarget(this->target);
 }
 
 template<class T>
-void Boids<T>::avoidOthers(T* boid) {
+void fish::Boids<T>::avoidOthers(T* boid) {
     glm::vec3 move(0.0f);
     glm::vec3 position = glm::vec3(boid->rigidBody->getModelMatrix()[3]);
     for (auto otherBoid : this->boidList) {
@@ -97,7 +97,7 @@ void Boids<T>::avoidOthers(T* boid) {
 }
 
 template<class T>
-void Boids<T>::matchVelocity(T* boid) {
+void fish::Boids<T>::matchVelocity(T* boid) {
     int numNeighbors = 0;
     glm::vec3 averageVelocity(0.0f);
     glm::vec3 position = glm::vec3(boid->rigidBody->getModelMatrix()[3]);
@@ -117,19 +117,19 @@ void Boids<T>::matchVelocity(T* boid) {
 }
 
 template<class T>
-void Boids<T>::limitSpeed(T* boid) {
+void fish::Boids<T>::limitSpeed(T* boid) {
     if (glm::length(boid->rigidBody->getLinearVelocity()) > this->maxSpeed) {
         boid->rigidBody->addForce(-boid->rigidBody->getLinearVelocity());
     }
 }
 
 template<class T>
-void Boids<T>::addRandomMovement(T* boid) {
+void fish::Boids<T>::addRandomMovement(T* boid) {
     boid->rigidBody->addForce((glm::vec3(this->random.nextFloat(), this->random.nextFloat(), this->random.nextFloat()) - 1.0f) * 2.0f * this->randomFactor);
 }
 
 template<class T>
-void Boids<T>::updateTarget() {
+void fish::Boids<T>::updateTarget() {
     if ((float)timeExternal->lastFrame - this->lastTargetChange > 2.0f) {
         this->target = this->boidList[0]->findTarget();
         this->lastTargetChange = (float)timeExternal->lastFrame;

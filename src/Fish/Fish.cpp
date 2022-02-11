@@ -5,6 +5,8 @@
 #include <Robot/Robot.hpp>
 #include <Time/Time.hpp>
 
+using namespace fish;
+
 Fish::Fish(Model* model, glm::vec3 position, world::World* world, glm::vec3 scale) {
     this->model = model;
     physx::PxTransform pose = physx::PxTransform(position.x, position.y, position.z);

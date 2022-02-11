@@ -1,9 +1,11 @@
 #pragma once
 
-#include <world/Object3D.hpp>
-#include <Resources/Model.hpp>
 #include <Physics/RigidBody.hpp>
+#include <Resources/Model.hpp>
 #include <glm/glm.hpp>
+#include <world/Object3D.hpp>
+
+namespace fish {
 
 class Cubefish : world::Object3D {
    public:
@@ -18,3 +20,5 @@ class Cubefish : world::Object3D {
    private:
     physics::RigidBody* rigidBody;
 };
+
+}  // namespace fish

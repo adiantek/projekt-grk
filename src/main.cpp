@@ -53,11 +53,11 @@ bool initialized = false;
 
 ResourceLoader resourceLoader;
 
-std::vector<Boids<Pilotfish> *> boids;
-std::vector<Boids<Barracuda> *> boids2;
-std::vector<Boids<RedSnapper> *> boids3;
-std::vector<Boids<Golden> *> boids4;
-std::vector<Cubefish *> cubefish;
+std::vector<fish::Boids<fish::Pilotfish> *> boids;
+std::vector<fish::Boids<fish::Barracuda> *> boids2;
+std::vector<fish::Boids<fish::RedSnapper> *> boids3;
+std::vector<fish::Boids<fish::Golden> *> boids4;
+std::vector<fish::Cubefish *> cubefish;
 
 world::World *w;
 
@@ -187,31 +187,31 @@ void init() {
     Random random(0L);
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<Pilotfish> *boid = new Boids<Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
+        fish::Boids<fish::Pilotfish> *boid = new fish::Boids<fish::Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids.push_back(boid);
     }
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<Barracuda> *boid = new Boids<Barracuda>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
+        fish::Boids<fish::Barracuda> *boid = new fish::Boids<fish::Barracuda>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids2.push_back(boid);
     }
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<RedSnapper> *boid = new Boids<RedSnapper>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
+        fish::Boids<fish::RedSnapper> *boid = new fish::Boids<fish::RedSnapper>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids3.push_back(boid);
     }
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<Golden> *boid = new Boids<Golden>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
+        fish::Boids<fish::Golden> *boid = new fish::Boids<fish::Golden>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids4.push_back(boid);
     }
 
-    cubefish.push_back(new Cubefish(glm::vec3(24.0f, 400.0f, -95.0f), 1.0f, 0.8f));
-    cubefish.push_back(new Cubefish(glm::vec3(27.0f, 400.0f, -95.0f), 3.0f, 2.4f));
+    cubefish.push_back(new fish::Cubefish(glm::vec3(24.0f, 400.0f, -95.0f), 1.0f, 0.8f));
+    cubefish.push_back(new fish::Cubefish(glm::vec3(27.0f, 400.0f, -95.0f), 3.0f, 2.4f));
     waterObject->addWorldObject((world::Object3D *)cubefish[0]);
     waterObject->addWorldObject((world::Object3D *)cubefish[1]);
 }
