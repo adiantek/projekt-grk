@@ -120,7 +120,7 @@ void Sound::start() {
         return;
     }
     alSourcei(resourceLoaderExternal->sound_bg, AL_LOOPING, AL_TRUE);
-    alSourcef(resourceLoaderExternal->sound_bg, AL_GAIN, 0.1f); // volume
+    alSourcef(resourceLoaderExternal->sound_bg, AL_GAIN, 0.5f); // volume
     alSourcei(resourceLoaderExternal->sound_bg, AL_SOURCE_RELATIVE, AL_TRUE);
     alSource3f(resourceLoaderExternal->sound_bg, AL_POSITION, 0, 0, 0);
     alSourcePlay(resourceLoaderExternal->sound_bg);
@@ -142,4 +142,13 @@ void Sound::closeChest(float x, float y, float z) {
     alSourcei(resourceLoaderExternal->sound_chestclosed, AL_SOURCE_RELATIVE, AL_FALSE);
     alSource3f(resourceLoaderExternal->sound_chestclosed, AL_POSITION, x, y, z);
     alSourcePlay(resourceLoaderExternal->sound_chestclosed);
+}
+
+void Sound::pickCoin(float x, float y, float z) {
+    if (!this->loaded) {
+        return;
+    }
+    alSourcei(resourceLoaderExternal->sound_coin, AL_SOURCE_RELATIVE, AL_FALSE);
+    alSource3f(resourceLoaderExternal->sound_coin, AL_POSITION, x, y, z);
+    alSourcePlay(resourceLoaderExternal->sound_coin);
 }

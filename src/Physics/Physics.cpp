@@ -246,7 +246,7 @@ void Physics::place(bool dynamic) {
         model = glm::translate(position) * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)));
     }
     if (dynamic || hit.hasAnyHits())
-        this->blocks.push_back(new Cubefish(model, 3.0f, 3.0f, this->models[currentModel], dynamic));
+        this->blocks.push_back(new fish::Cubefish(model, 3.0f, 3.0f, this->models[currentModel], dynamic));
 }
 
 void Physics::remove() {

@@ -5,6 +5,8 @@
 
 #define GOLDEN_SCALE 0.5f
 
+using namespace fish;
+
 Golden::Golden(glm::vec3 position, world::World* world)
 : Fish(resourceLoaderExternal->m_entities_wild_golden_fish, position, world, glm::vec3(GOLDEN_SCALE)) {}
 

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <world/Object3D.hpp>
-#include <world/World.hpp>
 #include <Physics/RigidBody.hpp>
 #include <Resources/Model.hpp>
+#include <world/Object3D.hpp>
+#include <world/World.hpp>
+
+namespace fish {
 
 class Fish : world::Object3D {
    public:
@@ -23,3 +25,5 @@ class Fish : world::Object3D {
     glm::vec3 target;
     Random* random;
 };
+
+}  // namespace fish

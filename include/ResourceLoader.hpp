@@ -179,6 +179,7 @@ public:
     ALuint sound_chestopen = 0xFFFFFFFF;
     ALuint sound_chestclosed = 0xFFFFFFFF;
     ALuint sound_bg = 0xFFFFFFFF;
+    ALuint sound_coin = 0xFFFFFFFF;
 
     // programs:
     GLuint p_color_armature = 0;

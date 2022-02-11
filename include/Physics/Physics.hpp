@@ -40,7 +40,7 @@ class Physics {
     physx::PxCooking* cooking = nullptr;
     physx::PxDefaultCpuDispatcher* dispatcher = nullptr;
     float timeToProccess = 0.0f;
-    std::vector<Cubefish*> blocks;
+    std::vector<fish::Cubefish*> blocks;
     std::vector<Model*> models;
 };
 }  // namespace physics

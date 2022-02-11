@@ -5,6 +5,8 @@
 
 #define REDSNAPPER_SCALE 0.5f
 
+using namespace fish;
+
 RedSnapper::RedSnapper(glm::vec3 position, world::World* world)
 : Fish(resourceLoaderExternal->m_entities_red_snapper, position, world, glm::vec3(REDSNAPPER_SCALE)) {}
 
