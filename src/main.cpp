@@ -36,6 +36,7 @@
 #include <Physics/RigidBody.hpp>
 #include <Fog/Fog.hpp>
 #include <Particle/ParticleSystem.hpp>
+#include <world/ChunkPosition.hpp>
 
 #include "PxPhysics.h"
 #include "Render_Utils.h"
@@ -172,6 +173,35 @@ void do_frame() {
     glfwSwapBuffers(window);
 }
 
+void onChunkLoad(Random *random, world::ChunkPosition pos) {
+    int minX = pos.coords.x << 4;
+    int minZ = pos.coords.z << 4;
+
+    if (random->nextFloat() < 0.02f) {
+        fish::Boids<fish::Pilotfish> *boid = new fish::Boids<fish::Pilotfish>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
+        waterObject->addWorldObject((world::Object3D *)boid);
+        boids.push_back(boid);
+    }
+    
+    if (random->nextFloat() < 0.02f) {
+        fish::Boids<fish::Barracuda> *boid = new fish::Boids<fish::Barracuda>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
+        waterObject->addWorldObject((world::Object3D *)boid);
+        boids2.push_back(boid);
+    }
+    
+    if (random->nextFloat() < 0.02f) {
+        fish::Boids<fish::RedSnapper> *boid = new fish::Boids<fish::RedSnapper>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
+        waterObject->addWorldObject((world::Object3D *)boid);
+        boids3.push_back(boid);
+    }
+    
+    if (random->nextFloat() < 0.02f) {
+        fish::Boids<fish::Golden> *boid = new fish::Boids<fish::Golden>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
+        waterObject->addWorldObject((world::Object3D *)boid);
+        boids4.push_back(boid);
+    }
+}
+
 void init() {
     if (initialized) return;
     initialized = true;
@@ -186,7 +216,7 @@ void init() {
     fog = new Fog(camera->width, camera->height, 256.0);
     new water::Water(192.0f, 320.0f, 65.0f, 400, 300.0f, 1200);
     new physics::Physics(9.8f);
-    w = new world::World(0);
+    w = new world::World(0, onChunkLoad);
 
     new ParticleSystem();
 
@@ -197,31 +227,6 @@ void init() {
     glEnable(GL_DEPTH_TEST);
 
     Random random(0L);
-
-    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        fish::Boids<fish::Pilotfish> *boid = new fish::Boids<fish::Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
-        waterObject->addWorldObject((world::Object3D *)boid);
-        boids.push_back(boid);
-    }
-
-    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        fish::Boids<fish::Barracuda> *boid = new fish::Boids<fish::Barracuda>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
-        waterObject->addWorldObject((world::Object3D *)boid);
-        boids2.push_back(boid);
-    }
-
-    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        fish::Boids<fish::RedSnapper> *boid = new fish::Boids<fish::RedSnapper>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
-        waterObject->addWorldObject((world::Object3D *)boid);
-        boids3.push_back(boid);
-    }
-
-    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        fish::Boids<fish::Golden> *boid = new fish::Boids<fish::Golden>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
-        waterObject->addWorldObject((world::Object3D *)boid);
-        boids4.push_back(boid);
-    }
-
     cubefish.push_back(new fish::Cubefish(glm::vec3(24.0f, 400.0f, -95.0f), 1.0f, 0.8f));
     cubefish.push_back(new fish::Cubefish(glm::vec3(27.0f, 400.0f, -95.0f), 3.0f, 2.4f));
     waterObject->addWorldObject((world::Object3D *)cubefish[0]);

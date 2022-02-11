@@ -282,6 +282,7 @@ void Chunk::decorate1() {
             i--;
         }
     }
+    this->world->onChunkLoad(this->chunkRandom, this->pos);
 }
 
 void Chunk::onShow() {
