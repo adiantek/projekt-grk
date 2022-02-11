@@ -212,7 +212,7 @@ void Chunk::decorate1() {
                 this->chunkRandom->nextInt(3));
         }
     }
-    this->grass_len = 2048;
+    this->grass_len = 256;
     this->grass = new size_t[this->grass_len];
     this->grass_shadow = new size_t[this->grass_len];
     this->grass_matrices = new float[this->grass_len * 16];

@@ -27,7 +27,7 @@ Budowanie dla osób nie mających życia:
 - Przycisk `R` - zmiana trybu dla klawisza `F`
 - Przycisk `G` w trybie stawiania elementów: zmiana modelu do postawienia (kula, sześcian, itd.)
 - Przycisk `E` - stawianie elementu statycznego
-- Przycisk `Q` - usuwanie elementu
+- Przycisk `Q` - usuwanie elementu (w trybie stawiania elementu)
 - Przycisk `C` - otworzenie lub zamknięcie najbliższej skrzynki (max odległość: 8 jednostek)
 
 ## Rozwiązywanie problemów
