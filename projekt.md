@@ -7,13 +7,13 @@ Celem projektu jest stworzenie gry, która rozgrywa się w środowisku podwodnym
 ## Wymagania obowiązkowe (30%)
 W projekcie muszą się znaleźć:
 -	[x] [Pływające ryby](https://github.com/adiantek/projekt-grk/issues/6),
--	[ ] [rośliny morskie](https://github.com/adiantek/projekt-grk/issues/7),
--	[ ] [bąble powietrza](https://github.com/adiantek/projekt-grk/issues/5),
+-	[x] [rośliny morskie](https://github.com/adiantek/projekt-grk/issues/7),
+-	[x] [bąble powietrza](https://github.com/adiantek/projekt-grk/issues/5),
 -	[x] [mgła](https://github.com/adiantek/projekt-grk/issues/8),
 -	[x] [Skybox](https://github.com/adiantek/projekt-grk/issues/9), 
 -	[x] [sterowana łódź podwodna lub inny sterowany obiekt](https://github.com/adiantek/projekt-grk/issues/4),
 -	[x] [ukształtowanie terenu](https://github.com/adiantek/projekt-grk/issues/10),
--	[ ] wszystkie rozwiązania grafiki zaprezentowane w trakcie zajęć. 
+-	[x] wszystkie rozwiązania grafiki zaprezentowane w trakcie zajęć. 
 
 ## Wrażenia estetyczne (30%)
 W tym punkcie będą oceniane wrażenia estetyczne z projektu. Zawiera się w tym między innymi dobór modeli i tekstur, czy modele zostały wykonane samodzielnie, możliwości interakcji z otoczeniem, ogólną estetykę.
