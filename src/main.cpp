@@ -167,25 +167,25 @@ void onChunkLoad(Random *random, world::ChunkPosition pos) {
     int minX = pos.coords.x << 4;
     int minZ = pos.coords.z << 4;
 
-    if (random->nextFloat() < 0.05f) {
+    if (random->nextFloat() < 0.02f) {
         fish::Boids<fish::Pilotfish> *boid = new fish::Boids<fish::Pilotfish>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids.push_back(boid);
     }
     
-    if (random->nextFloat() < 0.05f) {
+    if (random->nextFloat() < 0.02f) {
         fish::Boids<fish::Barracuda> *boid = new fish::Boids<fish::Barracuda>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids2.push_back(boid);
     }
     
-    if (random->nextFloat() < 0.05f) {
+    if (random->nextFloat() < 0.02f) {
         fish::Boids<fish::RedSnapper> *boid = new fish::Boids<fish::RedSnapper>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids3.push_back(boid);
     }
     
-    if (random->nextFloat() < 0.05f) {
+    if (random->nextFloat() < 0.02f) {
         fish::Boids<fish::Golden> *boid = new fish::Boids<fish::Golden>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids4.push_back(boid);
