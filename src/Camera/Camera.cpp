@@ -11,7 +11,7 @@
 #include <Time/Time.hpp>
 #include <Glow/GlowShader.hpp>
 #include <Physics/Physics.hpp>
-#include <World/World.hpp>
+#include <world/World.hpp>
 #include <utils/Gizmos.hpp>
 
 using namespace utils;
