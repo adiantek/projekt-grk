@@ -9,6 +9,8 @@
 #include <world/ChunkBorderDebugRenderer.hpp>
 #include <world/Crosshair.hpp>
 #include <world/Object3D.hpp>
+#include <utils/MatrixTextureArray.hpp>
+#include <utils/Frustum.hpp>
 
 namespace world {
 
@@ -37,10 +39,12 @@ class World : Object3D {
     void updateChunks();
     void drawChunks(glm::mat4 mat);
     void drawShadowChunks(glm::mat4 mat);
-
    public:
+    int32_t frustumTotal, frustumDraw, frustumDrawDecorator;
+
     int64_t seed;
     SimplexNoiseGenerator *noise;
+    utils::Frustum *frustum;
 
     World(int64_t seed);
     virtual ~World();
@@ -56,6 +60,13 @@ class World : Object3D {
     void drawShadow(glm::mat4 mat) override;
     Chunk *getChunkAt(ChunkPosition pos);
     bool chunksLoaded(glm::vec3 pos);
+
+    void toggleChest();
+
+    utils::MatrixTextureArray kelp;
+    utils::MatrixTextureArray seagrass;
+    utils::MatrixTextureArray kelpShadow;
+    utils::MatrixTextureArray seagrassShadow;
 };
 
 }  // namespace world

@@ -50,7 +50,7 @@ Physics::Physics(float gravity, ErrorCallback::LogLevel logLevel)
 #ifdef EMSCRIPTEN
     dispatcher = PxDefaultCpuDispatcherCreate(0);
 #else
-    dispatcher = PxDefaultCpuDispatcherCreate(4);
+    dispatcher = PxDefaultCpuDispatcherCreate(8);
 #endif
 
     PxSceneDesc sceneDesc(this->physx->getTolerancesScale());
@@ -98,7 +98,7 @@ void Physics::update(float deltaTime) {
                 } else {
                     rigidBody->applyDrag(0.001225f);
                 }
-                if (rigidBody->grabbed) {
+                if (rigidBody->grabbed &&  !rigidBody->isKinematic()) {
                     glm::vec3 direction = robot->position - glm::vec3(rigidBody->getModelMatrix()[3]);
                     ((physx::PxRigidBody*)actor)->setLinearVelocity(physx::PxVec3(direction.x, direction.y, direction.z));
                 }
@@ -163,6 +163,10 @@ physx::PxTriangleMeshGeometry Physics::createTriangleGeometry(vertex::VertexBuff
     return triGeom;
 }
 
+physx::PxHeightField* Physics::createHeightField(physx::PxHeightFieldDesc &description) {
+    return this->cooking->createHeightField(description, this->physx->getPhysicsInsertionCallback());
+}
+
 std::pair<physx::PxVec3, physx::PxVec3> calculateRay() {
     glm::vec4 start(0.0f, 0.0f, -1.0f, 1.0f);
     glm::vec4 end(0.0f, 0.0f, 1.0f, 1.0f);
@@ -187,12 +191,18 @@ void Physics::grab() {
     physx::PxVec3 direction = pair.second;
 
     PxRaycastBuffer hit;
-    PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
-    filterData.data.word0 = RAYHITABBLE;
+    PxQueryFilterData filterData(PxQueryFlag::eSTATIC);
     this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
-    if (hit.hasAnyHits()) {
-        ((RigidBody*)hit.block.actor->userData)->grabbed = !((RigidBody*)hit.block.actor->userData)->grabbed;
+    if (hit.hasAnyHits() && ((RigidBody*)hit.block.actor->userData)->object->object3DType == 1) {
+        ((world::Chest*)((RigidBody*)hit.block.actor->userData)->object)->toggle();
+    } else {
+        PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+        filterData.data.word0 = RAYHITABBLE;
+        this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+        if (hit.hasAnyHits()) {
+            ((RigidBody*)hit.block.actor->userData)->grabbed = !((RigidBody*)hit.block.actor->userData)->grabbed;
+        }
     }
 }
 
@@ -299,14 +309,22 @@ void Physics::draw(glm::mat4 mat) {
             physx::PxVec3 direction = pair.second;
 
             PxRaycastBuffer hit;
-            PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
-            filterData.data.word0 = RAYHITABBLE;
+            PxQueryFilterData filterData(PxQueryFlag::eSTATIC);
             this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
 
-            if (hit.hasAnyHits()) {
+            if (hit.hasAnyHits() && ((RigidBody*)hit.block.actor->userData)->object->object3DType == 1) {
                 Glow::glow->startFB();
                 ((RigidBody*)hit.block.actor->userData)->object->drawShadow(mat);
                 Glow::glow->stopFB();
+            } else {
+                PxQueryFilterData filterData(PxQueryFlag::eDYNAMIC);
+                filterData.data.word0 = RAYHITABBLE;
+                this->scene->raycast(position, direction, GRAB_DIST, hit, ((physx::PxHitFlags)(PxHitFlag::eDEFAULT)), filterData);
+                if (hit.hasAnyHits()) {
+                    Glow::glow->startFB();
+                    ((RigidBody*)hit.block.actor->userData)->object->drawShadow(mat);
+                    Glow::glow->stopFB();
+                }
             }
         } else {
             physx::PxVec3 position = pair.first;

@@ -16,6 +16,7 @@ Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
     this->world = world;
     this->pos = pos;
     this->created = timeExternal->lastFrame;
+    this->chunkRandom = createChunkRandom();
     glGenVertexArrays(1, &this->vao);
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->elements);
@@ -28,6 +29,7 @@ Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
 
 Chunk::~Chunk() {
     // LOGD("Chunk: unloading %d %d", pos.coords.x, pos.coords.z);
+    delete this->chunkRandom;
     glDeleteBuffers(1, &this->vbo);
     glDeleteBuffers(1, &this->elements);
     glDeleteVertexArrays(1, &this->vao);
@@ -35,6 +37,19 @@ Chunk::~Chunk() {
     if (this->minFishYCalculated) {
         glDeleteBuffers(1, &this->vboLines);
         glDeleteVertexArrays(1, &this->vaoLines);
+    }
+    if (this->frustumShadowVisible) {
+        this->onShadowHide();
+    }
+    if (this->frustumVisible) {
+        this->onHide();
+    }
+    delete this->kelps;
+    delete this->grass;
+    delete this->kelps_matrices;
+    delete this->grass_matrices;
+    if (this->chest) {
+        delete this->chest;
     }
 }
 
@@ -54,18 +69,23 @@ void Chunk::generate(float *noise) {
     for (int i = 0; i < 19 * 19; i++) {
         noise[i] = noise[i] * 128 + 128;
     }
+    this->minY = 256;
     this->maxY = 0;
+    this->maxDecoratorY = 0;
     for (int x = 0; x < 17; x++) {
         for (int y = 0; y < 17; y++) {
             this->heightMap[x * 17 + y] = noise[(x + 1) * 19 + y + 1];
             if (this->heightMap[x * 17 + y] > this->maxY) {
                 this->maxY = this->heightMap[x * 17 + y];
             }
+            if (this->heightMap[x * 17 + y] < this->minY) {
+                this->minY = this->heightMap[x * 17 + y];
+            }
         }
     }
 
     vertex::VertexBuffer vertices(&vertex::POS_NORMAL_TEX_TANGENT_BITANGENT, 17 * 17);
-    float vert[17 * 17 * 3];
+    physx::PxHeightFieldSample* samples = new physx::PxHeightFieldSample[17 * 17];
     for (int x = 0; x <= 16; x++) {
         for (int z = 0; z <= 16; z++) {
             glm::vec3 squares[2][2];
@@ -99,9 +119,7 @@ void Chunk::generate(float *noise) {
             // vertices.color(x / 16.0f, (this->heightMap[z * 17 + x] + 1.0f) / 2.0f, z / 16.0f);
             vertices.end();
 
-            vert[3 * (x * 17 + z)] = squares[0][0].x;
-            vert[3 * (x * 17 + z) + 1] = squares[0][0].y;
-            vert[3 * (x * 17 + z) + 2] = squares[0][0].z;
+            samples[x * 17 + z].height = (physx::PxI16) (squares[0][0].y * 128.0f);
         }
     }
     int n = 0;
@@ -117,10 +135,21 @@ void Chunk::generate(float *noise) {
             indices[n++] = x * 17 + z + 1;
         }
     }
-    physx::PxTransform transform = physx::PxTransform(0.0f, 0.0f, 0.0f);
-    physx::PxTriangleMeshGeometry geometry = physicsObject->createTriangleGeometry(&vertices, indices, 2 * 16 * 16);
+    physx::PxHeightFieldDesc description;
+    description.format = physx::PxHeightFieldFormat::eS16_TM;
+    description.nbColumns = 17;
+    description.nbRows = 17;
+    description.samples.data = samples;
+    description.samples.stride = sizeof(physx::PxHeightFieldSample);
+
+    physx::PxHeightField* heightField = physicsObject->createHeightField(description);
+
+    physx::PxHeightFieldGeometry geometry(heightField, physx::PxMeshGeometryFlags(), 0.0078125f, 1.0f, 1.0f);
+    physx::PxTransform transform = physx::PxTransform((float)minX, 0.0f, (float)minZ);
+
     this->rigidBody = new physics::RigidBody(true, transform, geometry, (world::Object3D *)this, 0.5f, 0.5f, 0.0001f);
-    geometry.triangleMesh->release();
+    heightField->release();
+    delete [] samples;
 
     glUseProgram(resourceLoaderExternal->p_chunk);
     glBindVertexArray(this->vao);
@@ -133,6 +162,158 @@ void Chunk::generate(float *noise) {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    this->decorate1();
+}
+
+void Chunk::decorate1() {
+    this->minDecoratorY = 256.0f;
+    this->maxDecoratorY = 0.0f;
+    this->stone = 0;
+    if (this->chunkRandom->nextFloat() < 0.1f) {
+        float height = this->getHeightAt(8, 8);
+        float scale = 0.01f;
+        if (this->minDecoratorY > height) {
+            this->minDecoratorY = height;
+        }
+        if (this->maxDecoratorY < height + scale * 143.33f) {
+            this->maxDecoratorY = height + scale * 143.33f;
+        }
+        glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(8.0f, 8.0f + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(8.0f + 0.0001f, 8.0f), 0.0f)));
+        this->chest = new Chest(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + 8.0f, height, this->pos.coords.z * 16.0f + 8.0f))
+                    * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
+                    * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)))
+                    * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                    * glm::scale(glm::vec3(scale)),
+                    this->chunkRandom->nextInt(5) + 5);
+    } else {
+        // max rozmiar kamienia od srodka: 4,84
+        // origin mam na środku
+        // 8.0 -> 8.0 + 4.84 = 12.84
+        // 8.0 + 3.16
+        // 8.0 - 3.16
+        float xpos = 4.84f + this->chunkRandom->nextFloat() * 6.32f;
+        float zpos = 4.84f + this->chunkRandom->nextFloat() * 6.32f;
+        this->chest = 0;
+        float height = this->getHeightAt(xpos, zpos);
+        if (this->chunkRandom->nextFloat() * 192 > height) {
+            float scale = this->chunkRandom->nextFloat() * 1.5f + 0.5f;
+            if (this->minDecoratorY > height) {
+                this->minDecoratorY = height;
+            }
+            if (this->maxDecoratorY < height + scale * 2.43f) {
+                this->maxDecoratorY = height + scale * 2.43f;
+            }
+            this->stone = new Stone(glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(1,0,0))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,1,0))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                * glm::scale(glm::vec3(scale)),
+                this->chunkRandom->nextInt(3));
+        }
+    }
+    this->grass_len = 256;
+    this->grass = new size_t[this->grass_len];
+    this->grass_shadow = new size_t[this->grass_len];
+    this->grass_matrices = new float[this->grass_len * 16];
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        float xpos = this->chunkRandom->nextFloat() * 16;
+        float zpos = this->chunkRandom->nextFloat() * 16;
+        float height = this->getHeightAt(xpos, zpos);
+        bool cond = true;
+        if (this->chest) {
+            float dist = (xpos - 8.0f) * (xpos - 8.0f) + (zpos - 8.0f) * (zpos - 8.0f);
+            // dist is from 0 to 128
+            cond = this->chunkRandom->nextFloat() * 128.0f < dist;
+        }
+        if (cond && this->chunkRandom->nextFloat() * 128.0f + 128.0f < height) {
+            glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(0.0f, -height + this->getHeightAt(xpos, zpos + 0.0001f), 0.0001f), glm::vec3(0.0001f, height - this->getHeightAt(xpos + 0.0001f, zpos), 0.0f)));
+            float scale = this->chunkRandom->nextFloat() * 3.0f + 1.0f;
+            if (this->minDecoratorY > height + scale * -0.15f) {
+                this->minDecoratorY = height + scale * -0.15f;
+            }
+            if (this->maxDecoratorY < height + scale * 0.45f) {
+                this->maxDecoratorY = height + scale * 0.45f;
+            }
+            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
+                * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
+                * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                * glm::scale(glm::vec3(scale * 2, scale * 2, scale));
+            memcpy(this->grass_matrices + i * 16, glm::value_ptr(mat), 16 * sizeof(float));
+            // this->world->seagrass.addMatrix(glm::value_ptr(mat), this->grass + i);
+        } else {
+            this->grass_len--;
+            i--;
+        }
+    }
+    
+    this->kelps_len = 32;
+    this->kelps = new size_t[this->kelps_len];
+    this->kelps_shadow = new size_t[this->kelps_len];
+    this->kelps_matrices = new float[this->kelps_len * 16];
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        float xpos = this->chunkRandom->nextFloat() * 16;
+        float zpos = this->chunkRandom->nextFloat() * 16;
+        float height = this->getHeightAt(xpos, zpos);
+        bool cond = true;
+        if (this->chest) {
+            float dist = (xpos - 8.0f) * (xpos - 8.0f) + (zpos - 8.0f) * (zpos - 8.0f);
+            // dist is from 0 to 128
+            cond = this->chunkRandom->nextFloat() * 128.0f < dist;
+        }
+        if (cond && this->chunkRandom->nextFloat() * 128.0f + 32.0f > height) {
+            float scale = this->chunkRandom->nextFloat() * 7.0f + 1.0f;
+            if (this->minDecoratorY > height) {
+                this->minDecoratorY = height;
+            }
+            if (this->maxDecoratorY < height + scale * 1.89f) {
+                this->maxDecoratorY = height + scale * 1.89f;
+            }
+            glm::mat4 mat = glm::translate(glm::vec3(this->pos.coords.x * 16.0f + xpos, height, this->pos.coords.z * 16.0f + zpos))
+                * glm::rotate(glm::radians(-90.0f), glm::vec3(1,0,0))
+                * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
+                * glm::scale(glm::vec3(scale));
+            memcpy(this->kelps_matrices + i * 16, glm::value_ptr(mat), 16 * sizeof(float));
+            // this->world->kelp.addMatrix(glm::value_ptr(mat), this->kelps + i);
+        } else {
+            this->kelps_len--;
+            i--;
+        }
+    }
+}
+
+void Chunk::onShow() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelp.addMatrix(this->kelps_matrices + i * 16, this->kelps + i);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrass.addMatrix(this->grass_matrices + i * 16, this->grass + i);
+    }
+}
+void Chunk::onHide() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelp.removeMatrix(this->kelps[i]);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrass.removeMatrix(this->grass[i]);
+    }
+}
+void Chunk::onShadowShow() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelpShadow.addMatrix(this->kelps_matrices + i * 16, this->kelps_shadow + i);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrassShadow.addMatrix(this->grass_matrices + i * 16, this->grass_shadow + i);
+    }
+}
+void Chunk::onShadowHide() {
+    for (int32_t i = 0; i < this->kelps_len; i++) {
+        this->world->kelpShadow.removeMatrix(this->kelps_shadow[i]);
+    }
+    for (int32_t i = 0; i < this->grass_len; i++) {
+        this->world->seagrassShadow.removeMatrix(this->grass_shadow[i]);
+    }
 }
 
 void Chunk::update() {
@@ -185,6 +366,9 @@ void Chunk::update() {
             vb.configurePos(resourceLoaderExternal->p_simple_color_shader_attr_vertexPosition);
         }
     }
+    if (this->chest) {
+        this->chest->update();
+    }
 }
 
 float Chunk::getHeightAt(int32_t x, int32_t z) {
@@ -231,7 +415,12 @@ float Chunk::getHeightAt(float x, float z) {
 }
 
 void Chunk::draw(glm::mat4 mat) {
-
+    if (this->chest) {
+        this->chest->draw(mat);
+    }
+    if (this->stone) {
+        this->stone->draw(mat);
+    }
 }
 
 void Chunk::prepareRendering(glm::mat4 mat) {
@@ -317,4 +506,7 @@ void Chunk::drawShadow(glm::mat4 mat) {
     glUniformMatrix4fv(resourceLoaderExternal->p_environment_map_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat));
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
+    if (this->chest) {
+        this->chest->drawShadow(mat);
+    }
 }

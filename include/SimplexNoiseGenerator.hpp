@@ -24,7 +24,7 @@ class SimplexNoiseGenerator {
     GLsync sync;
 
    public:
-    SimplexNoiseGenerator(Random *r);
+    SimplexNoiseGenerator(Random *r, double scale);
     ~SimplexNoiseGenerator();
     /**
      * @param x offset x

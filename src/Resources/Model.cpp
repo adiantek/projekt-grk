@@ -62,6 +62,10 @@ Mesh* Model::loadMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transforma
     this->aabbMax.y = std::max(mesh->mAABB.mMax.y, this->aabbMax.y);
     this->aabbMax.z = std::max(mesh->mAABB.mMax.z, this->aabbMax.z);
 
+    LOGD("Model %s, AABB: %.2f %.2f %.2f -> %.2f %.2f %.2f", name.c_str(),
+        this->aabbMin.x, this->aabbMin.y, this->aabbMin.z,
+        this->aabbMax.x, this->aabbMax.y, this->aabbMax.z);
+
 
     finalMesh->calculateRenderContext(mesh, this->bonesIds);
 
