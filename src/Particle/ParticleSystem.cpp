@@ -4,7 +4,7 @@
 #include <Particle/Particle.hpp>
 #include <Water/Water.hpp>
 #include <Robot/Robot.hpp>
-#include <Time/time.hpp>
+#include <Time/Time.hpp>
 #include <glm/ext.hpp>
 
 ParticleSystem::ParticleSystem() {
