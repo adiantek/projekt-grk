@@ -16,7 +16,7 @@ Cubefish::Cubefish(glm::vec3 position, float mass, float density) {
 Cubefish::Cubefish(glm::mat4 modelMatrix, float mass, float density, Model* model, bool dynamic) {
     physx::PxMat44 pose(glm::value_ptr(modelMatrix));
     physx::PxTransform initPose = physx::PxTransform(pose);
-	physx::PxBoxGeometry geometry = geometry = model->createGeometryAABB();
+	physx::PxBoxGeometry geometry = model->createGeometryAABB();
     this->rigidBody = new physics::RigidBody(!dynamic, initPose, geometry, this, 0.5f, 0.5f, 0.001f);
     if (dynamic) {
         this->rigidBody->setMass(mass);
