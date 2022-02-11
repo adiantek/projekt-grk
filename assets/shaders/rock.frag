@@ -153,7 +153,7 @@ vec3 PBR(vec3 normal, vec3 view, vec3 albedo, vec3 F0, float metallic, float rou
 void main() {
     vec3 lightDirection = normalize(lightDirectionTS);
     vec3 viewDirection = normalize(viewDirectionTS);
-    vec2 textureCoords = parallaxMapping(vec2(texturePosition.x , 1.0 - texturePosition.y), viewDirection, depthMap, 0.0005);
+    vec2 textureCoords = parallaxMapping(vec2(texturePosition.x , texturePosition.y), viewDirection, depthMap, 0.0005);
     
     vec3 normal = normalize(vec3(texture(normalSampler, textureCoords)) * 2.0 - 1.0);
     vec3 objectColor = texture(colorTexture, textureCoords).xyz;
