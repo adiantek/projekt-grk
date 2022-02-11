@@ -21,6 +21,8 @@ namespace water {
         glUniform1f(resourceLoaderExternal->p_instanced_kelp_uni_waterHeight, y);
         glUseProgram(resourceLoaderExternal->p_color_armature);
         glUniform1f(resourceLoaderExternal->p_color_armature_uni_waterHeight, y);
+        glUseProgram(resourceLoaderExternal->p_rock);
+        glUniform1f(resourceLoaderExternal->p_rock_uni_waterHeight, y);
     }
 
     Water::~Water() {}

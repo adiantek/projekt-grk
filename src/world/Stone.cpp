@@ -2,6 +2,7 @@
 
 #include <ResourceLoader.hpp>
 #include <world/Stone.hpp>
+#include <Water/Water.hpp>
 
 using namespace world;
 
@@ -34,21 +35,48 @@ void Stone::update() {
 
 void Stone::draw(glm::mat4 mat) {
     ResourceLoader *res = resourceLoaderExternal;
-    glUseProgram(res->p_simple_tex_shader);
-    glUniformMatrix4fv(res->p_simple_tex_shader_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * this->modelMatrix));
-    glUniform1i(res->p_simple_tex_shader_uni_textureSampler, 0);
+    glUseProgram(res->p_rock);
+    glUniformMatrix4fv(res->p_rock_uni_transformation, 1, GL_FALSE, glm::value_ptr(mat * this->modelMatrix));
+    glUniformMatrix4fv(res->p_rock_uni_modelMatrix, 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
+    glUniform1i(resourceLoaderExternal->p_rock_uni_caustics, 0);
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, waterObject->getCausticsMap());
+    glUniform1i(resourceLoaderExternal->p_rock_uni_colorTexture, 1);
+    glUniform1i(resourceLoaderExternal->p_rock_uni_aoMap, 2);
+    glUniform1i(resourceLoaderExternal->p_rock_uni_depthMap, 3);
+    glUniform1i(resourceLoaderExternal->p_rock_uni_normalSampler, 4);
     switch (model) {
         case 0:
+            glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_big1_rock_big1_albedo);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_big1_rock_big1_ao);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_big1_rock_big1_height);
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_big1_rock_big1_normal);
             Core::DrawContext(*(res->m_rocks_rock_big1->getMeshes()[0]->getRenderContext()));
             break;
         case 1:
+            glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small1_rock_small1_albedo);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small1_rock_small1_ao);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small1_rock_small1_height);
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small1_rock_small1_normal);
             Core::DrawContext(*(res->m_rocks_rock_small1->getMeshes()[0]->getRenderContext()));
             break;
         case 2:
+            glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small2_rock_small2_albedo);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small2_rock_small2_ao);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small2_rock_small2_height);
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, res->tex_rocks_rock_small2_rock_small2_normal);
             Core::DrawContext(*(res->m_rocks_rock_small2->getMeshes()[0]->getRenderContext()));
             break;
     }

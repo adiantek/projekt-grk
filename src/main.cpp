@@ -119,6 +119,11 @@ void do_frame() {
     glUniform3f(resourceLoader.p_instanced_kelp_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
     glUniformMatrix4fv(resourceLoader.p_instanced_kelp_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
 
+    glUseProgram(resourceLoader.p_rock);
+    glUniform3f(resourceLoader.p_rock_uni_lightPosition, lightPos.x, lightPos.y, lightPos.z);
+    glUniform3f(resourceLoader.p_rock_uni_cameraPosition, camera->position.x, camera->position.y, camera->position.z);
+    glUniformMatrix4fv(resourceLoader.p_rock_uni_lightTransformation, 1, GL_FALSE, glm::value_ptr(waterObject->getLightCamera()));
+
     glClearColor(0.0f, 0.1f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     Glow::glow->clear();
