@@ -2,7 +2,7 @@
 #include <ResourceLoader.hpp>
 #include <Particle/Particle.hpp>
 #include <Robot/Robot.hpp>
-#include <Time/time.hpp>
+#include <Time/Time.hpp>
 #include <glm/ext.hpp>
 
 
