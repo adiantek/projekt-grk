@@ -24,7 +24,6 @@ Coin::Coin(glm::mat4 model) {
 
 Coin::~Coin() {
     delete this->rigidBody;
-    delete this->random;
 }
 
 void Coin::update() {
