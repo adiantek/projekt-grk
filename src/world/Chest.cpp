@@ -4,22 +4,15 @@
 #include <ResourceLoader.hpp>
 #include <Water/Water.hpp>
 #include <Time/Time.hpp>
+#include <Sound.hpp>
+#include <Robot/Robot.hpp>
 
 using namespace world;
 
-// [     8.454 ] D [ G:\git\emcc\projekt-grk\src\Resources\Model.cpp:20 ] Processing model: assets/models/props/chest.dae
-// [     8.464 ] D [ G:\git\emcc\projekt-grk\src\Resources\Model.cpp:172 ] Armature_root:000001EC1BA0D850
-// [     8.464 ] D [ G:\git\emcc\projekt-grk\src\Resources\Model.cpp:172 ] Armature_top:000001EC1BB20B10
-// [     8.464 ] D [ G:\git\emcc\projekt-grk\src\Resources\Model.cpp:186 ] Armature_root:000001EC1BA0D850
-// [     8.465 ] D [ G:\git\emcc\projekt-grk\src\Resources\Model.cpp:186 ] Armature_top:000001EC1BB20B10
-// [     8.465 ] D [ G:\git\emcc\projekt-grk\src\utils\Gizmos.cpp:82 ] Dumping joints:
-// [     8.465 ] D [ G:\git\emcc\projekt-grk\src\utils\Gizmos.cpp:88 ] 0: root (parent: (null), matrix: 1.00 0.00 0.00 0.00 ...)
-// [     8.465 ] D [ G:\git\emcc\projekt-grk\src\utils\Gizmos.cpp:88 ] 1: Armature_root (parent: root, matrix: 1.00 0.00 0.00 0.00 ...)
-// [     8.465 ] D [ G:\git\emcc\projekt-grk\src\utils\Gizmos.cpp:88 ] 2: Armature_top (parent: Armature_root, matrix: 1.00 0.00 0.00 0.00 ...)
-
-Chest::Chest(glm::mat4 model) {
+Chest::Chest(glm::mat4 model, int coins) {
     this->object3DType = 1;
     this->model = model;
+    this->coins = coins;
     physx::PxTransform pose(physx::PxMat44(glm::value_ptr(model)));
     physx::PxTriangleMeshGeometry geometry = resourceLoaderExternal->m_props_chest->createGeometry(glm::vec3(0.01f));
     this->rigidBody = new physics::RigidBody(true, pose, geometry, this);
@@ -29,24 +22,43 @@ Chest::Chest(glm::mat4 model) {
     this->coverJoint = res->m_props_chest->getJoint("Armature_top");
 }
 
-void Chest::open() {
-    if (!this->isOpen)
-        for (int i = 0; i < 6; ++i)
-            this->coins.push_back(new Coin(model * glm::translate(glm::vec3(i % 2 * 0.6f - 0.6f, i % 3 == 0 ? 0.1f : -0.1f, (i / 2) * 0.28f + 0.2f))));
-    this->isOpen = true;
+glm::vec3 Chest::getPosition() {
+    return glm::vec3(this->model[3][0], this->model[3][1], this->model[3][2]);
+}
+
+void Chest::toggle() {
+    if (!this->isOpen && this->coins > 0) {
+        while (this->coins--) {
+            Coin *coin = new Coin(model * glm::translate(glm::vec3(
+                random->nextFloat() * 1.2f - 0.6f,
+                random->nextFloat() * 2.0f - 1.0f,
+                random->nextFloat() * 1.2f - 0.6f)));
+            coin->rigidBody->grabbed = true;
+            robot->coins.push_back(coin);
+        }
+    }
+    this->isOpen = !this->isOpen;
+    if (this->isOpen) {
+        sound->openChest(this->model[3][0], this->model[3][1], this->model[3][2]);
+    } else {
+        sound->closeChest(this->model[3][0], this->model[3][1], this->model[3][2]);
+    }
 }
 
 Chest::~Chest() {
     delete this->rigidBody;
-    for (auto coin : this->coins)
-        delete coin;
 }
 
 void Chest::update() {
-    if (isOpen && openingAnimationStage < 1.0f) {
-        openingAnimationStage += 0.5f * timeExternal->deltaTime;
-        if (openingAnimationStage > 1.0f)
+    float targetAnimation = this->isOpen ? 1.0f : 0.0f;
+    if (targetAnimation != openingAnimationStage) {
+        openingAnimationStage += 2.5f * timeExternal->deltaTime * (this->isOpen ? 1 : -1);
+        if (openingAnimationStage < 0.0f) {
+            openingAnimationStage = 0.0f;
+        }
+        if (openingAnimationStage > 1.0f) {
             openingAnimationStage = 1.0f;
+        }
 
         float rotationStage = glm::smoothstep(0.0f, 1.0f, openingAnimationStage);
         float rotation = -80.0f * rotationStage;
@@ -55,8 +67,6 @@ void Chest::update() {
             * glm::eulerAngleX(glm::radians(rotation))
             * glm::translate(-this->coverJoint->getOrigin() * 100.0f);
     }
-    for (auto coin : this->coins)
-        coin->update();
 }
 
 void Chest::draw(glm::mat4 mat) {
@@ -101,9 +111,6 @@ void Chest::draw(glm::mat4 mat) {
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, res->tex_props_chest_chest_wood_roughness);
     Core::DrawContext(*(res->m_props_chest->getMeshes()[1]->getRenderContext()));
-
-    for (auto coin : this->coins)
-        coin->draw(mat);
 }
 
 void Chest::drawShadow(glm::mat4 mat) {

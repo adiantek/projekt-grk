@@ -7,6 +7,7 @@
 #include <utils/Gizmos.hpp>
 #include <ResourceLoader.hpp>
 #include <utils/Frustum.hpp>
+#include <Camera/Camera.hpp>
 
 using namespace world;
 
@@ -398,6 +399,24 @@ bool World::chunksLoaded(glm::vec3 pos) {
         }
     }
     return true;
+}
+
+void World::toggleChest() {
+    Chest *nearestChest = 0;
+    float nearestDist = 0;
+    for (auto &it : this->chunks) {
+        Chunk *ch = it.second;
+        if (ch->chest) {
+            float dist = glm::distance2(camera->getPosition(), ch->chest->getPosition());
+            if (nearestChest == 0 || dist < nearestDist) {
+                nearestChest = ch->chest;
+                nearestDist = dist;
+            }
+        }
+    }
+    if (nearestChest && nearestDist < 8 * 8 * 8) {
+        nearestChest->toggle();
+    }
 }
 
 World *worldObject;

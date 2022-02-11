@@ -2,6 +2,7 @@
 
 #include <opengl.h>
 #include <stdbool.h>
+#include <Sound.hpp>
 
 #include <Resources/Model.hpp>
 
@@ -173,6 +174,11 @@ public:
     Model *m_sphere = 0;
     Model *m_sphere2 = 0;
     Model *m_sphere_different_texcoords = 0;
+
+    // sounds:
+    ALuint sound_chestopen = 0xFFFFFFFF;
+    ALuint sound_chestclosed = 0xFFFFFFFF;
+    ALuint sound_bg = 0xFFFFFFFF;
 
     // programs:
     GLuint p_color_armature = 0;
@@ -458,9 +464,11 @@ private:
     void loadTextures();
     void loadPrograms();
     void loadModels();
+    void loadSounds();
     void loadAttributesAndUniforms();
     void loadTexture(const char *name, GLuint *out);
     void loadModel(const char *name, Model **out);
+    void loadSound(const char *name, ALenum format, ALsizei freq, ALuint *out);
     void loadTextureCubeMap(GLuint *out);
     /**
      * true if and only if program was loaded right now

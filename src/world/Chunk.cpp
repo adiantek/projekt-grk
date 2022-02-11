@@ -184,7 +184,8 @@ void Chunk::decorate1() {
                     * glm::rotate(glm::radians(180.0f), glm::vec3(1,0,0))
                     * glm::transpose(glm::lookAt(glm::vec3(0.0f), normal, glm::vec3(0.0f, 1.0f, 0.0f)))
                     * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
-                    * glm::scale(glm::vec3(scale)));
+                    * glm::scale(glm::vec3(scale)),
+                    this->chunkRandom->nextInt(5) + 5);
     } else {
         // max rozmiar kamienia od srodka: 4,84
         // origin mam na środku

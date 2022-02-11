@@ -7,38 +7,34 @@
 #include <Camera/Camera.hpp>
 #include <Camera/Scope.hpp>
 #include <Controller/Controller.hpp>
+#include <Fish/Barracuda.hpp>
 #include <Fish/Boids.hpp>
 #include <Fish/Cubefish.hpp>
-#include <Fish/Pilotfish.hpp>
-#include <Fish/Barracuda.hpp>
-#include <Fish/RedSnapper.hpp>
 #include <Fish/Golden.hpp>
+#include <Fish/Pilotfish.hpp>
+#include <Fish/RedSnapper.hpp>
+#include <Fog/Fog.hpp>
+#include <Glow/GlowShader.hpp>
 #include <Physics/Physics.hpp>
 #include <Physics/RigidBody.hpp>
 #include <ResourceLoader.hpp>
 #include <Resources/GameObject.hpp>
 #include <Resources/Resources.hpp>
 #include <Robot/Robot.hpp>
+#include <Sound.hpp>
 #include <Time/Time.hpp>
 #include <Water/Water.hpp>
 #include <glm/ext.hpp>
 #include <utils/Gizmos.hpp>
+#include <utils/Line.hpp>
+#include <utils/MatrixTextureArray.hpp>
 #include <vector>
 #include <world/World.hpp>
-#include <Glow/GlowShader.hpp>
-#include <utils/Line.hpp>
-#include <Physics/Physics.hpp>
-#include <Physics/RigidBody.hpp>
-#include <Fog/Fog.hpp>
 
+#include "PxPhysics.h"
 #include "Render_Utils.h"
 #include "Texture.h"
-
-#include <zlib/zlib.h>
-#include <png/png.h>
-#include "PxPhysics.h"
 #include "foundation/PxMathUtils.h"
-#include <utils/MatrixTextureArray.hpp>
 
 #define BOIDS_AMOUNT 12
 #define BOIDS_SIZE 8
@@ -153,9 +149,9 @@ void do_frame() {
         lastTitleUpdate = timeExternal->lastFrame;
         char title[200];
         sprintf(title, "FPS: %u, Collected coins: %d frustum: %d / %d (rosliny: %d / %d)", timeExternal->fps,
-            robot->collectedCoins,
-            w->frustumDraw, w->frustumTotal,
-            w->frustumDrawDecorator, w->frustumTotal);
+                robot->collectedCoins,
+                w->frustumDraw, w->frustumTotal,
+                w->frustumDrawDecorator, w->frustumTotal);
         glfwSetWindowTitle(window, title);
     }
     glfwSwapBuffers(window);
@@ -167,15 +163,15 @@ void init() {
 
     // Initialize resources (textures, shaders, materials)
     Resources::init();
-
     new Scope();
+    sound->start();
 
     new Glow::GlowShader(camera->width, camera->height);
 
-	fog = new Fog(camera->width, camera->height, 256.0);
+    fog = new Fog(camera->width, camera->height, 256.0);
     new water::Water(192.0f, 320.0f, 65.0f, 400, 300.0f, 1200);
     new physics::Physics(9.8f);
-	w = new world::World(0);
+    w = new world::World(0);
 
     waterObject->addWorldObject((world::Object3D *)w);
 
@@ -185,25 +181,25 @@ void init() {
 
     Random random(0L);
 
-    for (int i=0; i<BOIDS_AMOUNT / 4;++i) {
+    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
         Boids<Pilotfish> *boid = new Boids<Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids.push_back(boid);
     }
 
-    for (int i=0; i<BOIDS_AMOUNT / 4;++i) {
+    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
         Boids<Barracuda> *boid = new Boids<Barracuda>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids2.push_back(boid);
     }
 
-    for (int i=0; i<BOIDS_AMOUNT / 4;++i) {
+    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
         Boids<RedSnapper> *boid = new Boids<RedSnapper>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids3.push_back(boid);
     }
 
-    for (int i=0; i<BOIDS_AMOUNT / 4;++i) {
+    for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
         Boids<Golden> *boid = new Boids<Golden>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids4.push_back(boid);
@@ -223,6 +219,8 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum se
 
 int main(int argc, char **argv) {
     vertex::VertexFormats_load();
+    argv++; argc--;
+    new Sound(&argv, &argc);
     LOGD("ZLIB version: %s", zlibVersion());
     LOGD("libpng version: %s", png_get_libpng_ver(NULL));
     {

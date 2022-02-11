@@ -73,6 +73,9 @@ void Controller::onKeyPress(GLFWwindow *window, int key, int scancode, int actio
                 break;
             }
         }
+        if (key == GLFW_KEY_C) {
+            worldObject->toggleChest();
+        }
         if (key == GLFW_KEY_R) {
             if (controller->mouseRightClicked) {
                 controller->scopeMode += 1;

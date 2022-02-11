@@ -34,7 +34,6 @@ class Chunk : Object3D {
     int32_t grass_len;
     size_t *grass;
     size_t *grass_shadow;
-    Chest *chest = 0;
     Stone *stone = 0;
 
    public:
@@ -47,6 +46,7 @@ class Chunk : Object3D {
     float allowFishAbove = 256;
     bool frustumVisible = false;
     bool frustumShadowVisible = false;
+    Chest *chest = 0;
     Chunk(World *world, ChunkPosition pos, float *noise);
     virtual ~Chunk();
 

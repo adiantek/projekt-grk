@@ -472,6 +472,12 @@ void ResourceLoader::loadModels() {
     loadModel("assets/models/sphere_different_texcoords.obj", &this->m_sphere_different_texcoords);
 }
 
+void ResourceLoader::loadSounds() {
+    loadSound("assets/sound/chestopen.raw", AL_FORMAT_MONO16, 44100, &this->sound_chestopen);
+    loadSound("assets/sound/chestclosed.raw", AL_FORMAT_MONO16, 44100, &this->sound_chestclosed);
+    loadSound("assets/sound/bg.raw", AL_FORMAT_STEREO16, 48000, &this->sound_bg);
+}
+
 bool ResourceLoader::loadResources() {
     if (this->all_loaded) {
         return true;
@@ -489,6 +495,7 @@ bool ResourceLoader::loadResources() {
     this->loadTextures();
     this->loadPrograms();
     this->loadModels();
+    this->loadSounds();
 
     this->totalResources = this->totalResourcesCounter;
 
@@ -618,6 +625,19 @@ void ResourceLoader::loadTextureCubeMap(GLuint *out) {
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     *out = id;
     this->loadedResources++;
+}
+
+void ResourceLoader::loadSound(const char *name, ALenum format, ALsizei freq, ALuint *out) {
+    this->totalResourcesCounter++;
+    if (*out != 0xFFFFFFFF) {
+        this->loadedResources++;
+        return;
+    }
+    if (!canLoadNextResource()) {
+        return;
+    }
+    LOGI("[ %3.0f%% ] Loading sound: %s", this->loadedResources * 100.0 / this->totalResources, name);
+    *out = sound->loadSound(name, format, freq);
 }
 
 void ResourceLoader::loadTexture(const char *name, GLuint *out) {

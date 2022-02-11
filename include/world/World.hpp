@@ -61,6 +61,8 @@ class World : Object3D {
     Chunk *getChunkAt(ChunkPosition pos);
     bool chunksLoaded(glm::vec3 pos);
 
+    void toggleChest();
+
     utils::MatrixTextureArray kelp;
     utils::MatrixTextureArray seagrass;
     utils::MatrixTextureArray kelpShadow;
