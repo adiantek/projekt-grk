@@ -37,6 +37,11 @@ Budowanie dla osób nie mających życia:
 - Przycisk `SPACJA` - w górę porusza się robot
 - Przycisk `LEWY ALT` - w dół porusza się robot
 
+## Tryby celownika
+- Plus - kamera wchodzi w interakcje z jednym dokładnie wskazanym obiektem,
+- Krzyżyk - kamera wchodzi w interakcję z grupą obiektów wskazywaną wokół kursora,
+- Budowanie - budowanie elementów w miejscu wskazanym przez kamerę.
+
 ## Rozwiązywanie problemów
 
 > Nie odnaleziono pliku `ucrtbased.dll`
