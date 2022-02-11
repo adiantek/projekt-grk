@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <Sound.hpp>
 #include <Camera/Camera.hpp>
 #include <Controller/Controller.hpp>
 #include <Robot/Robot.hpp>
@@ -142,6 +143,16 @@ void Camera::update() {
     setDirection();
 
     this->rotationMatrix = glm::lookAt(position, cameraTarget, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    sound->setPosition(this->position.x, this->position.y, this->position.z);
+    float soundOrientation[6];
+    soundOrientation[0] = cameraTarget.x - this->position.x;
+    soundOrientation[1] = cameraTarget.y - this->position.y;
+    soundOrientation[2] = cameraTarget.z - this->position.z;
+    soundOrientation[3] = 0.0f;
+    soundOrientation[4] = 1.0f;
+    soundOrientation[5] = 0.0f;
+    sound->setOrientation(soundOrientation);
 }
 
 Camera *camera;

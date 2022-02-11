@@ -1,7 +1,7 @@
 #version 300 es
 
 layout(location = 0) in vec3 vertexPosition;
-layout(location = 1) in vec2 vertexTex;
+layout(location = 2) in vec2 vertexTex;
 
 uniform mat4 transformation;
 

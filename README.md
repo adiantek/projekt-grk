@@ -20,6 +20,16 @@ Budowanie dla osób nie mających życia:
 - `cmake ..`
 - `cmake --build .`
 
+## Sterowanie
+- Przycisk `1` - zmiana oświetlenia na PBR
+- Przycisk `2` - zmiana modelu oświetlenia na model 
+- Przycisk `F` przy włączonym celowniku - łapanie jednego elementu lub łapanie wielu lub stawienie elementu dynamicznego
+- Przycisk `R` - zmiana trybu dla klawisza `F`
+- Przycisk `G` w trybie stawiania elementów: zmiana modelu do postawienia (kula, sześcian, itd.)
+- Przycisk `E` - stawianie elementu statycznego
+- Przycisk `Q` - usuwanie elementu (w trybie stawiania elementu)
+- Przycisk `C` - otworzenie lub zamknięcie najbliższej skrzynki (max odległość: 8 jednostek)
+
 ## Rozwiązywanie problemów
 
 > Nie odnaleziono pliku `ucrtbased.dll`

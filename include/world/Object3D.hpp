@@ -15,6 +15,8 @@ class Object3D {
     virtual void draw(glm::mat4 mat);
     virtual void drawShadow(glm::mat4 mat);
     virtual void onContact(const physx::PxRigidActor* actor, const physx::PxContactPair* pairs, physx::PxU32 nbPairs);
+
+    unsigned int object3DType = 0;
 };
 
 }  // namespace world

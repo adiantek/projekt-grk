@@ -2,7 +2,7 @@
 
 precision highp float;
 
-const float bias = 0.003;
+const float bias = 0.0005;
 const float PI = 3.14159265359;
 
 uniform sampler2D colorTexture;
@@ -78,12 +78,14 @@ float computeCaustics(float lightIntensity, sampler2D caustics, vec3 positionLS)
         computedLightIntensity = 0.5 + 0.2 * lightIntensity + causticsIntensity * smoothstep(0.0, 1.0, lightIntensity);
     } else {
         vec2 texelSize = 1.0 / vec2(textureSize(caustics, 0));
-        for(int x = -1; x <= 1; ++x) {
-            for(int y = -1; y <= 1; ++y) {
-                computedLightIntensity += causticsDepth - bias > texture(caustics, positionLS.xy + vec2(x, y) * texelSize).w ? 1.0 : 0.0;       
+        for(int x = -2; x <= 2; ++x) {
+            for(int y = -2; y <= 2; ++y) {
+                if (texture(caustics, positionLS.xy + vec2(x, y) * texelSize).w > positionLS.z - bias) {
+                    computedLightIntensity += 1.0;
+                }  
             }    
         }
-        computedLightIntensity /= 9.0;
+        computedLightIntensity /= 25.0;
     }
     return computedLightIntensity;
 }
@@ -126,7 +128,7 @@ void main() {
         discard;
     
     vec3 objectColor = texture(colorTexture, textureCoords).xyz;
-    vec3 normal = texture(normalTexture, textureCoords).xyz;
+    vec3 normal = texture(normalTexture, textureCoords).xyz * 2.0 - 1.0;
 
     float computedLightIntensity = 1.0;
 

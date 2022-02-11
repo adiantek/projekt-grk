@@ -6,6 +6,7 @@
 #include <glm/ext.hpp>
 #include <world/Object3D.hpp>
 #include <Physics/RigidBody.hpp>
+#include <world/Coin.hpp>
 
 namespace entity {
 
@@ -127,6 +128,9 @@ class Robot : world::Object3D {
     glm::mat4 getGameObjectMatrix();
 
     int mode = Robot::MODE_STATIONARY;
+
+    std::vector<world::Coin*> coins;
+    unsigned int collectedCoins = 0;
     bool isAboveWater();
 
    private:
