@@ -863,16 +863,16 @@ glm::vec3 Robot::getWorldPointAt(glm::vec3 point) {
     physx::PxVec3 origin = physx::PxVec3(point.x, point.y, point.z) - (unitDir * 0.1f);
     physx::PxReal maxDistance = 100;
     physx::PxRaycastBuffer hit;
-    physx::PxQueryFilterData filterData(physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC);
+    physx::PxQueryFilterData filterData(physx::PxQueryFlag::eSTATIC);
     filterData.data.word0 = 2;
 
     bool status = physicsObject->scene->raycast(origin, unitDir, maxDistance, hit, ((physx::PxHitFlags)(physx::PxHitFlag::eDEFAULT)), filterData);
     if (hit.hasAnyHits()) {
-        std::cout << "Raycast hit at " << hit.block.position.x << ", " << hit.block.position.y << ", " << hit.block.position.z << std::endl;
+        // std::cout << "Raycast hit at " << hit.block.position.x << ", " << hit.block.position.y << ", " << hit.block.position.z << std::endl;
         physx::PxVec3 physicResult = (hit.block.position - (unitDir * 0.05f));
         result = glm::vec3(physicResult.x, physicResult.y, physicResult.z);
     } else {
-        std::cout << "Raycast did not hit" << std::endl;
+        // std::cout << "Raycast did not hit" << std::endl;
     }
 
     return result;
