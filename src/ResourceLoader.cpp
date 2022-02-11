@@ -232,57 +232,6 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(bubbles_shader, cameraMatrix);
         UNIFORM(bubbles_shader, cameraDirection);
     }
-
-    LOAD_PROGRAM(shader_4_1, 2, "shader_4_1.frag", "shader_4_1.vert") {
-        // DUMP(shader_4_1);
-        ATTRIBUTE(shader_4_1, vertexNormal);
-        ATTRIBUTE(shader_4_1, vertexPosition);
-        UNIFORM(shader_4_1, cameraPos);
-        UNIFORM(shader_4_1, lightPos);
-        UNIFORM(shader_4_1, modelMatrix);
-        UNIFORM(shader_4_1, objectColor);
-        UNIFORM(shader_4_1, transformation);
-    }
-    LOAD_PROGRAM(shader_4_sun, 2, "shader_4_sun.frag", "shader_4_sun.vert") {
-        // DUMP(shader_4_sun);
-        ATTRIBUTE(shader_4_sun, vertexNormal);
-        ATTRIBUTE(shader_4_sun, vertexPosition);
-        UNIFORM(shader_4_sun, cameraPos);
-        UNIFORM(shader_4_sun, modelMatrix);
-        UNIFORM(shader_4_sun, modelViewProjectionMatrix);
-        UNIFORM(shader_4_sun, objectColor);
-    }
-    LOAD_PROGRAM(shader_4_tex, 2, "shader_4_tex.frag", "shader_4_tex.vert") {
-        // DUMP(shader_4_tex);
-        ATTRIBUTE(shader_4_tex, vertexBitangent);
-        ATTRIBUTE(shader_4_tex, vertexNormal);
-        ATTRIBUTE(shader_4_tex, vertexPosition);
-        ATTRIBUTE(shader_4_tex, vertexTangent);
-        ATTRIBUTE(shader_4_tex, vertexTexCoord);
-        UNIFORM(shader_4_tex, cameraPos);
-        UNIFORM(shader_4_tex, colorTexture);
-        UNIFORM(shader_4_tex, lightPos);
-        UNIFORM(shader_4_tex, modelMatrix);
-        UNIFORM(shader_4_tex, normalSampler);
-        UNIFORM(shader_4_tex, transformation);
-    }
-    LOAD_PROGRAM(shader_4_tex_with_parallax, 2, "shader_4_tex_with_parallax.frag", "shader_4_tex.vert") {
-        // DUMP(shader_4_tex_with_parallax);
-        ATTRIBUTE(shader_4_tex_with_parallax, vertexBitangent);
-        ATTRIBUTE(shader_4_tex_with_parallax, vertexNormal);
-        ATTRIBUTE(shader_4_tex_with_parallax, vertexPosition);
-        ATTRIBUTE(shader_4_tex_with_parallax, vertexTangent);
-        ATTRIBUTE(shader_4_tex_with_parallax, vertexTexCoord);
-        UNIFORM(shader_4_tex_with_parallax, cameraPos);
-        UNIFORM(shader_4_tex_with_parallax, colorTexture);
-        UNIFORM(shader_4_tex_with_parallax, depthSampler);
-        UNIFORM(shader_4_tex_with_parallax, heightScale);
-        UNIFORM(shader_4_tex_with_parallax, lightPos);
-        UNIFORM(shader_4_tex_with_parallax, modelMatrix);
-        UNIFORM(shader_4_tex_with_parallax, normalSampler);
-        UNIFORM(shader_4_tex_with_parallax, transformation);
-    }
-
     LOAD_PROGRAM(shader_color, 2, "shader_color.frag", "shader_color.vert") {
         // DUMP(shader_color);
         ATTRIBUTE(shader_color, vertexNormal);
