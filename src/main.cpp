@@ -182,25 +182,25 @@ void init() {
     Random random(0L);
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<Pilotfish> *boid = new Boids<Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
+        Boids<Pilotfish> *boid = new Boids<Pilotfish>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids.push_back(boid);
     }
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<Barracuda> *boid = new Boids<Barracuda>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
+        Boids<Barracuda> *boid = new Boids<Barracuda>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids2.push_back(boid);
     }
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<RedSnapper> *boid = new Boids<RedSnapper>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
+        Boids<RedSnapper> *boid = new Boids<RedSnapper>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids3.push_back(boid);
     }
 
     for (int i = 0; i < BOIDS_AMOUNT / 4; ++i) {
-        Boids<Golden> *boid = new Boids<Golden>(BOIDS_SIZE, glm::vec3(random.nextFloat(-100.0f, 100.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-100.0f, 100.0f)), w);
+        Boids<Golden> *boid = new Boids<Golden>(BOIDS_SIZE, glm::vec3(random.nextFloat(-50.0f, 50.0f), random.nextFloat(170.0f, 190.0f), random.nextFloat(-50.0f, 50.0f)), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids4.push_back(boid);
     }
@@ -219,7 +219,8 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum se
 
 int main(int argc, char **argv) {
     vertex::VertexFormats_load();
-    argv++; argc--;
+    argv++;
+    argc--;
     new Sound(&argv, &argc);
     LOGD("ZLIB version: %s", zlibVersion());
     LOGD("libpng version: %s", png_get_libpng_ver(NULL));

@@ -56,7 +56,7 @@ void Golden::drawShadow(glm::mat4 mat) {
 }
 
 glm::vec3 Golden::findTarget() {
-    glm::vec3 offset = glm::vec3(this->random->nextFloat(-40.0f, 40.0f), 0.0f, this->random->nextFloat(-40.0f, 40.0f)) + robot->position;
+    glm::vec3 offset = glm::vec3(this->random->nextFloat(-30.0f, 30.0f), 0.0f, this->random->nextFloat(-30.0f, 30.0f)) + robot->position;
     world::Chunk* chunk = this->world->getChunkAt(world::ChunkPosition(offset));
     if (chunk) {
         offset.y = (waterObject->getY() - chunk->maxY) / 7.0f + chunk->maxY;

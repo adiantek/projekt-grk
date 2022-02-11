@@ -175,7 +175,9 @@ void Robot::setMoveDirectionVector(glm::vec3 direction) {
     }
 
     else if (direction.y == 1.0f && (this->mode == Robot::MODE_WALKING || this->mode == Robot::MODE_STATIONARY)) {
-        this->jump();
+        if (!this->isAboveWater()) {
+            this->jump();
+        }
     }
 
     else if (direction.x == 0 && direction.y == 0 && direction.z == 0) {
@@ -257,7 +259,14 @@ void Robot::update() {
     float rotationSpeed = Robot::ROTATION_SPEED * timeExternal->deltaTime * 5.0f;
 
     if (this->mode != Robot::MODE_STATIONARY) {
-        this->position += this->moveDirectionVector * this->movementSpeed * timeExternal->deltaTime;
+        if (this->isInFloatingMode() && this->isAboveWater() && this->moveDirectionVector.y > 0.0f) {
+            glm::vec3 dir = glm::normalize(glm::vec3(this->moveDirectionVector.x, 0.0f, this->moveDirectionVector.z));
+            if (!glm::any(glm::isnan(dir))) {
+                this->position += dir * this->movementSpeed * timeExternal->deltaTime;
+            }
+        } else {
+            this->position += this->moveDirectionVector * this->movementSpeed * timeExternal->deltaTime;
+        }
 
         if (this->mode == Robot::MODE_JUMPING) {
             this->jumpStage += timeExternal->deltaTime * Robot::JUMP_SPEED;
@@ -606,7 +615,13 @@ void Robot::jump() {
 
     this->jumpStage = 0.0f;
     this->jumpStart = glm::vec3(this->position);
-    this->jumpTarget = this->gameObject->getModelMatrix() * glm::vec4(this->up * Robot::JUMP_HEIGHT, 1.0f);
+
+    glm::mat4 modelMatrix = this->gameObject->getModelMatrix();
+
+    this->jumpTarget = modelMatrix * glm::vec4(this->up * Robot::JUMP_HEIGHT, 1.0f);
+    if (this->jumpTarget.y > 191.5f) {
+        this->jumpTarget.y = 191.5f;
+    }
 
     this->openHatch(this->hatches.upper);
     this->openHatch(this->hatches.lowerLeft);
@@ -882,6 +897,10 @@ bool Robot::isInMovingMode() {
 float Robot::getDistanceFromGround() {
     glm::vec3 worldPoint = this->getWorldPointAt(this->position);
     return this->position.y - worldPoint.y;
+}
+
+bool Robot::isAboveWater() {
+    return this->position.y > 191.5f;
 }
 
 Robot *robot;
