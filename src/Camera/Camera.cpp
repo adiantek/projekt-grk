@@ -31,7 +31,7 @@ glm::mat4 Camera::getTransformationMatrix() {
 }
 
 glm::mat4 Camera::getCameraPositionMatrix() {
-    return glm::mat4(glm::inverse(glm::mat3(this->rotationMatrix)));
+    return this->rotationMatrix;
 }
 
 void Camera::useCameraViewport() {

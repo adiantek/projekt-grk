@@ -123,11 +123,14 @@ void ParticleSystem::render() {
 	// glm::vec3 cameraDirection = camera->getDirection();
 	// glm::mat4 lookAt = glm::transpose(glm::lookAt(glm::vec3(0.0f), cameraDirection, glm::vec3(0.0f, 1.0f, 0.0f)));
 	// lookAt = lookAt * glm::eulerAngleX(glm::radians(180.0f));
-	glm::mat4 lookAt = camera->getCameraPositionMatrix();
+	glm::mat4 lookAt = glm::transpose(glm::lookAt(glm::vec3(0.0f), camera->getDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+	glm::mat4 cameraMatrix2 = camera->getCameraPositionMatrix();
 
 	glUseProgram(resourceLoaderExternal->p_bubbles_shader);
     glUniform1f(resourceLoaderExternal->p_bubbles_shader_uni_distanceToSurface, waterObject->getY() - camera->position.y);
-	glUniformMatrix4fv(resourceLoaderExternal->p_bubbles_shader_uni_cameraDirection, 1, GL_FALSE, glm::value_ptr(lookAt));
+	glUniform3f(resourceLoaderExternal->p_bubbles_shader_uni_cameraDirection, cameraMatrix2[0][0], cameraMatrix2[1][0], cameraMatrix2[2][0]);
+	glUniform3f(glGetUniformLocation(resourceLoaderExternal->p_bubbles_shader, "cameraDirection2"), cameraMatrix2[0][1], cameraMatrix2[1][1], cameraMatrix2[2][1]);
 	// glUniform3f(resourceLoaderExternal->p_bubbles_shader_uni_cameraDirection, camera->getDirection().x, camera->getDirection().y, camera->getDirection().z);
     glUniform4fv(resourceLoaderExternal->p_bubbles_shader_uni_particlePositionsAndLife, MAX_PARTICLES, glm::value_ptr(particlePositionsAndLife[0]));
     glUniformMatrix4fv(resourceLoaderExternal->p_bubbles_shader_uni_cameraMatrix, 1, GL_FALSE, glm::value_ptr(cameraMatrix));
