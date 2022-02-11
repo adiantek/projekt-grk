@@ -25,7 +25,7 @@ Budowanie dla osób nie mających życia:
 
 ## Sterowanie
 - Przycisk `1` - zmiana oświetlenia na PBR
-- Przycisk `2` - zmiana modelu oświetlenia na model 
+- Przycisk `2` - zmiana modelu oświetlenia na model Phonga
 - Przycisk `F` przy włączonym celowniku - łapanie jednego elementu lub łapanie wielu lub stawienie elementu dynamicznego
 - Przycisk `R` - zmiana trybu dla klawisza `F`
 - Przycisk `G` w trybie stawiania elementów: zmiana modelu do postawienia (kula, sześcian, itd.)
