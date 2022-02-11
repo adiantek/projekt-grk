@@ -209,7 +209,8 @@ void Chunk::decorate1() {
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,1,0))
                 * glm::rotate(glm::radians(this->chunkRandom->nextFloat() * 360.0f), glm::vec3(0,0,1))
                 * glm::scale(glm::vec3(scale)),
-                this->chunkRandom->nextInt(3));
+                this->chunkRandom->nextInt(3)
+                , scale);
         }
     }
     this->grass_len = 256;
@@ -508,5 +509,9 @@ void Chunk::drawShadow(glm::mat4 mat) {
     glDrawElements(GL_TRIANGLES, 1536, GL_UNSIGNED_INT, 0);  // 1536 = sizeof(lines) / sizeof(int)
     if (this->chest) {
         this->chest->drawShadow(mat);
+    }
+
+    if (this->stone) {
+        this->stone->drawShadow(mat);
     }
 }
