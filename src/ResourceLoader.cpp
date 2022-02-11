@@ -231,6 +231,7 @@ void ResourceLoader::loadPrograms() {
         UNIFORM(bubbles_shader, particlePositionsAndLife);
         UNIFORM(bubbles_shader, cameraMatrix);
         UNIFORM(bubbles_shader, cameraDirection);
+        UNIFORM(bubbles_shader, cameraUp);
     }
     LOAD_PROGRAM(shader_color, 2, "shader_color.frag", "shader_color.vert") {
         // DUMP(shader_color);

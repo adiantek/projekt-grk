@@ -14,9 +14,8 @@ class Particle {
         float scale = 0.20f;
         float gravityEffect = 1.0f;
         glm::vec3 position;
-        glm::vec3 velocity;
 
-		Particle(glm::vec3 position, glm::vec3 velocity, float gravityEffect, 
+		Particle(glm::vec3 position, float gravityEffect, 
         float lifeRemaining, float rotation, float scale);
         ~Particle();
         Particle();

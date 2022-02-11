@@ -257,7 +257,8 @@ public:
     GLint p_bubbles_shader_uni_particlePositionsAndLife = -1;
     GLint p_bubbles_shader_uni_cameraMatrix = -1;
     GLint p_bubbles_shader_uni_cameraDirection = -1;
-
+    GLint p_bubbles_shader_uni_cameraUp = -1;
+    
     GLuint p_shader_color = 0;
     bool p_shader_color_loaded = false;
     GLint p_shader_color_attr_vertexNormal = -1;
