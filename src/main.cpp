@@ -177,28 +177,91 @@ void onChunkLoad(Random *random, world::ChunkPosition pos) {
     int minX = pos.coords.x << 4;
     int minZ = pos.coords.z << 4;
 
-    if (random->nextFloat() < 0.02f) {
+    int size1 = boids.size();
+    int size2 = boids2.size();
+    int size3 = boids3.size();
+    int size4 = boids4.size();
+
+    if (random->nextFloat() < 0.02f && boids.size() < 20) {
         fish::Boids<fish::Pilotfish> *boid = new fish::Boids<fish::Pilotfish>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids.push_back(boid);
     }
     
-    if (random->nextFloat() < 0.02f) {
+    if (random->nextFloat() < 0.02f && boids2.size() < 20) {
         fish::Boids<fish::Barracuda> *boid = new fish::Boids<fish::Barracuda>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids2.push_back(boid);
     }
     
-    if (random->nextFloat() < 0.02f) {
+    if (random->nextFloat() < 0.02f && boids3.size() < 20) {
         fish::Boids<fish::RedSnapper> *boid = new fish::Boids<fish::RedSnapper>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids3.push_back(boid);
     }
     
-    if (random->nextFloat() < 0.02f) {
+    if (random->nextFloat() < 0.02f && boids4.size() < 20) {
         fish::Boids<fish::Golden> *boid = new fish::Boids<fish::Golden>(BOIDS_SIZE, glm::vec3(minX + random->nextFloat() * 16.0f, random->nextFloat(170.0f, 190.0f), minZ + random->nextFloat() * 16.0f), w);
         waterObject->addWorldObject((world::Object3D *)boid);
         boids4.push_back(boid);
+    }
+}
+
+void onChunkUnLoad(world::ChunkPosition pos) {
+    for(int i = 0; i < boids.size(); ++i) {
+        auto boid = boids[i];
+        for (auto fish : boid->boidList) {
+            glm::vec3 fishPos = fish->rigidBody->getModelMatrix()[3];
+            if (fishPos.x > pos.coords.x * 16.0f && fishPos.x < pos.coords.x * 16.0f + 16.0f && fishPos.z > pos.coords.z * 16.0f && fishPos.z < pos.coords.z * 16.0f + 16.0f) {
+                waterObject->removeWorldObject((world::Object3D *)boid);
+                delete boid;
+                boids[i] = boids[boids.size() - 1];
+                boids.pop_back();
+                break;
+            }
+        }
+    }
+
+    for(int i = 0; i < boids2.size(); ++i) {
+        auto boid = boids2[i];
+        for (auto fish : boid->boidList) {
+            glm::vec3 fishPos = fish->rigidBody->getModelMatrix()[3];
+            if (fishPos.x > pos.coords.x * 16.0f && fishPos.x < pos.coords.x * 16.0f + 16.0f && fishPos.z > pos.coords.z * 16.0f && fishPos.z < pos.coords.z * 16.0f + 16.0f) {
+                waterObject->removeWorldObject((world::Object3D *)boid);
+                delete boid;
+                boids2[i] = boids2[boids2.size() - 1];
+                boids2.pop_back();
+                break;
+            }
+        }
+    }
+
+    for(int i = 0; i < boids3.size(); ++i) {
+        auto boid = boids3[i];
+        for (auto fish : boid->boidList) {
+            glm::vec3 fishPos = fish->rigidBody->getModelMatrix()[3];
+            if (fishPos.x > pos.coords.x * 16.0f && fishPos.x < pos.coords.x * 16.0f + 16.0f && fishPos.z > pos.coords.z * 16.0f && fishPos.z < pos.coords.z * 16.0f + 16.0f) {
+                waterObject->removeWorldObject((world::Object3D *)boid);
+                delete boid;
+                boids3[i] = boids3[boids3.size() - 1];
+                boids3.pop_back();
+                break;
+            }
+        }
+    }
+
+    for(int i = 0; i < boids4.size(); ++i) {
+        auto boid = boids4[i];
+        for (auto fish : boid->boidList) {
+            glm::vec3 fishPos = fish->rigidBody->getModelMatrix()[3];
+            if (fishPos.x > pos.coords.x * 16.0f && fishPos.x < pos.coords.x * 16.0f + 16.0f && fishPos.z > pos.coords.z * 16.0f && fishPos.z < pos.coords.z * 16.0f + 16.0f) {
+                waterObject->removeWorldObject((world::Object3D *)boid);
+                delete boid;
+                boids4[i] = boids4[boids4.size() - 1];
+                boids4.pop_back();
+                break;
+            }
+        }
     }
 }
 
@@ -216,7 +279,7 @@ void init() {
     fog = new Fog(camera->width, camera->height, 256.0);
     new water::Water(192.0f, 320.0f, 65.0f, 400, 300.0f, 1200);
     new physics::Physics(9.8f);
-    w = new world::World(0, onChunkLoad);
+    w = new world::World(0, onChunkLoad, onChunkUnLoad);
 
     new ParticleSystem();
 

@@ -29,6 +29,7 @@ Chunk::Chunk(World *world, ChunkPosition pos, float *noise) {
 
 Chunk::~Chunk() {
     // LOGD("Chunk: unloading %d %d", pos.coords.x, pos.coords.z);
+    this->world->onChunkUnLoad(this->pos);
     delete this->chunkRandom;
     glDeleteBuffers(1, &this->vbo);
     glDeleteBuffers(1, &this->elements);

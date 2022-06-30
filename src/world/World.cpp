@@ -13,9 +13,10 @@ using namespace world;
 
 #define VIEW_DISTANCE 12
 
-World::World(int64_t seed, void (*onChunkLoad)(Random *random, world::ChunkPosition pos)) {
+World::World(int64_t seed, void (*onChunkLoad)(Random *random, world::ChunkPosition pos), void (*onChunkUnLoad)(world::ChunkPosition pos)) {
     worldObject = this;
     this->onChunkLoad = onChunkLoad;
+    this->onChunkUnLoad = onChunkUnLoad;
     this->seed = seed;
     this->chunkBorderDebugRenderer = new ChunkBorderDebugRenderer();
     this->crosshair = new Crosshair();

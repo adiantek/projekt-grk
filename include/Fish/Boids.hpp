@@ -28,6 +28,7 @@ class Boids : world::Object3D {
     float visualRange = 75.0f;
     float lastTargetChange = -6.0f;
     float maxSpeed = 17.0f;
+    std::vector<T*> boidList;
 
    private:
     void swimTowardsCenter(T* boid);
@@ -38,7 +39,6 @@ class Boids : world::Object3D {
     void addRandomMovement(T* boid);
     void updateTarget();
 
-    std::vector<T*> boidList;
     glm::vec3 target;
     Random random;
     world::World* world;
