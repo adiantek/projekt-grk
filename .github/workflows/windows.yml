@@ -5,10 +5,12 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+  BUILD_TYPE: Release
 
 jobs:
   build:
@@ -23,13 +25,13 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-    # - name: Create out
-    #   shell: bash
-    #   run: |
-    #     mkdir out
-    #     cp build/Debug/GrafikaKomputerowa.exe out/
-    #     cp -R assets out/
-    # - uses: actions/upload-artifact@v2
-    #   with:
-    #     name: GrafikaKomputerowa
-    #     path: out/
+    - name: Create out
+      shell: bash
+      run: |
+        mkdir out
+        cp build/Release/GrafikaKomputerowa.exe out/
+        cp -R assets out/
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GrafikaKomputerowa
+        path: out/
